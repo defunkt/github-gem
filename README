@@ -3,11 +3,15 @@ The GitHub Gem
 
 This gem'll work hand-in-hand with GitHub's API to help you out.
 
-The vision is for this gem to help you:
+Some ideas:
   - Manage forks / remotes
   - Query the site (`svn info`)
   - git push + pull request
 
 The project will have an open commit bit: send us a cool patch, get write access.  Let's do this.
+
+I want to use this gem as a means of building out the GitHub API, as well.  read/write.
+
+Catch me in the #github room on freenode if you want to get involved.  Or just fork and send a pull request.
 
 - defunkt @ github

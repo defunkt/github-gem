@@ -28,7 +28,11 @@ end
 GitHub.helper :following do
   `git config --get-regexp '^remote\..+\.url$'`.split(/\n/).map do |line|
     _, url = line.split(/ /, 2)
-    user_and_repo_from(url).first
+    if ur = user_and_repo_from(url)
+      ur.first
+    else
+      "#{url} [foreign]"
+    end
   end
 end
 

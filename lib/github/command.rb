@@ -3,17 +3,21 @@ require 'open3'
 module GitHub
   class Command
     def initialize(block)
-      @block = block
+      (class << self;self end).send :define_method, :command, &block
     end
 
     def call(*args)
-      arity = @block.arity
+      arity = method(:command).arity
       args << nil while args.size < arity
-      @block.call(*args)
+      send :command, *args
     end
     
     def helper
       @helper ||= Helper.new
+    end
+
+    def pgit(*command)
+      puts git(*command)
     end
 
     def git(*command)

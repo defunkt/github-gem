@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 $:.unshift File.dirname(__FILE__)
 require 'github/command'
 require 'github/helper'
@@ -20,25 +18,13 @@ require 'github/helper'
 module GitHub
   extend self
 
-  def activate(args)
-    return if args.empty?
-    @debug = args.delete('--debug')
-    load 'commands.rb'
-    invoke(args.shift, *args)
-  end
-
-  def invoke(command, *args)
-    if block = commands[command]
-      debug "Invoking `#{command}`"
-      block.call(*args)
-    else
-      debug "Couldn't invoke `#{command}`: not found"
-    end
-  end
-
   def register(command, &block)
     debug "Registered `#{command}`"
     commands[command.to_s] = Command.new(block)
+  end
+
+  def describe(hash)
+    descriptions.update hash
   end
 
   def helper(command, &block)
@@ -46,8 +32,25 @@ module GitHub
     Helper.send :define_method, command, &block
   end
 
+  def activate(args)
+    @debug = args.delete('--debug')
+    load 'helpers.rb'
+    load 'commands.rb'
+    invoke(args.shift, *args)
+  end
+
+  def invoke(command, *args)
+    block = commands[command.to_s] || commands['default']
+    debug "Invoking `#{command}`"
+    block.call(*args)
+  end
+
   def commands
     @commands ||= {}
+  end
+
+  def descriptions
+    @descriptions ||= {}
   end
 
   def debug(*messages)
@@ -59,4 +62,11 @@ module GitHub
   end
 end
 
-GitHub.activate ARGV
+GitHub.register :default do
+  puts "Usage: github command <space separated arguments>", ''
+  puts "Available commands:", ''
+  GitHub.descriptions.each do |command, desc|
+    puts "  #{command} => #{desc}"
+  end
+  puts
+end

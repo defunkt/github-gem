@@ -1,12 +1,24 @@
-GitHub.register :open do 
+GitHub.register :helper do |name,comma_args|
+  comma_args ||= ''
+  puts helper.send(name, comma_args.split(/,/))
+end
+
+GitHub.register :home do
   if helper.project
-    exec "open https://github.com/#{helper.current_user}/#{helper.project}"
+    exec "open #{helper.homepage_for(helper.owner, 'master')}"
   end
 end
 
+GitHub.register :browse do
+  if helper.project
+    exec "open #{helper.homepage_for(helper.branch_user, helper.branch_name)}"
+  end
+end
+
+
 GitHub.register :info do
   puts "== Info for #{helper.project}"
-  puts "You are #{helper.current_user}"
+  puts "You are #{helper.owner}"
   puts "Currently tracking: "
   helper.tracking.each do |(name,user_or_url)|
     puts " - #{user_or_url} (as #{name})"

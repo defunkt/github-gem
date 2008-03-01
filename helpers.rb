@@ -48,10 +48,32 @@ GitHub.helper :tracking? do |user|
   tracking.include?(user)
 end
 
-GitHub.helper :current_user do
+GitHub.helper :owner do
   user_for(:origin)
+end
+
+GitHub.helper :user_and_branch do
+  raw_branch = `git rev-parse --symbolic-full-name HEAD`.chomp.sub(/^refs\/heads\//, '')
+  user, branch = raw_branch.split(/\//, 2)
+  if branch
+    [user, branch]
+  else
+    [owner, branch]
+  end
+end
+
+GitHub.helper :branch_user do
+  user_and_branch.first
+end
+
+GitHub.helper :branch_name do
+  user_and_branch.last
 end
 
 GitHub.helper :public_url_for do |user|
   "git://github.com/#{user}/#{project}.git"
+end
+
+GitHub.helper :homepage_for do |user, branch|
+  "https://github.com/#{user}/#{project}/tree/#{branch}"
 end

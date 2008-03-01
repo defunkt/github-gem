@@ -6,6 +6,6 @@ This gem'll work hand-in-hand with GitHub's API to help you out.
 Catch us in the #github room on freenode if you want to get involved.  Or just fork and send a pull request.
 
 Run it:
-  $ ruby lib/github.rb <command> <args>
+  $ ./bin/github.rb <command> <args>
 
 - defunkt

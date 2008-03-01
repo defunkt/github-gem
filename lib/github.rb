@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+$:.unshift File.dirname(__FILE__)
+require 'github/command'
+require 'github/helper'
+
 ##
 # Starting simple.
 #
@@ -24,7 +28,7 @@ module GitHub
 
   def invoke(command, *args)
     if block = commands[command]
-      block.call(args)
+      block.call(*args)
     else
       debug "Couldn't invoke `#{command}`: not found"
     end
@@ -32,7 +36,12 @@ module GitHub
 
   def register(command, &block)
     debug "Registered `#{command}`"
-    commands[command.to_s] = block
+    commands[command.to_s] = Command.new(block)
+  end
+
+  def helper(command, &block)
+    debug "Helper'd `#{command}`"
+    Helper.send :define_method, command, &block
   end
 
   def commands

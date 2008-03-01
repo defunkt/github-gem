@@ -16,6 +16,8 @@ require 'github/helper'
 #
 
 module GitHub
+  BASE_PATH = File.expand_path(File.dirname(__FILE__) + '/..')
+
   extend self
 
   def register(command, &block)
@@ -51,6 +53,14 @@ module GitHub
 
   def descriptions
     @descriptions ||= {}
+  end
+
+  def load(file)
+    if file[0] == ?/
+      super
+    else
+      super(BASE_PATH + "/#{file}")
+    end
   end
 
   def debug(*messages)

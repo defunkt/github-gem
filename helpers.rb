@@ -25,7 +25,7 @@ GitHub.helper :url_for do |remote|
   `git config --get remote.#{remote}.url`.chomp
 end
 
-GitHub.helper :following do
+GitHub.helper :tracking do
   `git config --get-regexp '^remote\..+\.url$'`.split(/\n/).map do |line|
     _, url = line.split(/ /, 2)
     if ur = user_and_repo_from(url)
@@ -36,14 +36,14 @@ GitHub.helper :following do
   end
 end
 
+GitHub.helper :tracking? do |user|
+  tracking.include?(user)
+end
+
 GitHub.helper :current_user do
   user_for(:origin)
 end
 
 GitHub.helper :public_url_for do |user|
   "git://github.com/#{user}/#{project}.git"
-end
-
-GitHub.helper :following? do |user|
-  following.include?(user)
 end

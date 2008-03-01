@@ -7,15 +7,15 @@ end
 GitHub.register :info do
   puts "== Info for #{helper.project}"
   puts "You are #{helper.current_user}"
-  puts "Currently following: "
-  helper.following.each do |user|
+  puts "Currently tracking: "
+  helper.tracking.each do |user|
     puts " - #{user}"
   end
 end
 
-GitHub.register :follow do |user|
-  die "Specify a user to pull from" if user.nil?
-  die "Already following #{user}" if helper.following?(user)
+GitHub.register :track do |user|
+  die "Specify a user to track" if user.nil?
+  die "Already tracking #{user}" if helper.tracking?(user)
 
   git "remote add #{user} #{helper.public_url_for(user)}"
 end
@@ -23,7 +23,7 @@ end
 GitHub.describe :pull => 'hi, this is github pull'
 GitHub.register :pull do |user, branch|
   die "Specify a user to pull from" if user.nil?
-  GitHub.invoke(:follow, user) unless helper.following?(user)
+  GitHub.invoke(:track, user) unless helper.tracking?(user)
   branch ||= 'master'
 
   puts "Switching to #{user}/#{branch}"

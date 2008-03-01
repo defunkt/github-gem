@@ -25,13 +25,21 @@ GitHub.helper :url_for do |remote|
   `git config --get remote.#{remote}.url`.chomp
 end
 
+GitHub.helper :remotes do
+  regexp = '^remote\.(.+)\.url$'
+  `git config --get-regexp '#{regexp}'`.split(/\n/).map do |line|
+    name_string, url = line.split(/ /, 2)
+    m, name = *name_string.match(/#{regexp}/)
+    [name, url]
+  end
+end
+
 GitHub.helper :tracking do
-  `git config --get-regexp '^remote\..+\.url$'`.split(/\n/).map do |line|
-    _, url = line.split(/ /, 2)
+  remotes.map do |(name, url)|
     if ur = user_and_repo_from(url)
-      ur.first
+      [name, ur.first]
     else
-      "#{url} [foreign]"
+      [name, url]
     end
   end
 end

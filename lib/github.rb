@@ -1,5 +1,3 @@
-#!/usr/bin/env ruby
-
 $:.unshift File.dirname(__FILE__)
 require 'github/command'
 require 'github/helper'

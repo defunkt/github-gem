@@ -58,7 +58,7 @@ GitHub.helper :user_and_branch do
   if branch
     [user, branch]
   else
-    [owner, branch]
+    [owner, user]
   end
 end
 

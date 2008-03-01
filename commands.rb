@@ -15,7 +15,6 @@ GitHub.register :browse do
   end
 end
 
-
 GitHub.register :info do
   puts "== Info for #{helper.project}"
   puts "You are #{helper.owner}"

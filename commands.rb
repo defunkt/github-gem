@@ -14,7 +14,14 @@ end
 
 GitHub.register :pull do |user, branch|
   branch ||= 'master'
-  if `git remote show #{user}` =~ /no such remote/i
-    `git remote add #{user} git://github.com/#{user}/#{helper.project}.git`
+  value    = git "remote show #{user}"
+
+  if value.error? && value =~ /no such remote/i
+    git "remote add #{user} git://github.com/#{user}/#{helper.project}.git"
+  elsif value.error?
+    die "Error: #{value}"
   end
+
+  git "checkout -b #{user}/#{branch}"
+  git "pull #{user} #{branch}"
 end

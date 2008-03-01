@@ -22,12 +22,14 @@ module GitHub
 
   def activate(args)
     return if args.empty?
+    @debug = args.delete('--debug')
     load 'commands.rb'
     invoke(args.shift, *args)
   end
 
   def invoke(command, *args)
     if block = commands[command]
+      debug "Invoking `#{command}`"
       block.call(*args)
     else
       debug "Couldn't invoke `#{command}`: not found"
@@ -53,7 +55,7 @@ module GitHub
   end
 
   def debug?
-    ARGV.include? '--debug'
+    !!@debug
   end
 end
 

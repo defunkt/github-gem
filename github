@@ -1,0 +1,1 @@
+ruby lib/github.rb $0

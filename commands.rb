@@ -12,6 +12,7 @@ GitHub.register :info do |repo, dude|
   puts "== Grabbing info for #{repo} #{dude}"
 end
 
+GitHub.describe :pull => 'hi, this is github pull'
 GitHub.register :pull do |user, branch|
   branch ||= 'master'
   value    = git "remote show #{user}"

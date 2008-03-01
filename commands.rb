@@ -1,11 +1,36 @@
+GitHub.helper :user_and_project_for do |remote|
+  url_for(remote).split(/[:\/]/, 2).last.split('/')
+end
+
+GitHub.helper :user_for do |remote|
+  user_and_project_for(remote).first
+end
+
 GitHub.helper :project do
-  `git config --get remote.origin.url`.chomp.split('/').last.chomp('.git')
+  user_and_project_for(:origin).last.chomp('.git')
+end
+
+GitHub.helper :url_for do |remote|
+  `git config --get remote.#{remote}.url`.chomp
+end
+
+GitHub.helper :current_user do
+  user_for(:origin)
+end
+
+GitHub.helper :public_url_for do |user|
+  "git://github.com/#{user}/#{project}.git"
 end
 
 GitHub.register :open do 
-  if remote = `git config --get remote.origin.url`.chomp
-    exec "open https://github.com/#{remote.split(/github.com[:|\/]/).last.chomp('.git')}"
+  if helper.project
+    exec "open https://github.com/#{helper.current_user}/#{helper.project}"
   end
+end
+
+GitHub.register :status do
+  puts "== Status right now for #{helper.project}"
+  puts "You are #{helper.current_user}"
 end
 
 GitHub.register :info do |repo, dude|
@@ -18,7 +43,7 @@ GitHub.register :pull do |user, branch|
   value    = git "remote show #{user}"
 
   if value.error? && value =~ /no such remote/i
-    git "remote add #{user} git://github.com/#{user}/#{helper.project}.git"
+    git "remote add #{user} #{helper.public_url_for(user)}"
   elsif value.error?
     die "Error: #{value}"
   end

@@ -3,13 +3,13 @@ require 'open3'
 module GitHub
   class Command
     def initialize(block)
-      (class << self;self end).send :define_method, :command, &block
+      @block = block
     end
 
     def call(*args)
-      arity = method(:command).arity
+      arity = @block.arity
       args << nil while args.size < arity
-      send :command, *args
+      @block.call(*args)
     end
     
     def helper

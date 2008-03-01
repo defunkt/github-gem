@@ -4,7 +4,7 @@ end
 
 GitHub.register :open do 
   if remote = `git config -l`.split("\n").detect { |line| line =~ /remote.origin.url/ }
-    exec "open http://github.com/#{remote.split(':').last.chomp('.git')}"
+    exec "open https://github.com/#{remote.split(/github.com[:|\/]/).last.chomp('.git')}"
   end
 end
 

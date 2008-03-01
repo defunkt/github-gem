@@ -70,5 +70,3 @@ GitHub.register :default do
   end
   puts
 end
-
-GitHub.activate ARGV

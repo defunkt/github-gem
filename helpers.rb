@@ -1,20 +1,24 @@
-GitHub.helper :user_and_project_from do |url|
+GitHub.helper :user_and_repo_from do |url|
   case url
   when %r|^git://github\.com/(.*)$|: $1.split('/')
   when %r|^git@github\.com:(.*)$|: $1.split('/')
   end
 end
 
-GitHub.helper :user_and_project_for do |remote|
-  user_and_project_from(url_for(remote))
+GitHub.helper :user_and_repo_for do |remote|
+  user_and_repo_from(url_for(remote))
 end
 
 GitHub.helper :user_for do |remote|
-  user_and_project_for(remote).first
+  user_and_repo_for(remote).first
+end
+
+GitHub.helper :repo_for do |remote|
+  user_and_repo_for(remote).last
 end
 
 GitHub.helper :project do
-  user_and_project_for(:origin).last.chomp('.git')
+  repo_for(:origin).chomp('.git')
 end
 
 GitHub.helper :url_for do |remote|
@@ -24,7 +28,7 @@ end
 GitHub.helper :following do
   `git config --get-regexp '^remote\..+\.url$'`.split(/\n/).map do |line|
     _, url = line.split(/ /, 2)
-    user_and_project_from(url).first
+    user_and_repo_from(url).first
   end
 end
 

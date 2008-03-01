@@ -22,6 +22,7 @@ GitHub.register :pull do |user, branch|
     die "Error: #{value}"
   end
 
+  puts "Switching to #{user}/#{branch}"
   git "checkout -b #{user}/#{branch}"
-  git "pull #{user} #{branch}"
+  pgit "pull #{user} #{branch}"
 end

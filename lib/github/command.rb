@@ -16,6 +16,10 @@ module GitHub
       @helper ||= Helper.new
     end
 
+    def pgit(*command)
+      puts git(*command)
+    end
+
     def git(*command)
       sh ['git', command].flatten.join(' ')
     end

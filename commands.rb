@@ -1,52 +1,30 @@
-GitHub.helper :user_and_project_for do |remote|
-  url_for(remote).split(/[:\/]/, 2).last.split('/')
-end
-
-GitHub.helper :user_for do |remote|
-  user_and_project_for(remote).first
-end
-
-GitHub.helper :project do
-  user_and_project_for(:origin).last.chomp('.git')
-end
-
-GitHub.helper :url_for do |remote|
-  `git config --get remote.#{remote}.url`.chomp
-end
-
-GitHub.helper :current_user do
-  user_for(:origin)
-end
-
-GitHub.helper :public_url_for do |user|
-  "git://github.com/#{user}/#{project}.git"
-end
-
 GitHub.register :open do 
   if helper.project
     exec "open https://github.com/#{helper.current_user}/#{helper.project}"
   end
 end
 
-GitHub.register :status do
-  puts "== Status right now for #{helper.project}"
+GitHub.register :info do
+  puts "== Info for #{helper.project}"
   puts "You are #{helper.current_user}"
+  puts "Currently following: "
+  helper.following.each do |user|
+    puts " - #{user}"
+  end
 end
 
-GitHub.register :info do |repo, dude|
-  puts "== Grabbing info for #{repo} #{dude}"
+GitHub.register :follow do |user|
+  die "Specify a user to pull from" if user.nil?
+  die "Already following #{user}" if helper.following?(user)
+
+  git "remote add #{user} #{helper.public_url_for(user)}"
 end
 
 GitHub.describe :pull => 'hi, this is github pull'
 GitHub.register :pull do |user, branch|
+  die "Specify a user to pull from" if user.nil?
+  GitHub.invoke(:follow, user) unless helper.following?(user)
   branch ||= 'master'
-  value    = git "remote show #{user}"
-
-  if value.error? && value =~ /no such remote/i
-    git "remote add #{user} #{helper.public_url_for(user)}"
-  elsif value.error?
-    die "Error: #{value}"
-  end
 
   puts "Switching to #{user}/#{branch}"
 

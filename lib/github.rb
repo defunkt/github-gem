@@ -34,12 +34,13 @@ module GitHub
 
   def activate(args)
     @debug = args.delete('--debug')
+    load 'helpers.rb'
     load 'commands.rb'
     invoke(args.shift, *args)
   end
 
   def invoke(command, *args)
-    block = commands[command] || commands['default']
+    block = commands[command.to_s] || commands['default']
     debug "Invoking `#{command}`"
     block.call(*args)
   end

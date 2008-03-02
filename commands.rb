@@ -1,21 +1,32 @@
-GitHub.register :open do 
+GitHub.register :helper do |name,comma_args|
+  comma_args ||= ''
+  puts helper.send(name, comma_args.split(/,/))
+end
+
+GitHub.register :home do
   if helper.project
-    exec "open https://github.com/#{helper.current_user}/#{helper.project}"
+    exec "open #{helper.homepage_for(helper.owner, 'master')}"
+  end
+end
+
+GitHub.register :browse do
+  if helper.project
+    exec "open #{helper.homepage_for(helper.branch_user, helper.branch_name)}"
   end
 end
 
 GitHub.register :info do
   puts "== Info for #{helper.project}"
-  puts "You are #{helper.current_user}"
-  puts "Currently following: "
-  helper.following.each do |user|
-    puts " - #{user}"
+  puts "You are #{helper.owner}"
+  puts "Currently tracking: "
+  helper.tracking.each do |(name,user_or_url)|
+    puts " - #{user_or_url} (as #{name})"
   end
 end
 
-GitHub.register :follow do |user|
-  die "Specify a user to pull from" if user.nil?
-  die "Already following #{user}" if helper.following?(user)
+GitHub.register :track do |user|
+  die "Specify a user to track" if user.nil?
+  die "Already tracking #{user}" if helper.tracking?(user)
 
   git "remote add #{user} #{helper.public_url_for(user)}"
 end
@@ -23,7 +34,7 @@ end
 GitHub.describe :pull => 'hi, this is github pull'
 GitHub.register :pull do |user, branch|
   die "Specify a user to pull from" if user.nil?
-  GitHub.invoke(:follow, user) unless helper.following?(user)
+  GitHub.invoke(:track, user) unless helper.tracking?(user)
   branch ||= 'master'
 
   puts "Switching to #{user}/#{branch}"

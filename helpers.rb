@@ -25,25 +25,55 @@ GitHub.helper :url_for do |remote|
   `git config --get remote.#{remote}.url`.chomp
 end
 
-GitHub.helper :following do
-  `git config --get-regexp '^remote\..+\.url$'`.split(/\n/).map do |line|
-    _, url = line.split(/ /, 2)
+GitHub.helper :remotes do
+  regexp = '^remote\.(.+)\.url$'
+  `git config --get-regexp '#{regexp}'`.split(/\n/).map do |line|
+    name_string, url = line.split(/ /, 2)
+    m, name = *name_string.match(/#{regexp}/)
+    [name, url]
+  end
+end
+
+GitHub.helper :tracking do
+  remotes.map do |(name, url)|
     if ur = user_and_repo_from(url)
-      ur.first
+      [name, ur.first]
     else
-      "#{url} [foreign]"
+      [name, url]
     end
   end
 end
 
-GitHub.helper :current_user do
+GitHub.helper :tracking? do |user|
+  tracking.include?(user)
+end
+
+GitHub.helper :owner do
   user_for(:origin)
+end
+
+GitHub.helper :user_and_branch do
+  raw_branch = `git rev-parse --symbolic-full-name HEAD`.chomp.sub(/^refs\/heads\//, '')
+  user, branch = raw_branch.split(/\//, 2)
+  if branch
+    [user, branch]
+  else
+    [owner, user]
+  end
+end
+
+GitHub.helper :branch_user do
+  user_and_branch.first
+end
+
+GitHub.helper :branch_name do
+  user_and_branch.last
 end
 
 GitHub.helper :public_url_for do |user|
   "git://github.com/#{user}/#{project}.git"
 end
 
-GitHub.helper :following? do |user|
-  following.include?(user)
+GitHub.helper :homepage_for do |user, branch|
+  "https://github.com/#{user}/#{project}/tree/#{branch}"
 end

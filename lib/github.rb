@@ -16,9 +16,9 @@ require 'github/helper'
 #
 
 module GitHub
-  BASE_PATH = File.expand_path(File.dirname(__FILE__) + '/..')
-
   extend self
+
+  BasePath = File.expand_path(File.dirname(__FILE__) + '/..')
 
   def register(command, &block)
     debug "Registered `#{command}`"
@@ -56,11 +56,7 @@ module GitHub
   end
 
   def load(file)
-    if file[0] == ?/
-      super
-    else
-      super(BASE_PATH + "/#{file}")
-    end
+    file[0] == ?/ ? super : super(BasePath + "/#{file}")
   end
 
   def debug(*messages)

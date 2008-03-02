@@ -1,4 +1,4 @@
-GitHub.register :helper do |name,comma_args|
+GitHub.register :helper do |name, comma_args|
   comma_args ||= ''
   puts helper.send(name, comma_args.split(/,/))
 end

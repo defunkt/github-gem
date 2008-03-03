@@ -56,7 +56,7 @@ module GitHub
   end
 
   def load(file)
-    file[0] == ?/ ? super : super(BasePath + "/#{file}")
+    file[0] == ?/ ? super : super(BasePath + "/commands/#{file}")
   end
 
   def debug(*messages)

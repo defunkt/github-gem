@@ -45,6 +45,7 @@ GitHub.register :pull do |user, branch|
 
   if git("checkout -b #{user}/#{branch}").error? && (checkout = git "checkout #{user}/#{branch}").error?
     puts checkout
+    puts :error
     return
   end
 

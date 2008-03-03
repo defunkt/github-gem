@@ -5,7 +5,15 @@ This gem'll work hand-in-hand with GitHub's API to help you out.
 
 Catch us in the #github room on freenode if you want to get involved.  Or just fork and send a pull request.
 
-Run it:
-  $ ./bin/github.rb <command> <args>
+===========
+Getting started
+===========
+If you want, you can use `gemify' to make a gem to install. 
+
+Otherwise, you can use a bash alias to run the script from anywhere!
+  $ alias github="/path/to/github-gem/bin/github"
+
+Then you can run it:
+  $ github <command> <args>
 
 - defunkt

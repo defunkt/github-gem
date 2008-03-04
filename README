@@ -29,9 +29,15 @@ Let's say you just forked `github-gem` on GitHub from defunkt.
 This will setup a remote and branch for defunkt's repository at master. 
 In this case, a 'defunkt/master' branch.
 
-If defunkt makes some changes you want, simply `github pull defunkt` then 
-`git merge defunkt/master` 
+If defunkt makes some changes you want, simply `github pull defunkt`.  This will
+leave you in the 'defunkt/master' branch after pulling changes from defunkt's
+remote.  After confirming that defunkt's changes were what you wanted, run `git
+checkout master` and then `git merge defunkt/master` to merge defunkt's changes
+into your own master branch.  In summary:
 
+  $ github pull defunkt
+  $ git checkout master
+  $ git merge defunkt/master
 
 
 ==========

@@ -12,12 +12,31 @@ Getting started
   $ gem install github
 
 Run it:
+
   $ github <command> <args>
 
 
-===========
+=============
+Pulling Changes
+=============
+
+Let's say you just forked `github-gem` on GitHub from defunkt.
+
+  $ git clone git://github.com/YOU/github-gem.git
+  $ cd github-gem
+  $ github pull defunkt
+
+This will setup a remote and branch for defunkt's repository at master. 
+In this case, a 'defunkt/master' branch.
+
+If defunkt makes some changes you want, simply `github pull defunkt` then 
+`git merge defunkt/master` 
+
+
+
+==========
 Contributors
-===========
+==========
 
 - defunkt
 - maddox

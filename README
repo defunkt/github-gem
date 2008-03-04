@@ -8,12 +8,17 @@ Catch us in the #github room on freenode if you want to get involved.  Or just f
 ===========
 Getting started
 ===========
-If you want, you can use `gemify' to make a gem to install. 
 
-Otherwise, you can use a bash alias to run the script from anywhere!
-  $ alias github="/path/to/github-gem/bin/github"
+  $ gem install github
 
-Then you can run it:
+Run it:
   $ github <command> <args>
 
+
+===========
+Contributors
+===========
+
 - defunkt
+- maddox
+- halorgium

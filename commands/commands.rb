@@ -42,6 +42,6 @@ GitHub.register :pull do |user, branch|
   branch ||= 'master'
 
   puts "Switching to #{user}/#{branch}"
-  git "checkout #{user}/#{branch}") if git("checkout -b #{user}/#{branch}").error? 
+  git "checkout #{user}/#{branch}" if git("checkout -b #{user}/#{branch}").error? 
   pgit "pull #{user} #{branch}"
 end

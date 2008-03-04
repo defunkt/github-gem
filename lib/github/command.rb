@@ -24,6 +24,10 @@ module GitHub
       sh ['git', command].flatten.join(' ')
     end
 
+    def git_exec(*command)
+      exec ['git', command].flatten.join(' ')
+    end
+
     def sh(*command)
       Shell.new(*command).run
     end

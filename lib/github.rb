@@ -35,7 +35,7 @@ module GitHub
   end
 
   def activate(args)
-    @debug = args.delete('--debug')
+    @options = parse_options(args)
     load 'helpers.rb'
     load 'commands.rb'
     invoke(args.shift, *args)
@@ -53,6 +53,25 @@ module GitHub
 
   def descriptions
     @descriptions ||= {}
+  end
+
+  def options
+    @options
+  end
+
+  def parse_options(args)
+    @debug = args.delete('--debug')
+    args.inject({}) do |memo, arg|
+      if arg =~ /^--([^=]+)=(.+)/
+        args.delete(arg)
+        memo.merge($1.to_sym => $2)
+      elsif arg =~ /^--(.+)/
+        args.delete(arg)
+        memo.merge($1.to_sym => true)
+      else
+        memo
+      end
+    end
   end
 
   def load(file)

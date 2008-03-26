@@ -35,7 +35,7 @@ GitHub.register :track do |user|
   git "remote add #{user} #{helper.public_url_for(user)}"
 end
 
-GitHub.describe :pull => 'Pull from a remote.'
+GitHub.describe :pull => "Pull from a remote.  Pass --merge to automatically merge remote's changes into your master."
 GitHub.register :pull do |user, branch|
   die "Specify a user to pull from" if user.nil?
   GitHub.invoke(:track, user) unless helper.tracking?(user)
@@ -43,5 +43,12 @@ GitHub.register :pull do |user, branch|
 
   puts "Switching to #{user}/#{branch}"
   git "checkout #{user}/#{branch}" if git("checkout -b #{user}/#{branch}").error? 
-  git_exec "pull #{user} #{branch}"
+  
+  if options[:merge]
+    git "pull #{user} #{branch}"
+    git "checkout master"
+    git_exec "merge #{user}/#{branch}"
+  else
+    git_exec "pull #{user} #{branch}"
+  end
 end

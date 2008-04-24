@@ -1,7 +1,10 @@
 if Gem.win_platform?
-  require 'win32/open3'
-  warn "You must 'gem install win32-open3' to use the github command on Windows"
-  exit 1
+  begin
+    require 'win32/open3'
+  rescue LoadError
+    warn "You must 'gem install win32-open3' to use the github command on Windows"
+    exit 1
+  end
 else
   require 'open3'
 end

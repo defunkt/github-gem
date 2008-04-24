@@ -22,6 +22,10 @@ module GitHub
       @helper ||= Helper.new
     end
 
+    def options
+      GitHub.options
+    end
+
     def pgit(*command)
       puts git(*command)
     end

@@ -77,3 +77,8 @@ end
 GitHub.helper :homepage_for do |user, branch|
   "https://github.com/#{user}/#{project}/tree/#{branch}"
 end
+
+GitHub.helper :open do
+  WINDOZE ? 'start' : 'open'
+end
+    

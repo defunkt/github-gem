@@ -6,14 +6,14 @@ end
 GitHub.describe :home => "Open this repo's master branch in a web browser."
 GitHub.register :home do
   if helper.project
-    exec "open #{helper.homepage_for(helper.owner, 'master')}"
+    exec "#{helper.open} #{helper.homepage_for(helper.owner, 'master')}"
   end
 end
 
 GitHub.describe :browse => "Open this repo in a web browser."
 GitHub.register :browse do
   if helper.project
-    exec "open #{helper.homepage_for(helper.branch_user, helper.branch_name)}"
+    exec "#{helper.open} #{helper.homepage_for(helper.branch_user, helper.branch_name)}"
   end
 end
 

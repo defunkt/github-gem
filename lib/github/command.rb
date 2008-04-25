@@ -1,4 +1,4 @@
-if Gem.win_platform?
+if RUBY_PLATFORM =~ /mswin|mingw/
   begin
     require 'win32/open3'
   rescue LoadError

@@ -39,6 +39,10 @@ into your own master branch.  In summary:
   $ git checkout master
   $ git merge defunkt/master
 
+If you've already reviewed defunkt's changes and just want to merge them into your 
+master branch, use the `merge` flag:
+
+  $ github pull --merge defunkt
 
 ==========
 Contributors

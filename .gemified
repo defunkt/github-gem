@@ -1,7 +1,0 @@
---- 
-:summary: The official `github` command line helper for simplifying your GitHub experience.
-:email: chris@ozmm.org
-:name: github
-:homepage: http://github.com/defunkt/github-gem/
-:author: Chris Wanstrath
-:version: 0.1.0

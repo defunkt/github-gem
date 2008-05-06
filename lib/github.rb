@@ -90,7 +90,9 @@ end
 GitHub.register :default do
   puts "Usage: github command <space separated arguments>", ''
   puts "Available commands:", ''
+  longest = GitHub.descriptions.map { |d,| d.to_s.size }.max
   GitHub.descriptions.each do |command, desc|
+    command = "%-#{longest}s" % command
     puts "  #{command} => #{desc}"
   end
   puts

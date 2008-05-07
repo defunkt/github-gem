@@ -79,6 +79,6 @@ GitHub.helper :homepage_for do |user, branch|
 end
 
 GitHub.helper :open do
-  WINDOZE ? 'start' : 'open'
+  Windoze ? 'start' : 'open'
 end
     

@@ -2,6 +2,7 @@ GitHub.helper :user_and_repo_from do |url|
   case url
   when %r|^git://github\.com/(.*)$|: $1.split('/')
   when %r|^git@github\.com:(.*)$|: $1.split('/')
+  else ['', '']
   end
 end
 
@@ -18,7 +19,12 @@ GitHub.helper :repo_for do |remote|
 end
 
 GitHub.helper :project do
-  repo_for(:origin).chomp('.git')
+  repo = repo_for(:origin)
+  if repo == ""
+    STDERR.puts "Error: missing remote 'origin'"
+    exit 1
+  end
+  repo.chomp('.git')
 end
 
 GitHub.helper :url_for do |remote|

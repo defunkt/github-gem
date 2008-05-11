@@ -1,7 +1,7 @@
 GitHub.helper :user_and_repo_from do |url|
   case url
-  when %r|^git://github\.com/(.*)$|: $1.split('/')
-  when %r|^git@github\.com:(.*)$|: $1.split('/')
+  when %r|^git://github\.com/([^/]+/[^/]+)$|: $1.split('/')
+  when %r|^git@github\.com:([^/]+/[^/]+)$|: $1.split('/')
   else ['', '']
   end
 end

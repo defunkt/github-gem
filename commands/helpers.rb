@@ -21,7 +21,11 @@ end
 GitHub.helper :project do
   repo = repo_for(:origin)
   if repo == ""
-    STDERR.puts "Error: missing remote 'origin'"
+    if url_for(:origin) == ""
+      STDERR.puts "Error: missing remote 'origin'"
+    else
+      STDERR.puts "Error: remote 'origin' is not a github URL"
+    end
     exit 1
   end
   repo.chomp('.git')

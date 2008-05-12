@@ -52,3 +52,15 @@ GitHub.register :pull do |user, branch|
     git_exec "pull #{user} #{branch}"
   end
 end
+
+GitHub.describe :clone => "Clone a repo.  Pass --ssh to clone from your own git@github.com schema."
+GitHub.register :clone do |user, repo|
+  user, repo = user.split('/') unless repo
+  die "Specify a repo to pull from" if repo.nil?
+
+  if options[:ssh]
+    git_exec "clone git@github.com:#{user}/#{repo}.git"
+  else
+    git_exec "clone git://github.com/#{user}/#{repo}.git"
+  end
+end

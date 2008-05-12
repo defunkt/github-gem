@@ -12,4 +12,26 @@ describe "The user_and_repo_from helper" do
   it "should parse a ssh-based url" do
     @helper.user_and_repo_from("git@github.com:mojombo/god.git").should == ["mojombo", "god.git"]
   end
+
+  it "should parse a non-standard ssh-based url" do
+    @helper.user_and_repo_from("ssh://git@github.com:mojombo/god.git").should == ["mojombo", "god.git"]
+    @helper.user_and_repo_from("github.com:mojombo/god.git").should == ["mojombo", "god.git"]
+    @helper.user_and_repo_from("ssh://github.com:mojombo/god.git").should == ["mojombo", "god.git"]
+  end
+
+  it "should return nothing for other urls" do
+    @helper.user_and_repo_from("home:path/to/repo.git").should == ['', '']
+  end
+
+  it "should return nothing for invalid git:// urls" do
+    @helper.user_and_repo_from("git://github.com/foo").should == ['', '']
+  end
+
+  it "should return nothing for invalid ssh-based urls" do
+    @helper.user_and_repo_from("git@github.com:kballard").should == ['', '']
+    @helper.user_and_repo_from("git@github.com:kballard/test/repo.git").should == ['', '']
+    @helper.user_and_repo_from("ssh://git@github.com:kballard").should == ['', '']
+    @helper.user_and_repo_from("github.com:kballard").should == ['', '']
+    @helper.user_and_repo_from("ssh://github.com:kballard").should == ['', '']
+  end
 end

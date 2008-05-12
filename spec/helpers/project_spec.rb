@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.dirname(File.dirname(__FILE__)) + '/spec_helper'
 
 describe "The project helper" do
   before(:each) do

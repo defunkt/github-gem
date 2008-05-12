@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.dirname(File.dirname(__FILE__)) + '/spec_helper'
 
 describe "The repo_for helper" do
   before(:each) do

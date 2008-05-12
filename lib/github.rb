@@ -29,6 +29,10 @@ module GitHub
     descriptions.update hash
   end
 
+  def flags(command, hash)
+    flag_descriptions[command].update hash
+  end
+
   def helper(command, &block)
     debug "Helper'd `#{command}`"
     Helper.send :define_method, command, &block
@@ -53,6 +57,10 @@ module GitHub
 
   def descriptions
     @descriptions ||= {}
+  end
+
+  def flag_descriptions
+    @flagdescs ||= Hash.new { |h, k| h[k] = {} }
   end
 
   def options
@@ -92,8 +100,13 @@ GitHub.register :default do
   puts "Available commands:", ''
   longest = GitHub.descriptions.map { |d,| d.to_s.size }.max
   GitHub.descriptions.each do |command, desc|
-    command = "%-#{longest}s" % command
-    puts "  #{command} => #{desc}"
+    cmdstr = "%-#{longest}s" % command
+    puts "  #{cmdstr} => #{desc}"
+    flongest = GitHub.flag_descriptions[command].map { |d,| "--#{d}".size }.max
+    GitHub.flag_descriptions[command].each do |flag, fdesc|
+      flagstr = "#{" " * longest}  %-#{flongest}s" % "--#{flag}"
+      puts "  #{flagstr}: #{fdesc}"
+    end
   end
   puts
 end

@@ -35,7 +35,8 @@ GitHub.register :track do |user|
   git "remote add #{user} #{helper.public_url_for(user)}"
 end
 
-GitHub.describe :pull => "Pull from a remote.  Pass --merge to automatically merge remote's changes into your master."
+GitHub.describe :pull => "Pull from a remote."
+GitHub.flags    :pull, :merge => "Automatically merge remote's changes into your master."
 GitHub.register :pull do |user, branch|
   die "Specify a user to pull from" if user.nil?
   GitHub.invoke(:track, user) unless helper.tracking?(user)
@@ -53,7 +54,8 @@ GitHub.register :pull do |user, branch|
   end
 end
 
-GitHub.describe :clone => "Clone a repo.  Pass --ssh to clone from your own git@github.com schema."
+GitHub.describe :clone => "Clone a repo."
+GitHub.flags    :clone, :ssh => "Clone using the git@github.com style url"
 GitHub.register :clone do |user, repo|
   user, repo = user.split('/') unless repo
   die "Specify a repo to pull from" if repo.nil?

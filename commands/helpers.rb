@@ -84,6 +84,10 @@ GitHub.helper :public_url_for do |user|
   "git://github.com/#{user}/#{project}.git"
 end
 
+GitHub.helper :private_url_for do |user|
+  "git@github.com:#{user}/#{project}.git"
+end
+
 GitHub.helper :homepage_for do |user, branch|
   "https://github.com/#{user}/#{project}/tree/#{branch}"
 end

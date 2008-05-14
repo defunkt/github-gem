@@ -4,7 +4,6 @@ describe "github" do
   it "home should open the project home page" do
     running :home do
       setup_url_for
-      setup_user_and_branch
       @command.should_receive(:exec).once.with("open https://github.com/user/project/tree/master")
     end
   end
@@ -12,7 +11,6 @@ describe "github" do
   it "home defunkt should open the home page of defunkt's fork" do
     running :home, "defunkt" do
       setup_url_for
-      setup_url_for(:defunkt)
       @command.should_receive(:exec).once.with("open https://github.com/defunkt/project/tree/master")
     end
   end
@@ -36,8 +34,6 @@ describe "github" do
   it "browse defunkt pending should open the home page of defunkt's fork with the 'pending' branch" do
     running :browse, "defunkt", "pending" do
       setup_url_for
-      setup_url_for(:defunkt)
-      setup_user_and_branch("user", "test-branch")
       @command.should_receive(:exec).once.with("open https://github.com/defunkt/project/tree/pending")
     end
   end
@@ -45,13 +41,31 @@ describe "github" do
   it "browse defunkt/pending should open the home page of defunkt's fork with the 'pending' branch" do
     running :browse, "defunkt/pending" do
       setup_url_for
-      setup_url_for(:defunkt)
-      setup_user_and_branch("user", "test-branch")
       @command.should_receive(:exec).once.with("open https://github.com/defunkt/project/tree/pending")
     end
   end
 
   # -----------------
+
+  backtick = nil # establish the variable in this scope
+  before(:all) do
+    # raise an exception if the `` operator is used
+    # in our tests, we want to ensure we're fully self-contained
+    Kernel.instance_eval do
+      backtick = instance_method(:`)
+      alias_method(:_backtick, :`)
+      define_method :` do |str|
+        raise "Cannot use backticks in tests"
+      end
+    end
+  end
+
+  after(:all) do
+    # and now restore the `` operator
+    Kernel.instance_eval do
+      define_method :`, backtick
+    end
+  end
 
   def running(cmd, *args, &block)
     Runner.new(cmd, *args, &block).run

@@ -3,13 +3,16 @@ require 'spec'
 
 require File.dirname(__FILE__) + '/../lib/github'
 
-module GitHub
-  load 'helpers.rb'
-  load 'commands.rb'
-end
-
 # prevent the use of `` in tests
 Spec::Runner.configure do |configuration|
+  # load this here so it's covered by the `` guard
+  configuration.prepend_before(:all) do
+    module GitHub
+      load 'helpers.rb'
+      load 'commands.rb'
+    end
+  end
+
   backtick = nil # establish the variable in this scope
   configuration.prepend_before(:all) do
     # raise an exception if the `` operator is used

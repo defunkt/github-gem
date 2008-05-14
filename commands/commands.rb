@@ -4,16 +4,24 @@ GitHub.register :helper do |name, comma_args|
 end
 
 GitHub.describe :home => "Open this repo's master branch in a web browser."
-GitHub.register :home do
+GitHub.register :home do |user|
   if helper.project
-    exec "#{helper.open} #{helper.homepage_for(helper.owner, 'master')}"
+    exec "#{helper.open} #{helper.homepage_for(user || helper.owner, 'master')}"
   end
 end
 
 GitHub.describe :browse => "Open this repo in a web browser."
-GitHub.register :browse do
+GitHub.register :browse do |user, branch|
   if helper.project
-    exec "#{helper.open} #{helper.homepage_for(helper.branch_user, helper.branch_name)}"
+    # if one arg given, treat it as a branch name
+    # unless it maches user/branch, then split it
+    # if two args given, treat as user branch
+    # if no args given, use defaults
+    user, branch = user.split("/", 2) if branch.nil? unless user.nil?
+    branch = user and user = nil if branch.nil?
+    user ||= helper.branch_user
+    branch ||= helper.branch_name
+    exec "#{helper.open} #{helper.homepage_for(user, branch)}"
   end
 end
 

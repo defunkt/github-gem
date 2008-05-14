@@ -47,26 +47,6 @@ describe "github" do
 
   # -----------------
 
-  backtick = nil # establish the variable in this scope
-  before(:all) do
-    # raise an exception if the `` operator is used
-    # in our tests, we want to ensure we're fully self-contained
-    Kernel.instance_eval do
-      backtick = instance_method(:`)
-      alias_method(:_backtick, :`)
-      define_method :` do |str|
-        raise "Cannot use backticks in tests"
-      end
-    end
-  end
-
-  after(:all) do
-    # and now restore the `` operator
-    Kernel.instance_eval do
-      define_method :`, backtick
-    end
-  end
-
   def running(cmd, *args, &block)
     Runner.new(cmd, *args, &block).run
   end

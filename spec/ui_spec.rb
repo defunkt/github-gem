@@ -1,21 +1,21 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe "github" do
-  it "home should open the project home page" do
+  specify "home should open the project home page" do
     running :home do
       setup_url_for
       @command.should_receive(:exec).once.with("open https://github.com/user/project/tree/master")
     end
   end
 
-  it "home defunkt should open the home page of defunkt's fork" do
+  specify "home defunkt should open the home page of defunkt's fork" do
     running :home, "defunkt" do
       setup_url_for
       @command.should_receive(:exec).once.with("open https://github.com/defunkt/project/tree/master")
     end
   end
 
-  it "browse should open the project home page with the current branch" do
+  specify "browse should open the project home page with the current branch" do
     running :browse do
       setup_url_for
       setup_user_and_branch("user", "test-branch")
@@ -23,7 +23,7 @@ describe "github" do
     end
   end
 
-  it "browse pending should open the project home page with the 'pending' branch" do
+  specify "browse pending should open the project home page with the 'pending' branch" do
     running :browse, "pending" do
       setup_url_for
       setup_user_and_branch("user", "test-branch")
@@ -31,21 +31,21 @@ describe "github" do
     end
   end
 
-  it "browse defunkt pending should open the home page of defunkt's fork with the 'pending' branch" do
+  specify "browse defunkt pending should open the home page of defunkt's fork with the 'pending' branch" do
     running :browse, "defunkt", "pending" do
       setup_url_for
       @command.should_receive(:exec).once.with("open https://github.com/defunkt/project/tree/pending")
     end
   end
 
-  it "browse defunkt/pending should open the home page of defunkt's fork with the 'pending' branch" do
+  specify "browse defunkt/pending should open the home page of defunkt's fork with the 'pending' branch" do
     running :browse, "defunkt/pending" do
       setup_url_for
       @command.should_receive(:exec).once.with("open https://github.com/defunkt/project/tree/pending")
     end
   end
 
-  it "info should show info for this project" do
+  specify "info should show info for this project" do
     running :info do
       setup_url_for
       setup_remote(:origin, :user => "user", :ssh => true)

@@ -3,6 +3,25 @@ require 'spec'
 
 require File.dirname(__FILE__) + '/../lib/github'
 
+class Spec::Example::Configuration
+  def add_guard(klass, name)
+    guarded = nil
+    self.prepend_before(:all) do
+      klass.instance_eval do
+        guarded = instance_method(name)
+        define_method name do |*args|
+          raise "Testing guards violated: Cannot call #{klass}##{name}"
+        end
+      end
+    end
+    self.prepend_after(:all) do
+      klass.instance_eval do
+        define_method name, guarded
+      end
+    end
+  end
+end
+
 # prevent the use of `` in tests
 Spec::Runner.configure do |configuration|
   # load this here so it's covered by the `` guard
@@ -13,28 +32,6 @@ Spec::Runner.configure do |configuration|
     end
   end
 
-  backtick = nil # establish the variable in this scope
-  saved_system = nil
-  configuration.prepend_before(:all) do
-    # raise an exception if Kernel#` or Kernel#system is used
-    # in our tests, we want to ensure we're fully self-contained
-    Kernel.instance_eval do
-      backtick = instance_method(:`)
-      saved_system = instance_method(:system)
-      define_method :` do |str|
-        raise "Cannot use backticks in tests"
-      end
-      define_method :system do |*args|
-        raise "Cannot use Kernel#system in tests"
-      end
-    end
-  end
-
-  configuration.prepend_after(:all) do
-    # and now restore Kernel#` and Kernel#system
-    Kernel.instance_eval do
-      define_method :`, backtick
-      define_method :system, saved_system
-    end
-  end
+  configuration.add_guard(Kernel, :`)
+  configuration.add_guard(Kernel, :system)
 end

@@ -29,7 +29,7 @@ GitHub.describe :info => "Info about this project."
 GitHub.register :info do
   puts "== Info for #{helper.project}"
   puts "You are #{helper.owner}"
-  puts "Currently tracking: "
+  puts "Currently tracking:"
   helper.tracking.each do |(name,user_or_url)|
     puts " - #{user_or_url} (as #{name})"
   end

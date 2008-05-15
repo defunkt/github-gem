@@ -50,20 +50,13 @@ describe "github" do
       setup_url_for
       setup_remote(:origin, :user => "user", :ssh => true)
       setup_remote(:defunkt)
-      output = ""
-      @command.should_receive(:puts).any_number_of_times do |str|
-        output << str
-        output << "\n" unless output[-1] == "\n"
-      end
-      post_run do
-        output.should == <<-EOF
+      stdout.should == <<-EOF
 == Info for project
 You are user
 Currently tracking:
  - user (as origin)
  - defunkt (as defunkt)
 EOF
-      end
     end
   end
 
@@ -87,11 +80,7 @@ EOF
     def run
       self.instance_eval &@block
       GitHub.invoke(@cmd_name, *@args)
-      @post_run.call unless @post_run.nil?
-    end
-
-    def post_run(&block)
-      @post_run = block
+      @stdout_mock.invoke unless @stdout_mock.nil?
     end
 
     def setup_user_and_branch(user = :user, branch = :master)
@@ -120,6 +109,39 @@ EOF
 
     def mock_remotes()
       @helper.should_receive(:remotes).any_number_of_times.and_return(@remotes)
+    end
+
+    def stdout
+      if @stdout_mock.nil?
+        output = ""
+        @stdout_mock = DeferredMock.new(output)
+        STDOUT.should_receive(:write).any_number_of_times do |str|
+          output << str
+        end
+      end
+      @stdout_mock
+    end
+
+    class DeferredMock
+      def initialize(obj = nil)
+        @obj = obj
+        @calls = []
+      end
+
+      def invoke(obj = nil)
+        obj ||= @obj
+        @calls.each do |sym, args|
+          obj.send sym, *args
+        end
+      end
+
+      def should(*args)
+        @calls << [:should, args]
+      end
+
+      def should_not(*args)
+        @calls << [:should_not, args]
+      end
     end
   end
 end

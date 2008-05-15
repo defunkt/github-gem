@@ -93,6 +93,5 @@ GitHub.helper :homepage_for do |user, branch|
 end
 
 GitHub.helper :open do
-  Windoze ? 'start' : 'open'
+  ENV['BROWSER'] || (Windoze ? 'start' : 'open')
 end
-    

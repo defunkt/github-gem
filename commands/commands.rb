@@ -54,15 +54,12 @@ GitHub.register :pull do |user, branch|
   die "Specify a user to pull from" if user.nil?
   GitHub.invoke(:track, user) unless helper.tracking?(user)
   branch ||= 'master'
-
-  puts "Switching to #{user}/#{branch}"
-  git "checkout #{user}/#{branch}" if git("checkout -b #{user}/#{branch}").error? 
   
   if options[:merge]
-    git "pull #{user} #{branch}"
-    git "checkout master"
-    git_exec "merge #{user}/#{branch}"
+    git_exec "pull #{user} #{branch}"
   else
+    puts "Switching to #{user}/#{branch}"
+    git "checkout #{user}/#{branch}" if git("checkout -b #{user}/#{branch}").error?
     git_exec "pull #{user} #{branch}"
   end
 end

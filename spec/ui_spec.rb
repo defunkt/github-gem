@@ -116,8 +116,9 @@ EOF
 
     def run
       self.instance_eval &@block
-      GitHub.parse_options(@args)
-      invoke = lambda { GitHub.invoke(@cmd_name, *@args) }
+      GitHub.should_receive(:load).with("commands.rb")
+      GitHub.should_receive(:load).with("helpers.rb")
+      invoke = lambda { GitHub.activate([@cmd_name, *@args]) }
       case @expected_result
       when Spec::Matchers::RaiseError, Spec::Matchers::Change, Spec::Matchers::ThrowSymbol
         invoke.should @expected_result

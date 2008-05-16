@@ -79,6 +79,7 @@ EOF
 
     def run
       self.instance_eval &@block
+      GitHub.parse_options(@args)
       GitHub.invoke(@cmd_name, *@args)
       @stdout_mock.invoke unless @stdout_mock.nil?
     end

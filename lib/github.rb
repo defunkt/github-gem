@@ -39,7 +39,7 @@ module GitHub
   end
 
   def activate(args)
-    @options = parse_options(args)
+    parse_options(args)
     load 'helpers.rb'
     load 'commands.rb'
     invoke(args.shift, *args)
@@ -69,7 +69,7 @@ module GitHub
 
   def parse_options(args)
     @debug = args.delete('--debug')
-    args.inject({}) do |memo, arg|
+    @options = args.inject({}) do |memo, arg|
       if arg =~ /^--([^=]+)=(.+)/
         args.delete(arg)
         memo.merge($1.to_sym => $2)

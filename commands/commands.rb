@@ -35,7 +35,8 @@ GitHub.register :info do
   end
 end
 
-GitHub.describe :track => "Track another user's repository. Pass --private to track a private project."
+GitHub.describe :track => "Track another user's repository."
+GitHub.flags    :track, :private => "Use git@github.com: instead of git://github.com/"
 GitHub.register :track do |user|
   die "Specify a user to track" if user.nil?
   die "Already tracking #{user}" if helper.tracking?(user)

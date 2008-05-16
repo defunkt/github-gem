@@ -81,7 +81,15 @@ EOF
     def run
       self.instance_eval &@block
       GitHub.parse_options(@args)
-      GitHub.invoke(@cmd_name, *@args)
+      invoke = lambda { GitHub.invoke(@cmd_name, *@args) }
+      case @expected_result
+      when Spec::Matchers::RaiseError, Spec::Matchers::Change, Spec::Matchers::ThrowSymbol
+        invoke.should @expected_result
+      when nil
+        invoke.call
+      else
+        invoke.should @expected_result
+      end
       @stdout_mock.invoke unless @stdout_mock.nil?
     end
 
@@ -111,6 +119,10 @@ EOF
 
     def mock_remotes()
       @helper.should_receive(:remotes).any_number_of_times.and_return(@remotes)
+    end
+
+    def should(result)
+      @expected_result = result
     end
 
     def stdout

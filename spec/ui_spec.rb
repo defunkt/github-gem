@@ -63,17 +63,18 @@ EOF
   # -----------------
 
   def running(cmd, *args, &block)
-    Runner.new(cmd, *args, &block).run
+    Runner.new(self, cmd, *args, &block).run
   end
 
   class Runner
-    def initialize(cmd, *args, &block)
+    def initialize(parent, cmd, *args, &block)
       @cmd_name = cmd.to_s
       @command = GitHub.commands[cmd.to_s]
       @helper = @command.helper
       @args = args
       @block = block
       @remotes = []
+      @parent = parent
       mock_remotes
     end
 
@@ -143,6 +144,10 @@ EOF
       def should_not(*args)
         @calls << [:should_not, args]
       end
+    end
+
+    def method_missing(sym, *args)
+      @parent.send sym, *args
     end
   end
 end

@@ -35,12 +35,16 @@ GitHub.register :info do
   end
 end
 
-GitHub.describe :track => "Track another user's repository."
+GitHub.describe :track => "Track another user's repository. Pass --private to track a private project."
 GitHub.register :track do |user|
   die "Specify a user to track" if user.nil?
   die "Already tracking #{user}" if helper.tracking?(user)
 
-  git "remote add #{user} #{helper.public_url_for(user)}"
+  if options[:private]
+    git "remote add #{user} #{helper.private_url_for(user)}"
+  else
+    git "remote add #{user} #{helper.public_url_for(user)}"
+  end
 end
 
 GitHub.describe :pull => "Pull from a remote."

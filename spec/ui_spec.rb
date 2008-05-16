@@ -1,6 +1,7 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
 describe "github" do
+  # -- home --
   specify "home should open the project home page" do
     running :home do
       setup_url_for
@@ -15,6 +16,7 @@ describe "github" do
     end
   end
 
+  # -- browse --
   specify "browse should open the project home page with the current branch" do
     running :browse do
       setup_url_for
@@ -45,6 +47,7 @@ describe "github" do
     end
   end
 
+  # -- info --
   specify "info should show info for this project" do
     running :info do
       setup_url_for
@@ -57,6 +60,39 @@ Currently tracking:
  - user (as origin)
  - defunkt (as defunkt)
 EOF
+    end
+  end
+
+  # -- track --
+  specify "track defunkt should track a new remote for defunkt" do
+    running :track, "defunkt" do
+      setup_url_for
+      @helper.should_receive(:tracking?).with("defunkt").once.and_return(false)
+      @command.should_receive(:git).with("remote add defunkt git://github.com/defunkt/project.git").once
+    end
+  end
+
+  specify "track --private defunkt should track a new remove for defunkt using ssh" do
+    running :track, "--private", "defunkt" do
+      setup_url_for
+      @helper.should_receive(:tracking?).with("defunkt").once.and_return(false)
+      @command.should_receive(:git).with("remote add defunkt git@github.com:defunkt/project.git").once
+    end
+  end
+
+  specify "track defunkt should die if the defunkt remote exists" do
+    running :track, "defunkt" do
+      setup_url_for
+      @helper.should_receive(:tracking?).with("defunkt").once.and_return(true)
+      @command.should_receive(:die).with("Already tracking defunkt").and_return { raise "Died" }
+      self.should raise_error("Died")
+    end
+  end
+
+  specify "track should die with no args" do
+    running :track do
+      @command.should_receive(:die).with("Specify a user to track").and_return { raise "Died" }
+      self.should raise_error("Died")
     end
   end
 

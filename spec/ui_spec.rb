@@ -119,13 +119,16 @@ EOF
       GitHub.should_receive(:load).with("commands.rb")
       GitHub.should_receive(:load).with("helpers.rb")
       invoke = lambda { GitHub.activate([@cmd_name, *@args]) }
-      case @expected_result
-      when Spec::Matchers::RaiseError, Spec::Matchers::Change, Spec::Matchers::ThrowSymbol
-        invoke.should @expected_result
-      when nil
-        invoke.call
+      if @expected_result
+        expectation, result = @expected_result
+        case result
+        when Spec::Matchers::RaiseError, Spec::Matchers::Change, Spec::Matchers::ThrowSymbol
+          invoke.send expectation, result
+        else
+          invoke.call.send expectation, result
+        end
       else
-        invoke.should @expected_result
+        invoke.call
       end
       @stdout_mock.invoke unless @stdout_mock.nil?
     end
@@ -159,7 +162,11 @@ EOF
     end
 
     def should(result)
-      @expected_result = result
+      @expected_result = [:should, result]
+    end
+
+    def should_not(result)
+      @expected_result = [:should_not, result]
     end
 
     def stdout

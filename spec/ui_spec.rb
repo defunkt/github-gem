@@ -47,6 +47,14 @@ describe "github" do
     end
   end
 
+  # -- network --
+  specify "network should open the network page for this repo" do
+    running :network do
+      setup_url_for
+      @command.should_receive(:exec).once.with("open https://github.com/user/project/network")
+    end
+  end
+
   # -- info --
   specify "info should show info for this project" do
     running :info do

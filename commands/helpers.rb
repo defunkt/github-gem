@@ -92,6 +92,10 @@ GitHub.helper :homepage_for do |user, branch|
   "https://github.com/#{user}/#{project}/tree/#{branch}"
 end
 
+GitHub.helper :network_page_for do |user|
+  "https://github.com/#{user}/#{project}/network"
+end
+
 GitHub.helper :open do
   ENV['BROWSER'] || (Windoze ? 'start' : 'open')
 end

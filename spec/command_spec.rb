@@ -20,7 +20,8 @@ describe GitHub::Command do
   end
 
   it "should successfully call out to the shell" do
-    class_unguard(Open3, :popen3)
+    unguard(Kernel, :fork)
+    unguard(Kernel, :exec)
     hi = @command.sh("echo hi")
     hi.should == "hi"
     hi.out?.should be(true)

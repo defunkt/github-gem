@@ -69,8 +69,9 @@ Spec::Runner.configure do |configuration|
   configuration.prepend_before(:each) do
     add_guard Kernel, :`
     add_guard Kernel, :system
+    add_guard Kernel, :fork
+    add_guard Kernel, :exec
     add_class_guard Process, :fork
-    add_class_guard Open3, :popen3 if defined? Open3
   end
 
   configuration.append_after(:each) do

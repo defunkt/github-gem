@@ -2,7 +2,6 @@ GitHub.helper :user_and_repo_from do |url|
   case url
   when %r|^git://github\.com/([^/]+/[^/]+)$|: $1.split('/')
   when %r|^(?:ssh://)?(?:git@)?github\.com:([^/]+/[^/]+)$|: $1.split('/')
-  else ['', '']
   end
 end
 
@@ -11,16 +10,16 @@ GitHub.helper :user_and_repo_for do |remote|
 end
 
 GitHub.helper :user_for do |remote|
-  user_and_repo_for(remote).first
+  user_and_repo_for(remote).try.first
 end
 
 GitHub.helper :repo_for do |remote|
-  user_and_repo_for(remote).last
+  user_and_repo_for(remote).try.last
 end
 
 GitHub.helper :project do
   repo = repo_for(:origin)
-  if repo == ""
+  if repo.nil?
     if url_for(:origin) == ""
       STDERR.puts "Error: missing remote 'origin'"
     else

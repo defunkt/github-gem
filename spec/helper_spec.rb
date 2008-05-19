@@ -90,19 +90,19 @@ describe GitHub::Helper do
     end
 
     it "should return nothing for other urls" do
-      @helper.user_and_repo_from("home:path/to/repo.git").should == ['', '']
+      @helper.user_and_repo_from("home:path/to/repo.git").should == nil
     end
 
     it "should return nothing for invalid git:// urls" do
-      @helper.user_and_repo_from("git://github.com/foo").should == ['', '']
+      @helper.user_and_repo_from("git://github.com/foo").should == nil
     end
 
     it "should return nothing for invalid ssh-based urls" do
-      @helper.user_and_repo_from("git@github.com:kballard").should == ['', '']
-      @helper.user_and_repo_from("git@github.com:kballard/test/repo.git").should == ['', '']
-      @helper.user_and_repo_from("ssh://git@github.com:kballard").should == ['', '']
-      @helper.user_and_repo_from("github.com:kballard").should == ['', '']
-      @helper.user_and_repo_from("ssh://github.com:kballard").should == ['', '']
+      @helper.user_and_repo_from("git@github.com:kballard").should == nil
+      @helper.user_and_repo_from("git@github.com:kballard/test/repo.git").should == nil
+      @helper.user_and_repo_from("ssh://git@github.com:kballard").should == nil
+      @helper.user_and_repo_from("github.com:kballard").should == nil
+      @helper.user_and_repo_from("ssh://github.com:kballard").should == nil
     end
   end
 

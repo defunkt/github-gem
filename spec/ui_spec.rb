@@ -154,7 +154,7 @@ EOF
       @helper = @command.helper
       @args = args
       @block = block
-      @remotes = []
+      @remotes = {}
       @parent = parent
       mock_remotes
     end
@@ -182,10 +182,13 @@ EOF
       user = options[:user] || remote
       project = options[:project]
       ssh = options[:ssh]
-      if ssh
-        @remotes << [remote, "git@github.com:#{user}/#{project}.git"]
+      url = options[:url]
+      if url
+        @remotes[remote.to_sym] = url
+      elsif ssh
+        @remotes[remote.to_sym] = "git@github.com:#{user}/#{project}.git"
       else
-        @remotes << [remote, "git://github.com/#{user}/#{project}.git"]
+        @remotes[remote.to_sym] = "git://github.com/#{user}/#{project}.git"
       end
       mock_remotes
     end

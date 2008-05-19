@@ -5,14 +5,14 @@ describe "github" do
   specify "home should open the project home page" do
     running :home do
       setup_url_for
-      @command.should_receive(:exec).once.with("open https://github.com/user/project/tree/master")
+      @helper.should_receive(:open).once.with("https://github.com/user/project/tree/master")
     end
   end
 
   specify "home defunkt should open the home page of defunkt's fork" do
     running :home, "defunkt" do
       setup_url_for
-      @command.should_receive(:exec).once.with("open https://github.com/defunkt/project/tree/master")
+      @helper.should_receive(:open).once.with("https://github.com/defunkt/project/tree/master")
     end
   end
 
@@ -21,7 +21,7 @@ describe "github" do
     running :browse do
       setup_url_for
       setup_user_and_branch("user", "test-branch")
-      @command.should_receive(:exec).once.with("open https://github.com/user/project/tree/test-branch")
+      @helper.should_receive(:open).once.with("https://github.com/user/project/tree/test-branch")
     end
   end
 
@@ -29,21 +29,21 @@ describe "github" do
     running :browse, "pending" do
       setup_url_for
       setup_user_and_branch("user", "test-branch")
-      @command.should_receive(:exec).once.with("open https://github.com/user/project/tree/pending")
+      @helper.should_receive(:open).once.with("https://github.com/user/project/tree/pending")
     end
   end
 
   specify "browse defunkt pending should open the home page of defunkt's fork with the 'pending' branch" do
     running :browse, "defunkt", "pending" do
       setup_url_for
-      @command.should_receive(:exec).once.with("open https://github.com/defunkt/project/tree/pending")
+      @helper.should_receive(:open).once.with("https://github.com/defunkt/project/tree/pending")
     end
   end
 
   specify "browse defunkt/pending should open the home page of defunkt's fork with the 'pending' branch" do
     running :browse, "defunkt/pending" do
       setup_url_for
-      @command.should_receive(:exec).once.with("open https://github.com/defunkt/project/tree/pending")
+      @helper.should_receive(:open).once.with("https://github.com/defunkt/project/tree/pending")
     end
   end
 
@@ -51,14 +51,14 @@ describe "github" do
   specify "network should open the network page for this repo" do
     running :network do
       setup_url_for
-      @command.should_receive(:exec).once.with("open https://github.com/user/project/network")
+      @helper.should_receive(:open).once.with("https://github.com/user/project/network")
     end
   end
 
   specify "network defunkt should open the network page for defunkt's fork" do
     running :network, "defunkt" do
       setup_url_for
-      @command.should_receive(:exec).once.with("open https://github.com/defunkt/project/network")
+      @helper.should_receive(:open).once.with("https://github.com/defunkt/project/network")
     end
   end
 

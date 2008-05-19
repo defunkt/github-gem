@@ -175,4 +175,14 @@ remote.nex3.url git://github.com/nex3/github-gem.git
       @helper.user_and_branch.should == ["defunkt", "wip"]
     end
   end
+
+  helper :open do
+    it "should launch the URL" do
+      Launchy::Browser.next_instance.tap do |browser|
+        browser.should_receive(:my_os_family).any_number_of_times.and_return :windows # avoid forking
+        browser.should_receive(:system).with("/usr/bin/open http://www.google.com")
+      end
+      @helper.open "http://www.google.com"
+    end
+  end
 end

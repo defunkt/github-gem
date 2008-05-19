@@ -97,6 +97,6 @@ GitHub.helper :network_page_for do |user|
   "https://github.com/#{user}/#{project}/network"
 end
 
-GitHub.helper :open do
-  ENV['BROWSER'] || (Windoze ? 'start' : 'open')
+GitHub.helper :open do |url|
+  Launchy::Browser.new.visit url
 end

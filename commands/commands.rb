@@ -1,7 +1,7 @@
 GitHub.describe :home => "Open this repo's master branch in a web browser."
 GitHub.register :home do |user|
   if helper.project
-    exec "#{helper.open} #{helper.homepage_for(user || helper.owner, 'master')}"
+    helper.open helper.homepage_for(user || helper.owner, 'master')
   end
 end
 
@@ -16,7 +16,7 @@ GitHub.register :browse do |user, branch|
     branch = user and user = nil if branch.nil?
     user ||= helper.branch_user
     branch ||= helper.branch_name
-    exec "#{helper.open} #{helper.homepage_for(user, branch)}"
+    helper.open helper.homepage_for(user, branch)
   end
 end
 
@@ -24,7 +24,7 @@ GitHub.describe :network => "Open the network page for this repo in a web browse
 GitHub.register :network do |user|
   if helper.project
     user ||= helper.owner
-    exec "#{helper.open} #{helper.network_page_for(user)}"
+    helper.open helper.network_page_for(user)
   end
 end
 

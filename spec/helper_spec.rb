@@ -127,36 +127,36 @@ remote.origin.url git@github.com:kballard/github-gem.git
 remote.defunkt.url git://github.com/defunkt/github-gem.git
 remote.nex3.url git://github.com/nex3/github-gem.git
       EOF
-      @helper.remotes.should == [
-        ["origin", "git@github.com:kballard/github-gem.git"],
-        ["defunkt", "git://github.com/defunkt/github-gem.git"],
-        ["nex3", "git://github.com/nex3/github-gem.git"]
-      ]
+      @helper.remotes.should == {
+        :origin => "git@github.com:kballard/github-gem.git",
+        :defunkt => "git://github.com/defunkt/github-gem.git",
+        :nex3 => "git://github.com/nex3/github-gem.git"
+      }
     end
   end
 
   helper :tracking do
     it "should return a list of remote/user_or_url pairs" do
-      @helper.should_receive(:remotes).and_return [
-        ["origin", "git@github.com:kballard/github-gem.git"],
-        ["defunkt", "git://github.com/defunkt/github-gem.git"],
-        ["external", "server:path/to/github-gem.git"]
-      ]
-      @helper.tracking.should == [
-        ["origin", "kballard"],
-        ["defunkt", "defunkt"],
-        ["external", "server:path/to/github-gem.git"]
-      ]
+      @helper.should_receive(:remotes).and_return({
+        :origin => "git@github.com:kballard/github-gem.git",
+        :defunkt => "git://github.com/defunkt/github-gem.git",
+        :external => "server:path/to/github-gem.git"
+      })
+      @helper.tracking.should == {
+        :origin => "kballard",
+        :defunkt => "defunkt",
+        :external => "server:path/to/github-gem.git"
+      }
     end
   end
 
   helper :tracking? do
     it "should return whether the user is tracked" do
-      @helper.should_receive(:tracking).and_return [
-        ["origin", "kballard"],
-        ["defunkt", "defunkt"],
-        ["external", "server:path/to/github-gem.git"]
-      ]
+      @helper.should_receive(:tracking).any_number_of_times.and_return({
+        :origin => "kballard",
+        :defunkt => "defunkt",
+        :external => "server:path/to/github-gem.git"
+      })
       @helper.tracking?("kballard").should == true
       @helper.tracking?("defunkt").should == true
       @helper.tracking?("nex3").should == false

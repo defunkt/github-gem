@@ -36,25 +36,27 @@ end
 
 GitHub.helper :remotes do
   regexp = '^remote\.(.+)\.url$'
-  `git config --get-regexp '#{regexp}'`.split(/\n/).map do |line|
+  `git config --get-regexp '#{regexp}'`.split(/\n/).inject({}) do |memo, line|
     name_string, url = line.split(/ /, 2)
     m, name = *name_string.match(/#{regexp}/)
-    [name, url]
+    memo[name.to_sym] = url
+    memo
   end
 end
 
 GitHub.helper :tracking do
-  remotes.map do |(name, url)|
+  remotes.inject({}) do |memo, (name, url)|
     if ur = user_and_repo_from(url)
-      [name, ur.first]
+      memo[name] = ur.first
     else
-      [name, url]
+      memo[name] = url
     end
+    memo
   end
 end
 
 GitHub.helper :tracking? do |user|
-  tracking.include?(user)
+  tracking.values.include?(user)
 end
 
 GitHub.helper :owner do

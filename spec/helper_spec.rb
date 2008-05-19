@@ -112,4 +112,41 @@ describe GitHub::Helper do
       @helper.user_for(:origin).should == "defunkt"
     end
   end
+
+  helper :url_for do
+    it "should call out to the shell" do
+      @helper.should_receive(:`).with("git config --get remote.origin.url").and_return "git://github.com/user/project.git\n"
+      @helper.url_for(:origin).should == "git://github.com/user/project.git"
+    end
+  end
+
+  helper :remotes do
+    it "should return a list of remotes" do
+      @helper.should_receive(:`).with('git config --get-regexp \'^remote\.(.+)\.url$\'').and_return <<-EOF
+remote.origin.url git@github.com:kballard/github-gem.git
+remote.defunkt.url git://github.com/defunkt/github-gem.git
+remote.nex3.url git://github.com/nex3/github-gem.git
+      EOF
+      @helper.remotes.should == [
+        ["origin", "git@github.com:kballard/github-gem.git"],
+        ["defunkt", "git://github.com/defunkt/github-gem.git"],
+        ["nex3", "git://github.com/nex3/github-gem.git"]
+      ]
+    end
+  end
+
+  helper :tracking do
+    it "should return a list of remote/user_or_url pairs" do
+      @helper.should_receive(:remotes).and_return [
+        ["origin", "git@github.com:kballard/github-gem.git"],
+        ["defunkt", "git://github.com/defunkt/github-gem.git"],
+        ["external", "server:path/to/github-gem.git"]
+      ]
+      @helper.tracking.should == [
+        ["origin", "kballard"],
+        ["defunkt", "defunkt"],
+        ["external", "server:path/to/github-gem.git"]
+      ]
+    end
+  end
 end

@@ -113,6 +113,78 @@ EOF
     end
   end
 
+  # -- pull --
+  specify "pull should die with no args" do
+    running :pull do
+      @command.should_receive(:die).with("Specify a user to pull from").and_return { raise "Died" }
+      self.should raise_error("Died")
+    end
+  end
+
+  specify "pull defunkt should start tracking defunkt if they're not already tracked" do
+    running :pull, "defunkt" do
+      setup_remote(:origin, :user => "user", :ssh => true)
+      setup_remote(:external, :url => "home:/path/to/project.git")
+      GitHub.should_receive(:invoke).with(:track, "defunkt").and_return { raise "Tracked" }
+      self.should raise_error("Tracked")
+    end
+  end
+
+  specify "pull defunkt should create defunkt/master and pull from the defunkt remote" do
+    running :pull, "defunkt" do
+      setup_remote(:defunkt)
+      @command.should_receive(:git).with("checkout -b defunkt/master").ordered.and_return do
+        mock("checkout -b defunkt/master").tap { |m| m.stub!(:error?) }
+      end
+      @command.should_receive(:git_exec).with("pull defunkt master").ordered
+      stdout.should == "Switching to defunkt/master"
+    end
+  end
+
+  specify "pull defunkt should switch to pre-existing defunkt/master and pull from the defunkt remote" do
+    running :pull, "defunkt" do
+      setup_remote(:defunkt)
+      @command.should_receive(:git).with("checkout -b defunkt/master").ordered.and_return do
+        mock("checkout -b defunkt/master").tap { |m| m.should_receive(:error?) { true } }
+      end
+      @command.should_receive(:git).with("checkout defunkt/master").ordered
+      @command.should_receive(:git_exec).with("pull defunkt master").ordered
+      stdout.should == "Switching to defunkt/master"
+    end
+  end
+
+  specify "pull defunkt wip should create defunkt/wip and pull from wip branch on defunkt remote" do
+    running :pull, "defunkt", "wip" do
+      setup_remote(:defunkt)
+      @command.should_receive(:git).with("checkout -b defunkt/wip").ordered.and_return do
+        mock("checkout -b defunkt/wip").tap { |m| m.stub!(:error?) }
+      end
+      @command.should_receive(:git_exec).with("pull defunkt wip").ordered
+      stdout.should == "Switching to defunkt/wip"
+    end
+  end
+
+  specify "pull defunkt/wip should switch to pre-existing defunkt/wip and pull from wip branch on defunkt remote" do
+    running :pull, "defunkt/wip" do
+      pending "Accept user/branch syntax" do
+        setup_remote(:defunkt)
+        @command.should_receive(:git).with("checkout -b defunkt/wip").ordered.and_return do
+          mock("checkout -b defunkt/wip").tap { |m| m.should_receive(:error?) { true } }
+        end
+        @command.should_receive(:git).with("checkout defunkt/wip").ordered
+        @command.should_receive(:git_exec).with("pull defunkt wip").ordered
+        stdout.should == "Switching to defunkt/wip"
+      end
+    end
+  end
+
+  specify "pull --merge defunkt should pull from defunkt remote into current branch" do
+    running :pull, "--merge", "defunkt" do
+      setup_remote(:defunkt)
+      @command.should_receive(:git_exec).with("pull defunkt master")
+    end
+  end
+
   # -- default --
   specify "should print the default message" do
     running :default do

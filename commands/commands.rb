@@ -70,14 +70,14 @@ end
 
 GitHub.describe :clone => "Clone a repo."
 GitHub.flags    :clone, :ssh => "Clone using the git@github.com style url"
-GitHub.register :clone do |user, repo|
+GitHub.register :clone do |user, repo, dir|
   die "Specify a user to pull from" if user.nil?
   user, repo = user.split('/') unless repo
   die "Specify a repo to pull from" if repo.nil?
 
   if options[:ssh]
-    git_exec "clone git@github.com:#{user}/#{repo}.git"
+    git_exec "clone git@github.com:#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
   else
-    git_exec "clone git://github.com/#{user}/#{repo}.git"
+    git_exec "clone git://github.com/#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
   end
 end

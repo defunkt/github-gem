@@ -211,14 +211,12 @@ EOF
   end
 
   specify "clone defunkt github-gem repo should clone the repo into the dir 'repo'" do
-    pending
     running :clone, "defunkt", "github-gem", "repo" do
       @command.should_receive(:git_exec).with("clone git://github.com/defunkt/github-gem.git repo")
     end
   end
 
   specify "clone --ssh defunkt github-gem repo should clone the repo using the private URL into the dir 'repo'" do
-    pending
     running :clone, "--ssh", "defunkt", "github-gem", "repo" do
       @command.should_receive(:git_exec).with("clone git@github.com:defunkt/github-gem.git repo")
     end

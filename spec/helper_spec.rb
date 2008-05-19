@@ -149,4 +149,17 @@ remote.nex3.url git://github.com/nex3/github-gem.git
       ]
     end
   end
+
+  helper :tracking? do
+    it "should return whether the user is tracked" do
+      @helper.should_receive(:tracking).and_return [
+        ["origin", "kballard"],
+        ["defunkt", "defunkt"],
+        ["external", "server:path/to/github-gem.git"]
+      ]
+      @helper.tracking?("kballard").should == true
+      @helper.tracking?("defunkt").should == true
+      @helper.tracking?("nex3").should == false
+    end
+  end
 end

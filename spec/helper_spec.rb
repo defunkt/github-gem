@@ -69,8 +69,8 @@ describe GitHub::Helper do
 
   helper :repo_for do
     it "should return mephisto.git" do
-      setup_url_for "mojombo", "mojombo", "mephisto"
-      @helper.repo_for("mojombo").should == "mephisto.git"
+      setup_url_for :mojombo, "mojombo", "mephisto"
+      @helper.repo_for(:mojombo).should == "mephisto.git"
     end
   end
 

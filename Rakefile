@@ -9,7 +9,7 @@ begin
     p.summary      = "The official `github` command line helper for simplifying your GitHub experience."
     p.description  = "The official `github` command line helper for simplifying your GitHub experience."
     p.url          = "http://github.com/"
-    p.author       = 'Chris Wanstrath'
+    p.author       = ['Chris Wanstrath', 'Kevin Ballard']
     p.email        = "chris@ozmm.org"
     p.dependencies = ["launchy"]
   end

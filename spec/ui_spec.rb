@@ -156,13 +156,12 @@ EOF
       @helper = @command.helper
       @args = args
       @block = block
-      @remotes = {}
       @parent = parent
-      mock_remotes
     end
 
     def run
       self.instance_eval &@block
+      mock_remotes unless @remotes.nil?
       GitHub.should_receive(:load).with("commands.rb")
       GitHub.should_receive(:load).with("helpers.rb")
       invoke = lambda { GitHub.activate([@cmd_name, *@args]) }
@@ -181,6 +180,7 @@ EOF
     end
 
     def setup_remote(remote, options = {:user => nil, :project => "project"})
+      @remotes ||= {}
       user = options[:user] || remote
       project = options[:project]
       ssh = options[:ssh]
@@ -192,7 +192,6 @@ EOF
       else
         @remotes[remote.to_sym] = "git://github.com/#{user}/#{project}.git"
       end
-      mock_remotes
     end
 
     def mock_remotes()

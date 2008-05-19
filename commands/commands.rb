@@ -1,8 +1,3 @@
-GitHub.register :helper do |name, comma_args|
-  comma_args ||= ''
-  puts helper.send(name, comma_args.split(/,/))
-end
-
 GitHub.describe :home => "Open this repo's master branch in a web browser."
 GitHub.register :home do |user|
   if helper.project

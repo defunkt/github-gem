@@ -162,4 +162,17 @@ remote.nex3.url git://github.com/nex3/github-gem.git
       @helper.tracking?("nex3").should == false
     end
   end
+
+  helper :user_and_branch do
+    it "should return owner and branch for unqualified branches" do
+      setup_url_for
+      @helper.should_receive(:`).with("git rev-parse --symbolic-full-name HEAD").and_return "refs/heads/master"
+      @helper.user_and_branch.should == ["user", "master"]
+    end
+
+    it "should return user and branch for user/branch-style branches" do
+      @helper.should_receive(:`).with("git rev-parse --symbolic-full-name HEAD").and_return "refs/heads/defunkt/wip"
+      @helper.user_and_branch.should == ["defunkt", "wip"]
+    end
+  end
 end

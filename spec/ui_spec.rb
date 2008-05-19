@@ -164,6 +164,11 @@ EOF
       mock_remotes unless @remotes.nil?
       GitHub.should_receive(:load).with("commands.rb")
       GitHub.should_receive(:load).with("helpers.rb")
+      args = @args.clone
+      GitHub.parse_options(args) # strip out the flags
+      GitHub.should_receive(:invoke).with(@cmd_name, *args).and_return do
+        GitHub.send(GitHub.send(:__mock_proxy).send(:munge, :invoke), @cmd_name, *args)
+      end
       invoke = lambda { GitHub.activate([@cmd_name, *@args]) }
       if @expected_result
         expectation, result = @expected_result

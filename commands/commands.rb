@@ -71,6 +71,7 @@ end
 GitHub.describe :clone => "Clone a repo."
 GitHub.flags    :clone, :ssh => "Clone using the git@github.com style url"
 GitHub.register :clone do |user, repo|
+  die "Specify a user to pull from" if user.nil?
   user, repo = user.split('/') unless repo
   die "Specify a repo to pull from" if repo.nil?
 

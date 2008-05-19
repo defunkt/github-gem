@@ -33,6 +33,6 @@ begin
     t.spec_files = FileList['spec/**/*_spec.rb']
     t.spec_opts = ['--color']
     t.rcov = true
-    t.rcov_opts = ['--exclude', 'spec']
+    t.rcov_opts = ['--exclude', '^spec,gems/rspec,gems/rcov']
   end
 end

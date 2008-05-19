@@ -68,12 +68,14 @@ describe "github" do
       setup_url_for
       setup_remote(:origin, :user => "user", :ssh => true)
       setup_remote(:defunkt)
+      setup_remote(:external, :url => "home:/path/to/project.git")
       stdout.should == <<-EOF
 == Info for project
 You are user
 Currently tracking:
  - user (as origin)
  - defunkt (as defunkt)
+ - home:/path/to/project.git (as external)
 EOF
     end
   end

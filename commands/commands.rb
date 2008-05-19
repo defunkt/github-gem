@@ -26,9 +26,10 @@ GitHub.register :browse do |user, branch|
 end
 
 GitHub.describe :network => "Open the network page for this repo in a web browser"
-GitHub.register :network do
+GitHub.register :network do |user|
   if helper.project
-    exec "#{helper.open} #{helper.network_page_for(helper.owner)}"
+    user ||= helper.owner
+    exec "#{helper.open} #{helper.network_page_for(user)}"
   end
 end
 

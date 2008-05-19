@@ -55,6 +55,13 @@ describe "github" do
     end
   end
 
+  specify "network defunkt should open the network page for defunkt's fork" do
+    running :network, "defunkt" do
+      setup_url_for
+      @command.should_receive(:exec).once.with("open https://github.com/defunkt/project/network")
+    end
+  end
+
   # -- info --
   specify "info should show info for this project" do
     running :info do

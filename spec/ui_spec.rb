@@ -111,6 +111,34 @@ EOF
     end
   end
 
+  # -- default --
+  specify "should print the default message" do
+    running :default do
+      GitHub.should_receive(:descriptions).any_number_of_times.and_return({
+        "home" => "Open the home page",
+        "track" => "Track a new repo",
+        "browse" => "Browse the github page for this branch",
+        "command" => "description"
+      })
+      GitHub.should_receive(:flag_descriptions).any_number_of_times.and_return({
+        "home" => {:flag => "Flag description"},
+        "track" => {:flag1 => "Flag one", :flag2 => "Flag two"},
+        "browse" => {},
+        "command" => {}
+      })
+      @command.should_receive(:puts).with("Usage: github command <space separated arguments>", '').ordered
+      @command.should_receive(:puts).with("Available commands:", '').ordered
+      @command.should_receive(:puts).with("  home    => Open the home page")
+      @command.should_receive(:puts).with("           --flag: Flag description")
+      @command.should_receive(:puts).with("  track   => Track a new repo")
+      @command.should_receive(:puts).with("           --flag1: Flag one")
+      @command.should_receive(:puts).with("           --flag2: Flag two")
+      @command.should_receive(:puts).with("  browse  => Browse the github page for this branch")
+      @command.should_receive(:puts).with("  command => description")
+      @command.should_receive(:puts).with()
+    end
+  end
+
   # -----------------
 
   def running(cmd, *args, &block)

@@ -9,6 +9,44 @@ class Module
   end
 end
 
+class Spec::NextInstanceProxy
+  def initialize
+    @deferred = []
+  end
+
+  def method_missing(sym, *args)
+    proxy = Spec::NextInstanceProxy.new
+    @deferred << [sym, args, proxy]
+    proxy
+  end
+
+  def should_receive(*args)
+    method_missing(:should_receive, *args)
+  end
+  alias stub! should_receive
+
+  def invoke(obj)
+    @deferred.each do |(sym, args, proxy)|
+      result = obj.send(sym, *args)
+      proxy.invoke(result)
+    end
+  end
+end
+
+class Class
+  def next_instance
+    meth = metaclass.instance_method(:new)
+    proxy = Spec::NextInstanceProxy.new
+    metaclass.send :define_method, :new do |*args|
+      instance = meth.bind(self).call(*args)
+      proxy.invoke(instance)
+      metaclass.send :define_method, :new, meth
+      instance
+    end
+    proxy
+  end
+end
+
 module Spec::Example::ExampleGroupSubclassMethods
   def add_guard(klass, name, is_class = false)
     guarded = nil # define variable now for scoping

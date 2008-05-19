@@ -63,12 +63,9 @@ module GitHub
 
         out = out.read.strip
         err = err.read.strip
-
-        if out.any?
-          replace @out = out
-        elsif err.any?
-          replace @error = err
-        end
+             
+        replace @out = out if out.any?
+        replace @error = err if err.any?
       end
 
       def command

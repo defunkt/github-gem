@@ -146,6 +146,8 @@ EOF
   end
 
   class Runner
+    include SetupMethods
+
     def initialize(parent, cmd, *args, &block)
       @cmd_name = cmd.to_s
       @command = GitHub.commands[cmd.to_s]
@@ -174,18 +176,6 @@ EOF
         invoke.call
       end
       @stdout_mock.invoke unless @stdout_mock.nil?
-    end
-
-    def setup_user_and_branch(user = :user, branch = :master)
-      @helper.should_receive(:user_and_branch).any_number_of_times.and_return([user, branch])
-    end
-
-    def setup_url_for(remote = :origin, user = nil, project = :project)
-      if user.nil?
-        user = remote
-        user = "user" if remote == :origin
-      end
-      @helper.should_receive(:url_for).any_number_of_times.with(remote).and_return("git://github.com/#{user}/#{project}")
     end
 
     def setup_remote(remote, options = {:user => nil, :project => "project"})

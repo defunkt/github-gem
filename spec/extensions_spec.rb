@@ -25,3 +25,10 @@ describe "When calling #try" do
     String.try.should equal(String)
   end
 end
+
+describe "When calling #tap" do
+  specify "objects should behave like Ruby 1.9's #tap" do
+    obj = "foo"
+    obj.tap { |obj| obj.size.should == 3 }.should equal(obj)
+  end
+end

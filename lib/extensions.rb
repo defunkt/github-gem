@@ -1,3 +1,4 @@
+# define #try
 class Object
   def try
     self
@@ -15,5 +16,13 @@ class NilClass
   NilProxy = klass.new
   def try
     NilProxy
+  end
+end
+
+# define #tap
+class Object
+  def tap(&block)
+    block.call(self)
+    self
   end
 end

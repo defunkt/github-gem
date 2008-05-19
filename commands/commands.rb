@@ -81,3 +81,15 @@ GitHub.register :clone do |user, repo, dir|
     git_exec "clone git://github.com/#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
   end
 end
+
+GitHub.describe :'pull-request' => "Generate the text for a pull request"
+GitHub.register :'pull-request' do |user, branch|
+  if helper.project
+    die "Specify a user for the pull request" if user.nil?
+    user, branch = user.split('/', 2) if branch.nil?
+    branch ||= 'master'
+    GitHub.invoke(:track, user) unless helper.tracking?(user)
+
+    git_exec "request-pull #{user}/#{branch} origin"
+  end
+end

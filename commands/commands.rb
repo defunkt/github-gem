@@ -55,8 +55,9 @@ GitHub.describe :pull => "Pull from a remote."
 GitHub.flags    :pull, :merge => "Automatically merge remote's changes into your master."
 GitHub.register :pull do |user, branch|
   die "Specify a user to pull from" if user.nil?
-  GitHub.invoke(:track, user) unless helper.tracking?(user)
+  user, branch = user.split("/", 2) if branch.nil?
   branch ||= 'master'
+  GitHub.invoke(:track, user) unless helper.tracking?(user)
   
   if options[:merge]
     git_exec "pull #{user} #{branch}"

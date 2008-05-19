@@ -166,15 +166,13 @@ EOF
 
   specify "pull defunkt/wip should switch to pre-existing defunkt/wip and pull from wip branch on defunkt remote" do
     running :pull, "defunkt/wip" do
-      pending "Accept user/branch syntax" do
-        setup_remote(:defunkt)
-        @command.should_receive(:git).with("checkout -b defunkt/wip").ordered.and_return do
-          mock("checkout -b defunkt/wip").tap { |m| m.should_receive(:error?) { true } }
-        end
-        @command.should_receive(:git).with("checkout defunkt/wip").ordered
-        @command.should_receive(:git_exec).with("pull defunkt wip").ordered
-        stdout.should == "Switching to defunkt/wip"
+      setup_remote(:defunkt)
+      @command.should_receive(:git).with("checkout -b defunkt/wip").ordered.and_return do
+        mock("checkout -b defunkt/wip").tap { |m| m.should_receive(:error?) { true } }
       end
+      @command.should_receive(:git).with("checkout defunkt/wip").ordered
+      @command.should_receive(:git_exec).with("pull defunkt wip").ordered
+      stdout.should == "Switching to defunkt/wip"
     end
   end
 

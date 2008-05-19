@@ -68,15 +68,20 @@ module GitHub
   end
 
   def parse_options(args)
-    @debug = args.delete('--debug')
+    idx = 0
     args.clone.inject({}) do |memo, arg|
-      if arg =~ /^--([^=]+)=(.+)/
-        args.delete(arg)
+      case arg
+      when /^--(.+?)=(.*)/
+        args.delete_at(idx)
         memo.merge($1.to_sym => $2)
-      elsif arg =~ /^--(.+)/
-        args.delete(arg)
+      when /^--(.+)/
+        args.delete_at(idx)
         memo.merge($1.to_sym => true)
+      when "--"
+        args.delete_at(idx)
+        return memo
       else
+        idx += 1
         memo
       end
     end

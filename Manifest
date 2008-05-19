@@ -6,6 +6,7 @@ lib/github/command.rb
 lib/github/helper.rb
 lib/github.rb
 LICENSE
+Manifest
 README
 spec/command_spec.rb
 spec/extensions_spec.rb
@@ -13,4 +14,4 @@ spec/github_spec.rb
 spec/helper_spec.rb
 spec/spec_helper.rb
 spec/ui_spec.rb
-Manifest
+spec/windoze_spec.rb

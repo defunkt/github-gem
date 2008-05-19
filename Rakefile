@@ -11,6 +11,7 @@ begin
     p.url          = "http://github.com/"
     p.author       = 'Chris Wanstrath'
     p.email        = "chris@ozmm.org"
+    p.dependencies = ["launchy"]
   end
 
 rescue LoadError => boom

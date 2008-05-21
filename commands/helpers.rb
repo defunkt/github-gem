@@ -2,7 +2,6 @@ GitHub.helper :user_and_repo_from do |url|
   case url
   when %r|^git://github\.com/([^/]+/[^/]+)$|: $1.split('/')
   when %r|^(?:ssh://)?(?:git@)?github\.com:([^/]+/[^/]+)$|: $1.split('/')
-  else ['', '']
   end
 end
 
@@ -11,16 +10,16 @@ GitHub.helper :user_and_repo_for do |remote|
 end
 
 GitHub.helper :user_for do |remote|
-  user_and_repo_for(remote).first
+  user_and_repo_for(remote).try.first
 end
 
 GitHub.helper :repo_for do |remote|
-  user_and_repo_for(remote).last
+  user_and_repo_for(remote).try.last
 end
 
 GitHub.helper :project do
   repo = repo_for(:origin)
-  if repo == ""
+  if repo.nil?
     if url_for(:origin) == ""
       STDERR.puts "Error: missing remote 'origin'"
     else
@@ -37,25 +36,27 @@ end
 
 GitHub.helper :remotes do
   regexp = '^remote\.(.+)\.url$'
-  `git config --get-regexp '#{regexp}'`.split(/\n/).map do |line|
+  `git config --get-regexp '#{regexp}'`.split(/\n/).inject({}) do |memo, line|
     name_string, url = line.split(/ /, 2)
     m, name = *name_string.match(/#{regexp}/)
-    [name, url]
+    memo[name.to_sym] = url
+    memo
   end
 end
 
 GitHub.helper :tracking do
-  remotes.map do |(name, url)|
+  remotes.inject({}) do |memo, (name, url)|
     if ur = user_and_repo_from(url)
-      [name, ur.first]
+      memo[name] = ur.first
     else
-      [name, url]
+      memo[name] = url
     end
+    memo
   end
 end
 
 GitHub.helper :tracking? do |user|
-  tracking.include?(user)
+  tracking.values.include?(user)
 end
 
 GitHub.helper :owner do
@@ -84,11 +85,18 @@ GitHub.helper :public_url_for do |user|
   "git://github.com/#{user}/#{project}.git"
 end
 
+GitHub.helper :private_url_for do |user|
+  "git@github.com:#{user}/#{project}.git"
+end
+
 GitHub.helper :homepage_for do |user, branch|
   "https://github.com/#{user}/#{project}/tree/#{branch}"
 end
 
-GitHub.helper :open do
-  Windoze ? 'start' : 'open'
+GitHub.helper :network_page_for do |user|
+  "https://github.com/#{user}/#{project}/network"
 end
-    
+
+GitHub.helper :open do |url|
+  Launchy::Browser.new.visit url
+end

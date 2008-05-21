@@ -1,6 +1,9 @@
 $:.unshift File.dirname(__FILE__)
+require 'extensions'
 require 'github/command'
 require 'github/helper'
+require 'rubygems'
+require 'launchy'
 
 ##
 # Starting simple.
@@ -29,6 +32,10 @@ module GitHub
     descriptions.update hash
   end
 
+  def flags(command, hash)
+    flag_descriptions[command].update hash
+  end
+
   def helper(command, &block)
     debug "Helper'd `#{command}`"
     Helper.send :define_method, command, &block
@@ -55,20 +62,29 @@ module GitHub
     @descriptions ||= {}
   end
 
+  def flag_descriptions
+    @flagdescs ||= Hash.new { |h, k| h[k] = {} }
+  end
+
   def options
     @options
   end
 
   def parse_options(args)
-    @debug = args.delete('--debug')
-    args.inject({}) do |memo, arg|
-      if arg =~ /^--([^=]+)=(.+)/
-        args.delete(arg)
+    idx = 0
+    args.clone.inject({}) do |memo, arg|
+      case arg
+      when /^--(.+?)=(.*)/
+        args.delete_at(idx)
         memo.merge($1.to_sym => $2)
-      elsif arg =~ /^--(.+)/
-        args.delete(arg)
+      when /^--(.+)/
+        args.delete_at(idx)
         memo.merge($1.to_sym => true)
+      when "--"
+        args.delete_at(idx)
+        return memo
       else
+        idx += 1
         memo
       end
     end
@@ -92,8 +108,13 @@ GitHub.register :default do
   puts "Available commands:", ''
   longest = GitHub.descriptions.map { |d,| d.to_s.size }.max
   GitHub.descriptions.each do |command, desc|
-    command = "%-#{longest}s" % command
-    puts "  #{command} => #{desc}"
+    cmdstr = "%-#{longest}s" % command
+    puts "  #{cmdstr} => #{desc}"
+    flongest = GitHub.flag_descriptions[command].map { |d,| "--#{d}".size }.max
+    GitHub.flag_descriptions[command].each do |flag, fdesc|
+      flagstr = "#{" " * longest}  %-#{flongest}s" % "--#{flag}"
+      puts "  #{flagstr}: #{fdesc}"
+    end
   end
   puts
 end

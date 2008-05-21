@@ -1,6 +1,4 @@
-Windoze = RUBY_PLATFORM =~ /mswin|mingw/
-
-if Windoze
+if RUBY_PLATFORM =~ /mswin|mingw/
   begin
     require 'win32/open3'
   rescue LoadError

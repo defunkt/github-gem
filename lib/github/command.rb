@@ -58,12 +58,15 @@ module GitHub
       def run
         GitHub.debug "sh: #{command}"
         _, out, err = Open3.popen3(*@command)
-
+        
         out = out.read.strip
         err = err.read.strip
-             
-        replace @out = out if out.any?
-        replace @error = err if err.any?
+
+        if out.any?
+          self.replace @out = out
+        elsif err.any?
+          self.replace @error = err
+        end
       end
 
       def command

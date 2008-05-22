@@ -180,7 +180,11 @@ remote.nex3.url git://github.com/nex3/github-gem.git
     it "should launch the URL" do
       Launchy::Browser.next_instance.tap do |browser|
         browser.should_receive(:my_os_family).any_number_of_times.and_return :windows # avoid forking
-        browser.should_receive(:system).with("/usr/bin/open http://www.google.com")
+        if RUBY_PLATFORM =~ /mingw|mswin/
+          browser.should_receive(:system).with("start http://www.google.com")
+        else
+          browser.should_receive(:system).with("/usr/bin/open http://www.google.com")
+        end
       end
       @helper.open "http://www.google.com"
     end

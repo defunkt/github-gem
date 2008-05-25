@@ -20,7 +20,7 @@ command :browse do |user, branch|
   end
 end
 
-desc "Open the network page for this repo in a web browser"
+desc "Open the network page for this repo in a web browser."
 command :network do |user|
   if helper.project
     user ||= helper.owner
@@ -39,7 +39,7 @@ command :info do
 end
 
 desc "Track another user's repository."
-flags :private => "Use git@github.com: instead of git://github.com/"
+flags :private => "Use git@github.com: instead of git://github.com/."
 command :track do |user|
   die "Specify a user to track" if user.nil?
   die "Already tracking #{user}" if helper.tracking?(user)
@@ -69,7 +69,7 @@ command :pull do |user, branch|
 end
 
 desc "Clone a repo."
-flags :ssh => "Clone using the git@github.com style url"
+flags :ssh => "Clone using the git@github.com style url."
 command :clone do |user, repo, dir|
   die "Specify a user to pull from" if user.nil?
   user, repo = user.split('/') unless repo
@@ -82,7 +82,7 @@ command :clone do |user, repo, dir|
   end
 end
 
-desc "Generate the text for a pull request"
+desc "Generate the text for a pull request."
 command :'pull-request' do |user, branch|
   if helper.project
     die "Specify a user for the pull request" if user.nil?

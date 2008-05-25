@@ -1,23 +1,23 @@
-GitHub.helper :user_and_repo_from do |url|
+helper :user_and_repo_from do |url|
   case url
   when %r|^git://github\.com/([^/]+/[^/]+)$|: $1.split('/')
   when %r|^(?:ssh://)?(?:git@)?github\.com:([^/]+/[^/]+)$|: $1.split('/')
   end
 end
 
-GitHub.helper :user_and_repo_for do |remote|
+helper :user_and_repo_for do |remote|
   user_and_repo_from(url_for(remote))
 end
 
-GitHub.helper :user_for do |remote|
+helper :user_for do |remote|
   user_and_repo_for(remote).try.first
 end
 
-GitHub.helper :repo_for do |remote|
+helper :repo_for do |remote|
   user_and_repo_for(remote).try.last
 end
 
-GitHub.helper :project do
+helper :project do
   repo = repo_for(:origin)
   if repo.nil?
     if url_for(:origin) == ""
@@ -30,11 +30,11 @@ GitHub.helper :project do
   repo.chomp('.git')
 end
 
-GitHub.helper :url_for do |remote|
+helper :url_for do |remote|
   `git config --get remote.#{remote}.url`.chomp
 end
 
-GitHub.helper :remotes do
+helper :remotes do
   regexp = '^remote\.(.+)\.url$'
   `git config --get-regexp '#{regexp}'`.split(/\n/).inject({}) do |memo, line|
     name_string, url = line.split(/ /, 2)
@@ -44,7 +44,7 @@ GitHub.helper :remotes do
   end
 end
 
-GitHub.helper :tracking do
+helper :tracking do
   remotes.inject({}) do |memo, (name, url)|
     if ur = user_and_repo_from(url)
       memo[name] = ur.first
@@ -55,15 +55,15 @@ GitHub.helper :tracking do
   end
 end
 
-GitHub.helper :tracking? do |user|
+helper :tracking? do |user|
   tracking.values.include?(user)
 end
 
-GitHub.helper :owner do
+helper :owner do
   user_for(:origin)
 end
 
-GitHub.helper :user_and_branch do
+helper :user_and_branch do
   raw_branch = `git rev-parse --symbolic-full-name HEAD`.chomp.sub(/^refs\/heads\//, '')
   user, branch = raw_branch.split(/\//, 2)
   if branch
@@ -73,30 +73,30 @@ GitHub.helper :user_and_branch do
   end
 end
 
-GitHub.helper :branch_user do
+helper :branch_user do
   user_and_branch.first
 end
 
-GitHub.helper :branch_name do
+helper :branch_name do
   user_and_branch.last
 end
 
-GitHub.helper :public_url_for do |user|
+helper :public_url_for do |user|
   "git://github.com/#{user}/#{project}.git"
 end
 
-GitHub.helper :private_url_for do |user|
+helper :private_url_for do |user|
   "git@github.com:#{user}/#{project}.git"
 end
 
-GitHub.helper :homepage_for do |user, branch|
+helper :homepage_for do |user, branch|
   "https://github.com/#{user}/#{project}/tree/#{branch}"
 end
 
-GitHub.helper :network_page_for do |user|
+helper :network_page_for do |user|
   "https://github.com/#{user}/#{project}/network"
 end
 
-GitHub.helper :open do |url|
+helper :open do |url|
   Launchy::Browser.new.visit url
 end

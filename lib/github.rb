@@ -23,17 +23,22 @@ module GitHub
 
   BasePath = File.expand_path(File.dirname(__FILE__) + '/..')
 
-  def register(command, &block)
+  def command(command, &block)
     debug "Registered `#{command}`"
+    descriptions[command] = @next_description if @next_description
+    @next_description = nil
+    flag_descriptions[command].update @next_flags if @next_flags
+    @next_flags = nil
     commands[command.to_s] = Command.new(block)
   end
 
-  def describe(hash)
-    descriptions.update hash
+  def desc(str)
+    @next_description = str
   end
 
-  def flags(command, hash)
-    flag_descriptions[command].update hash
+  def flags(hash)
+    @next_flags ||= {}
+    @next_flags.update hash
   end
 
   def helper(command, &block)
@@ -105,7 +110,7 @@ module GitHub
   end
 end
 
-GitHub.register :default do
+GitHub.command :default do
   puts "Usage: github command <space separated arguments>", ''
   puts "Available commands:", ''
   longest = GitHub.descriptions.map { |d,| d.to_s.size }.max

@@ -343,6 +343,7 @@ EOF
         invoke.call
       end
       @stdout_mock.invoke unless @stdout_mock.nil?
+      @stderr_mock.invoke unless @stderr_mock.nil?
     end
 
     def setup_remote(remote, options = {:user => nil, :project => "project"})
@@ -381,6 +382,17 @@ EOF
         end
       end
       @stdout_mock
+    end
+
+    def stderr
+      if @stderr_mock.nil?
+        output = ""
+        @stderr_mock = DeferredMock.new(output)
+        STDERR.should_receive(:write).any_number_of_times do |str|
+          output << str
+        end
+      end
+      @stderr_mock
     end
 
     class DeferredMock

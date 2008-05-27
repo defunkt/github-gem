@@ -222,6 +222,12 @@ EOF
     end
   end
 
+  specify "clone defunkt/github-gem repo should clone the repo into the dir 'repo'" do
+    running :clone, "defunkt/github-gem", "repo" do
+      @command.should_receive(:git_exec).with("clone git://github.com/defunkt/github-gem.git repo")
+    end
+  end
+
   # -- pull-request --
   specify "pull-request should die with no args" do
     running :'pull-request' do

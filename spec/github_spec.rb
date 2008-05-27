@@ -48,4 +48,18 @@ describe "GitHub.parse_options" do
     GitHub.parse_options(args).should == {}
     args.should == []
   end
+
+  it "should not set up debugging when --debug not passed" do
+    GitHub.stub!(:load)
+    GitHub.stub!(:invoke)
+    GitHub.activate(['default'])
+    GitHub.should_not be_debug
+  end
+
+  it "should set up debugging when passed --debug" do
+    GitHub.stub!(:load)
+    GitHub.stub!(:invoke)
+    GitHub.activate(['default', '--debug'])
+    GitHub.should be_debug
+  end
 end

@@ -100,6 +100,11 @@ Spec::Runner.configure do |configuration|
     end
   end
 
+  configuration.prepend_after(:each) do
+    GitHub.instance_variable_set :'@options', nil
+    GitHub.instance_variable_set :'@debug', nil
+  end
+
   configuration.prepend_before(:all) do
     self.class.send :include, Spec::Example::ExampleGroupSubclassMethods
   end

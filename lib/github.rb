@@ -48,6 +48,7 @@ module GitHub
 
   def activate(args)
     @options = parse_options(args)
+    @debug = @options[:debug]
     load 'helpers.rb'
     load 'commands.rb'
     invoke(args.shift, *args)

@@ -72,7 +72,10 @@ desc "Clone a repo."
 flags :ssh => "Clone using the git@github.com style url."
 command :clone do |user, repo, dir|
   die "Specify a user to pull from" if user.nil?
-  user, repo = user.split('/') unless repo
+  if user.include? ?/
+    die "Expected user/repo dir, given extra argument" if dir
+    (user, repo), dir = [user.split('/', 2), repo]
+  end
   die "Specify a repo to pull from" if repo.nil?
 
   if options[:ssh]

@@ -38,7 +38,9 @@ module GitHub
     end
 
     def git_exec(*command)
-      exec ['git', command].flatten.join(' ')
+      cmdstr = ['git', command].flatten.join(' ')
+      GitHub.debug "exec: #{cmdstr}"
+      exec cmdstr
     end
 
     def sh(*command)

@@ -17,8 +17,9 @@ describe "When calling #try" do
   end
 
   specify "nil should ignore any calls made past #try" do
-    nil.try.size.should == nil
-    nil.try.sdlfj.should == nil
+    nil.try.size.should equal(NilClass::NilProxy)
+    nil.try.sdlfj.should equal(NilClass::NilProxy)
+    nil.try.one.two.three.should equal(NilClass::NilProxy)
   end
 
   specify "classes should respond just like objects" do

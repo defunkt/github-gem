@@ -81,12 +81,20 @@ helper :branch_name do
   user_and_branch.last
 end
 
+helper :public_url_for_user_and_repo do |user, repo|
+  "git://github.com/#{user}/#{repo}.git"
+end
+
+helper :private_url_for_user_and_repo do |user, repo|
+  "git@github.com:#{user}/#{repo}.git"
+end
+
 helper :public_url_for do |user|
-  "git://github.com/#{user}/#{project}.git"
+  public_url_for_user_and_repo user, project
 end
 
 helper :private_url_for do |user|
-  "git@github.com:#{user}/#{project}.git"
+  private_url_for_user_and_repo user, project
 end
 
 helper :homepage_for do |user, branch|

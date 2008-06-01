@@ -114,24 +114,20 @@ EOF
   end
 
   specify "track should accept user/project syntax" do
-    pending do
-      running :track, "defunkt/github-gem.git" do
-        setup_url_for
-        @helper.should_receive(:tracking?).with("defunkt").and_return false
-        @command.should_receive(:git).with("remote add defunkt git://github.com/defunkt/github-gem.git")
-      end
+    running :track, "defunkt/github-gem.git" do
+      setup_url_for
+      @helper.should_receive(:tracking?).with("defunkt").and_return false
+      @command.should_receive(:git).with("remote add defunkt git://github.com/defunkt/github-gem.git")
     end
   end
 
   specify "track defunkt/github-gem.git should function with no origin remote" do
-    pending do
-      running :track, "defunkt/github-gem.git" do
-        @helper.stub!(:url_for).with(:origin).and_return ""
-        @helper.stub!(:tracking?).and_return false
-        @command.should_receive(:git).with("remote add defunkt git://github.com/defunkt/github-gem.git")
-        self.should_not raise_error(SystemExit)
-        stderr.should_not =~ /^Error/
-      end
+    running :track, "defunkt/github-gem.git" do
+      @helper.stub!(:url_for).with(:origin).and_return ""
+      @helper.stub!(:tracking?).and_return false
+      @command.should_receive(:git).with("remote add defunkt git://github.com/defunkt/github-gem.git")
+      self.should_not raise_error(SystemExit)
+      stderr.should_not =~ /^Error/
     end
   end
 

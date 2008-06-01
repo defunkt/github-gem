@@ -35,9 +35,30 @@ describe GitHub::Helper do
   end
 
   helper :private_url_for do
-    it "should return ssh-style url" do
+    it "should return an ssh-style url" do
       setup_url_for :origin, "user", "merb-core"
       @helper.private_url_for("wycats").should == "git@github.com:wycats/merb-core.git"
+    end
+  end
+
+  helper :private_url_for_user_and_repo do
+    it "should return an ssh-style url" do
+      @helper.should_not_receive(:project)
+      @helper.private_url_for_user_and_repo("defunkt", "github-gem").should == "git@github.com:defunkt/github-gem.git"
+    end
+  end
+
+  helper :public_url_for do
+    it "should return a git:// URL" do
+      setup_url_for :origin, "user", "merb-core"
+      @helper.public_url_for("wycats").should == "git://github.com/wycats/merb-core.git"
+    end
+  end
+
+  helper :public_url_for_user_and_repo do
+    it "should return a git:// URL" do
+      @helper.should_not_receive(:project)
+      @helper.public_url_for_user_and_repo("defunkt", "github-gem").should == "git://github.com/defunkt/github-gem.git"
     end
   end
 
@@ -57,13 +78,6 @@ describe GitHub::Helper do
       @helper.should_receive(:url_for).twice.with(:origin).and_return("home:path/to/repo.git")
       STDERR.should_receive(:puts).with("Error: remote 'origin' is not a github URL")
       lambda { @helper.project }.should raise_error(SystemExit)
-    end
-  end
-
-  helper :public_url_for do
-    it "should return git:// URL" do
-      setup_url_for :origin, "user", "merb-core"
-      @helper.public_url_for("wycats").should == "git://github.com/wycats/merb-core.git"
     end
   end
 

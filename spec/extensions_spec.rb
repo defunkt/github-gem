@@ -10,6 +10,7 @@ describe "When calling #try" do
   specify "objects should behave as if #try wasn't called" do
     "foo".try.size.should == 3
     { :foo => :bar }.try.fetch(:foo).should == :bar
+    [1, 2, 3].try.map { |x| x + 1 }.should == [2, 3, 4]
   end
 
   specify "nil should return the singleton NilClass::NilProxy" do

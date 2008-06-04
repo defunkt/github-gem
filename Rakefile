@@ -23,13 +23,11 @@ end
 begin
   require 'spec/rake/spectask'
 
-  desc "Run all specs"
   Spec::Rake::SpecTask.new("spec") do |t|
     t.spec_files = FileList['spec/**/*_spec.rb']
     t.spec_opts = ['--color']
   end
 
-  desc "Run all specs with RCov"
   Spec::Rake::SpecTask.new("rcov_spec") do |t|
     t.spec_files = FileList['spec/**/*_spec.rb']
     t.spec_opts = ['--color']

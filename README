@@ -9,7 +9,7 @@ Catch us in the #github room on freenode if you want to get involved.  Or just f
 Getting started
 ===========
 
-  $ gem install github
+  $ gem install defunkt-github -s http://gems.github.com
 
 Run it:
 

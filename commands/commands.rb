@@ -40,6 +40,7 @@ end
 
 desc "Track another user's repository."
 flags :private => "Use git@github.com: instead of git://github.com/."
+flags :ssh => 'Equivalent to --private'
 command :track do |remote, user|
   # track remote user
   # track remote user/repo
@@ -52,7 +53,7 @@ command :track do |remote, user|
   repo = @helper.project if repo.nil?
   repo.chomp!(".git")
 
-  if options[:private]
+  if options[:private] || options[:ssh]
     git "remote add #{user} #{helper.private_url_for_user_and_repo(user, repo)}"
   else
     git "remote add #{user} #{helper.public_url_for_user_and_repo(user, repo)}"

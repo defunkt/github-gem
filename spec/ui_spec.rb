@@ -89,11 +89,19 @@ EOF
     end
   end
 
-  specify "track --private defunkt should track a new remove for defunkt using ssh" do
+  specify "track --private defunkt should track a new remote for defunkt using ssh" do
     running :track, "--private", "defunkt" do
       setup_url_for
-      @helper.should_receive(:tracking?).with("defunkt").once.and_return(false)
-      @command.should_receive(:git).with("remote add defunkt git@github.com:defunkt/project.git").once
+      @helper.should_receive(:tracking?).with("defunkt").and_return(false)
+      @command.should_receive(:git).with("remote add defunkt git@github.com:defunkt/project.git")
+    end
+  end
+
+  specify "track --ssh defunkt should be equivalent to track --private defunkt" do
+    running :track, "--ssh", "defunkt" do
+      setup_url_for
+      @helper.should_receive(:tracking?).with("defunkt").and_return(false)
+      @command.should_receive(:git).with("remote add defunkt git@github.com:defunkt/project.git")
     end
   end
 

@@ -139,6 +139,24 @@ EOF
     end
   end
 
+  specify "track origin defunkt/github-gem should track defunkt/github-gem as the origin remote" do
+    running :track, "origin", "defunkt/github-gem" do
+      @helper.stub!(:url_for).with(:origin).and_return ""
+      @helper.stub!(:tracking?).and_return false
+      @command.should_receive(:git).with("remote add origin git://github.com/defunkt/github-gem.git")
+      stderr.should_not =~ /^Error/
+    end
+  end
+
+  specify "track --private origin defunkt/github-gem should track defunkt/github-gem as the origin remote using ssh" do
+    running :track, "--private", "origin", "defunkt/github-gem" do
+      @helper.stub!(:url_for).with(:origin).and_return ""
+      @helper.stub!(:tracking?).and_return false
+      @command.should_receive(:git).with("remote add origin git@github.com:defunkt/github-gem.git")
+      stderr.should_not =~ /^Error/
+    end
+  end
+
   # -- pull --
   specify "pull should die with no args" do
     running :pull do

@@ -52,11 +52,12 @@ command :track do |remote, user|
   die "Already tracking #{user}" if helper.tracking?(user)
   repo = @helper.project if repo.nil?
   repo.chomp!(".git")
+  remote ||= user
 
   if options[:private] || options[:ssh]
-    git "remote add #{user} #{helper.private_url_for_user_and_repo(user, repo)}"
+    git "remote add #{remote} #{helper.private_url_for_user_and_repo(user, repo)}"
   else
-    git "remote add #{user} #{helper.public_url_for_user_and_repo(user, repo)}"
+    git "remote add #{remote} #{helper.public_url_for_user_and_repo(user, repo)}"
   end
 end
 

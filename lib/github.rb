@@ -3,7 +3,16 @@ require 'extensions'
 require 'github/command'
 require 'github/helper'
 require 'rubygems'
-require 'launchy'
+# require 'launchy'
+
+def has_launchy?(&blk)
+  begin
+    gem 'launchy'
+    yield
+  rescue Gem::LoadError
+    $stderr.puts "Sorry, you need to install launchy: `gem install launchy`"
+  end
+end
 
 ##
 # Starting simple.
@@ -109,6 +118,8 @@ module GitHub
   def debug?
     !!@debug
   end
+  
+
 end
 
 GitHub.command :default do

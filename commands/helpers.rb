@@ -106,5 +106,8 @@ helper :network_page_for do |user|
 end
 
 helper :open do |url|
-  Launchy::Browser.new.visit url
+  has_launchy? do
+    Launchy::Browser.new.visit url
+  end
 end
+

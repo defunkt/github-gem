@@ -181,7 +181,7 @@ EOF
         mock("checkout -b defunkt/master").tap { |m| m.stub!(:error?) }
       end
       @command.should_receive(:git_exec).with("pull defunkt master").ordered
-      stdout.should == "Switching to defunkt/master"
+      stdout.should == "Switching to defunkt/master\n"
     end
   end
 
@@ -193,7 +193,7 @@ EOF
       end
       @command.should_receive(:git).with("checkout defunkt/master").ordered
       @command.should_receive(:git_exec).with("pull defunkt master").ordered
-      stdout.should == "Switching to defunkt/master"
+      stdout.should == "Switching to defunkt/master\n"
     end
   end
 
@@ -204,7 +204,7 @@ EOF
         mock("checkout -b defunkt/wip").tap { |m| m.stub!(:error?) }
       end
       @command.should_receive(:git_exec).with("pull defunkt wip").ordered
-      stdout.should == "Switching to defunkt/wip"
+      stdout.should == "Switching to defunkt/wip\n"
     end
   end
 
@@ -216,7 +216,7 @@ EOF
       end
       @command.should_receive(:git).with("checkout defunkt/wip").ordered
       @command.should_receive(:git_exec).with("pull defunkt wip").ordered
-      stdout.should == "Switching to defunkt/wip"
+      stdout.should == "Switching to defunkt/wip\n"
     end
   end
 
@@ -443,21 +443,59 @@ EOF
       def initialize(obj = nil)
         @obj = obj
         @calls = []
+        @expectations = []
       end
+
+      attr_reader :obj
 
       def invoke(obj = nil)
         obj ||= @obj
         @calls.each do |sym, args|
           obj.send sym, *args
         end
+        @expectations.each do |exp|
+          exp.invoke
+        end
       end
 
       def should(*args)
-        @calls << [:should, args]
+        if args.empty?
+          exp = Expectation.new(self, :should)
+          @expectations << exp
+          exp
+        else
+          @calls << [:should, args]
+        end
       end
 
       def should_not(*args)
-        @calls << [:should_not, args]
+        if args.empty?
+          exp = Expectation.new(self, :should_not)
+          @expectations << exp
+          exp
+        else
+          @calls << [:should_not, args]
+        end
+      end
+
+      class Expectation
+        def initialize(mock, call)
+          @mock = mock
+          @call = call
+          @calls = []
+        end
+
+        undef_method *(instance_methods.map { |x| x.to_sym } - [:__id__, :__send__])
+
+        def invoke
+          @calls.each do |sym, args|
+            (@mock.obj.send @call).send sym, *args
+          end
+        end
+
+        def method_missing(sym, *args)
+          @calls << [sym, args]
+        end
       end
     end
 

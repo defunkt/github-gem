@@ -47,50 +47,46 @@ class Class
   end
 end
 
-module Spec
-  module Example
-    module ExampleGroupSubclassMethods
-      def add_guard(klass, name, is_class = false)
-        guarded = nil # define variable now for scoping
-        target = (is_class ? klass.metaclass : klass)
-        sep = (is_class ? "." : "#")
-        target.class_eval do
-          guarded = instance_method(name)
-          define_method name do |*args|
-            raise "Testing guards violated: Cannot call #{klass}#{sep}#{name}"
-          end
-        end
-        @guards ||= []
-        @guards << [klass, name, is_class, guarded]
-      end
-
-      def add_class_guard(klass, name)
-        add_guard(klass, name, true)
-      end
-
-      def unguard(klass, name, is_class = false)
-        row = @guards.find { |(k,n,i)| k == klass and n == name and i == is_class }
-        raise "#{klass}#{is_class ? "." : "#"}#{name} is not guarded" if row.nil?
-        (is_class ? klass.metaclass : klass).class_eval do
-          define_method name, row.last
-        end
-        @guards.delete row
-      end
-
-      def class_unguard(klass, name)
-        unguard(klass, name, true)
-      end
-
-      def unguard_all
-        @guards ||= []
-        @guards.each do |klass, name, is_class, guarded|
-          (is_class ? klass.metaclass : klass).class_eval do
-            define_method name, guarded
-          end
-        end
-        @guards.clear
+module Spec::Example::ExampleGroupSubclassMethods
+  def add_guard(klass, name, is_class = false)
+    guarded = nil # define variable now for scoping
+    target = (is_class ? klass.metaclass : klass)
+    sep = (is_class ? "." : "#")
+    target.class_eval do
+      guarded = instance_method(name)
+      define_method name do |*args|
+        raise "Testing guards violated: Cannot call #{klass}#{sep}#{name}"
       end
     end
+    @guards ||= []
+    @guards << [klass, name, is_class, guarded]
+  end
+
+  def add_class_guard(klass, name)
+    add_guard(klass, name, true)
+  end
+
+  def unguard(klass, name, is_class = false)
+    row = @guards.find { |(k,n,i)| k == klass and n == name and i == is_class }
+    raise "#{klass}#{is_class ? "." : "#"}#{name} is not guarded" if row.nil?
+    (is_class ? klass.metaclass : klass).class_eval do
+      define_method name, row.last
+    end
+    @guards.delete row
+  end
+
+  def class_unguard(klass, name)
+    unguard(klass, name, true)
+  end
+
+  def unguard_all
+    @guards ||= []
+    @guards.each do |klass, name, is_class, guarded|
+      (is_class ? klass.metaclass : klass).class_eval do
+        define_method name, guarded
+      end
+    end
+    @guards.clear
   end
 end
 

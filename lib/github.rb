@@ -9,7 +9,7 @@ require 'rubygems'
 #
 # $ github <command> <args>
 #
-#   GitHub.register <command> do |*args|
+#   GitHub.command <command> do |*args|
 #     whatever 
 #   end
 #

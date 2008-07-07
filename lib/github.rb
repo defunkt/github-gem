@@ -3,7 +3,6 @@ require 'extensions'
 require 'github/command'
 require 'github/helper'
 require 'rubygems'
-require 'launchy'
 
 ##
 # Starting simple.

@@ -21,5 +21,5 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.1.1}
   s.summary = %q{The official `github` command line helper for simplifying your GitHub experience.}
 
-  s.add_dependency(%q<launchy>, [">= 0"])
+  # s.add_dependency(%q<launchy>, [">= 0"])
 end

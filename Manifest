@@ -9,10 +9,11 @@ lib/github.rb
 LICENSE
 Manifest
 README
-spec/command_spec.rb
-spec/extensions_spec.rb
-spec/github_spec.rb
-spec/helper_spec.rb
+spec/github/helper_spec.rb
+spec/github/spec_helper.rb
+spec/github/ui_spec.rb
+spec/shared/command_spec.rb
+spec/shared/extensions_spec.rb
+spec/shared/github_spec.rb
+spec/shared/windoze_spec.rb
 spec/spec_helper.rb
-spec/ui_spec.rb
-spec/windoze_spec.rb

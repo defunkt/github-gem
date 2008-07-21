@@ -17,7 +17,7 @@ describe "github/command.rb" do
   end
 
   before(:each) do
-    @filename = File.dirname(__FILE__) + "/../lib/github/command.rb"
+    @filename = File.dirname(__FILE__) + "/../../lib/github/command.rb"
     @data = File.read(@filename)
   end
 

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + "/spec_helper"
+require File.dirname(__FILE__) + "/../spec_helper"
 
 describe "When calling #try" do
   specify "objects should return themselves" do

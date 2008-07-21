@@ -92,14 +92,6 @@ end
 
 # prevent the use of `` in tests
 Spec::Runner.configure do |configuration|
-  # load this here so it's covered by the `` guard
-  configuration.prepend_before(:all) do
-    module GitHub
-      load 'helpers.rb'
-      load 'commands.rb'
-    end
-  end
-
   configuration.prepend_after(:each) do
     GitHub.instance_variable_set :'@options', nil
     GitHub.instance_variable_set :'@debug', nil

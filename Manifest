@@ -9,9 +9,9 @@ lib/github.rb
 LICENSE
 Manifest
 README
+spec/github/command_spec.rb
 spec/github/helper_spec.rb
 spec/github/spec_helper.rb
-spec/github/ui_spec.rb
 spec/shared/command_spec.rb
 spec/shared/extensions_spec.rb
 spec/shared/github_spec.rb

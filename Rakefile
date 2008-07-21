@@ -23,12 +23,13 @@ end
 begin
   require 'spec/rake/spectask'
 
-  def spec_task(cmd=nil, rcov=nil)
+  def spec_task(cmd=nil, rcov=false)
     name = "spec"
     name << ":rcov" if rcov
     root_name = name.dup
     cmd ||= "shared"
     name << ":#{cmd}"
+    desc ''
     Spec::Rake::SpecTask.new(name) do |t|
       t.spec_files = FileList["spec#{"/#{cmd}" if cmd}/*_spec.rb"]
       t.spec_opts = ['--color']
@@ -38,6 +39,7 @@ begin
       end
     end
     task root_name => name
+    spec_task cmd, true unless rcov
   end
 
   desc 'Run specs'
@@ -45,17 +47,6 @@ begin
   desc 'Run specs using RCov'
   task :'spec:shared'
 
-  # spec_task
-  desc ''
   spec_task
-
-  desc ''
-  spec_task(nil, true)
-  task 'spec:rcov' => ['spec:rcov:github']
-
-  desc ''
-  spec_task('github')
-
-  desc ''
-  spec_task('github', true)
+  spec_task 'github'
 end

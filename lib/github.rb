@@ -22,6 +22,15 @@ module GitHub
 
   BasePath = File.expand_path(File.dirname(__FILE__) + '/..')
 
+  @@command_name = 'github'
+
+  def command_name=(name)
+    @@command_name = name
+  end
+  def command_name
+    @@command_name
+  end
+
   def command(command, &block)
     debug "Registered `#{command}`"
     descriptions[command] = @next_description if @next_description
@@ -96,7 +105,14 @@ module GitHub
   end
 
   def load(file)
-    file[0] == ?/ ? path = file : path = BasePath + "/commands/#{file}"
+    if file[0] == ?/
+      path = file
+    else
+      path = BasePath + "/commands/#{command_name}/#{file}"
+      unless File.exists?(path)
+        path = BasePath + "/commands/#{file}"
+      end
+    end
     data = File.read(path)
     GitHub.module_eval data, path
   end
@@ -111,7 +127,7 @@ module GitHub
 end
 
 GitHub.command :default do
-  puts "Usage: github command <space separated arguments>", ''
+  puts "Usage: #{GitHub.command_name} command <space separated arguments>", ''
   puts "Available commands:", ''
   longest = GitHub.descriptions.map { |d,| d.to_s.size }.max
   GitHub.descriptions.each do |command, desc|

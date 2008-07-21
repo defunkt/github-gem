@@ -1,6 +1,7 @@
 bin/github
-commands/commands.rb
-commands/helpers.rb
+commands/github/commands.rb
+commands/github/helpers.rb
+github-gem.gemspec
 lib/extensions.rb
 lib/github/command.rb
 lib/github/helper.rb

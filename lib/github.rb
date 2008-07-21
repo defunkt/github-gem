@@ -108,9 +108,17 @@ module GitHub
     if file[0] == ?/
       path = file
     else
+      # if both exist, we want to load both
       path = BasePath + "/commands/#{command_name}/#{file}"
-      unless File.exists?(path)
-        path = BasePath + "/commands/#{file}"
+      path2 = BasePath + "/commands/#{file}"
+      if File.exists?(path)
+        if File.exists?(path2)
+          data = File.read(path)
+          GitHub.module_eval data, path
+          path = path2
+        end
+      else
+        path = path2
       end
     end
     data = File.read(path)

@@ -49,4 +49,5 @@ begin
 
   spec_task
   spec_task 'github'
+  spec_task 'gist'
 end

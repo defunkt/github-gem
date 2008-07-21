@@ -1,6 +1,10 @@
+bin/gist
 bin/github
+commands/gist/commands.rb
+commands/gist/helpers.rb
 commands/github/commands.rb
 commands/github/helpers.rb
+commands/helpers.rb
 github-gem.gemspec
 lib/extensions.rb
 lib/github/command.rb
@@ -9,6 +13,9 @@ lib/github.rb
 LICENSE
 Manifest
 README
+spec/gist/command_spec.rb
+spec/gist/helper_spec.rb
+spec/gist/spec_helper.rb
 spec/github/command_spec.rb
 spec/github/helper_spec.rb
 spec/github/spec_helper.rb

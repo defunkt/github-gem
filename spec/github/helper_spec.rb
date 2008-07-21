@@ -1,21 +1,5 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-class HelperRunner
-  def initialize(parent, name)
-    @parent = parent
-    @name = name
-  end
-
-  def run(&block)
-    self.instance_eval(&block)
-  end
-
-  def it(str, &block)
-    @parent.send :it, "#{@name} #{str}", &block
-  end
-  alias specify it
-end
-
 describe GitHub::Helper do
   include SetupMethods
 

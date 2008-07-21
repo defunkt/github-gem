@@ -128,3 +128,177 @@ module SetupMethods
     @helper.should_receive(:url_for).any_number_of_times.with(remote).and_return("git://github.com/#{user}/#{project}.git")
   end
 end
+
+class HelperRunner
+  def initialize(parent, name)
+    @parent = parent
+    @name = name
+  end
+
+  def run(&block)
+    self.instance_eval(&block)
+  end
+
+  def it(str, &block)
+    @parent.send :it, "#{@name} #{str}", &block
+  end
+  alias specify it
+end
+
+module CommandRunner
+  def running(cmd, *args, &block)
+    Runner.new(self, cmd, *args, &block).run
+  end
+
+  class Runner
+    include SetupMethods
+
+    def initialize(parent, cmd, *args, &block)
+      @cmd_name = cmd.to_s
+      @command = GitHub.commands[cmd.to_s]
+      @helper = @command.helper
+      @args = args
+      @block = block
+      @parent = parent
+    end
+
+    def run
+      self.instance_eval &@block
+      mock_remotes unless @remotes.nil?
+      GitHub.should_receive(:load).with("commands.rb")
+      GitHub.should_receive(:load).with("helpers.rb")
+      args = @args.clone
+      GitHub.parse_options(args) # strip out the flags
+      GitHub.should_receive(:invoke).with(@cmd_name, *args).and_return do
+        GitHub.send(GitHub.send(:__mock_proxy).send(:munge, :invoke), @cmd_name, *args)
+      end
+      invoke = lambda { GitHub.activate([@cmd_name, *@args]) }
+      if @expected_result
+        expectation, result = @expected_result
+        case result
+        when Spec::Matchers::RaiseError, Spec::Matchers::Change, Spec::Matchers::ThrowSymbol
+          invoke.send expectation, result
+        else
+          invoke.call.send expectation, result
+        end
+      else
+        invoke.call
+      end
+      @stdout_mock.invoke unless @stdout_mock.nil?
+      @stderr_mock.invoke unless @stderr_mock.nil?
+    end
+
+    def setup_remote(remote, options = {:user => nil, :project => "project"})
+      @remotes ||= {}
+      user = options[:user] || remote
+      project = options[:project]
+      ssh = options[:ssh]
+      url = options[:url]
+      if url
+        @remotes[remote.to_sym] = url
+      elsif ssh
+        @remotes[remote.to_sym] = "git@github.com:#{user}/#{project}.git"
+      else
+        @remotes[remote.to_sym] = "git://github.com/#{user}/#{project}.git"
+      end
+    end
+
+    def mock_remotes()
+      @helper.should_receive(:remotes).any_number_of_times.and_return(@remotes)
+    end
+
+    def should(result)
+      @expected_result = [:should, result]
+    end
+
+    def should_not(result)
+      @expected_result = [:should_not, result]
+    end
+
+    def stdout
+      if @stdout_mock.nil?
+        output = ""
+        @stdout_mock = DeferredMock.new(output)
+        STDOUT.should_receive(:write).any_number_of_times do |str|
+          output << str
+        end
+      end
+      @stdout_mock
+    end
+
+    def stderr
+      if @stderr_mock.nil?
+        output = ""
+        @stderr_mock = DeferredMock.new(output)
+        STDERR.should_receive(:write).any_number_of_times do |str|
+          output << str
+        end
+      end
+      @stderr_mock
+    end
+
+    class DeferredMock
+      def initialize(obj = nil)
+        @obj = obj
+        @calls = []
+        @expectations = []
+      end
+
+      attr_reader :obj
+
+      def invoke(obj = nil)
+        obj ||= @obj
+        @calls.each do |sym, args|
+          obj.send sym, *args
+        end
+        @expectations.each do |exp|
+          exp.invoke
+        end
+      end
+
+      def should(*args)
+        if args.empty?
+          exp = Expectation.new(self, :should)
+          @expectations << exp
+          exp
+        else
+          @calls << [:should, args]
+        end
+      end
+
+      def should_not(*args)
+        if args.empty?
+          exp = Expectation.new(self, :should_not)
+          @expectations << exp
+          exp
+        else
+          @calls << [:should_not, args]
+        end
+      end
+
+      class Expectation
+        def initialize(mock, call)
+          @mock = mock
+          @call = call
+          @calls = []
+        end
+
+        undef_method *(instance_methods.map { |x| x.to_sym } - [:__id__, :__send__])
+
+        def invoke
+          @calls.each do |sym, args|
+            (@mock.obj.send @call).send sym, *args
+          end
+        end
+
+        def method_missing(sym, *args)
+          @calls << [sym, args]
+        end
+      end
+    end
+
+    def method_missing(sym, *args)
+      @parent.send sym, *args
+    end
+  end
+end

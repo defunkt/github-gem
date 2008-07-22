@@ -1,5 +1,5 @@
 $:.unshift File.dirname(__FILE__)
-require 'extensions'
+require 'github/extensions'
 require 'github/command'
 require 'github/helper'
 require 'rubygems'

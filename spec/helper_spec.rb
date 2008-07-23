@@ -194,6 +194,7 @@ remote.nex3.url git://github.com/nex3/github-gem.git
     it "should launch the URL when Launchy is installed" do
       begin
         require 'launchy'
+
         @helper.should_receive(:gem).with('launchy')
         Launchy::Browser.next_instance.tap do |browser|
           browser.should_receive(:my_os_family).any_number_of_times.and_return :windows # avoid forking
@@ -202,12 +203,10 @@ remote.nex3.url git://github.com/nex3/github-gem.git
           else
             browser.should_receive(:system).with("/usr/bin/open http://www.google.com")
           end
-          # @helper.should_receive(:has_launchy?).and_return { |blk| blk.call }
-          Launchy::Browser.next_instance.should_receive(:visit).with("http://www.google.com")
           @helper.open "http://www.google.com"
-        rescue LoadError
-          fail "Launchy is required for this spec"
         end
+      rescue LoadError
+        fail "Launchy is required for this spec"
       end
     end
 

@@ -33,13 +33,14 @@ command :info do
   puts "== Info for #{helper.project}"
   puts "You are #{helper.owner}"
   puts "Currently tracking:"
-  helper.tracking.each do |(name,user_or_url)|
+  helper.tracking.sort { |(a,),(b,)| a == :origin ? -1 : b == :origin ? 1 : a.to_s <=> b.to_s }.each do |(name,user_or_url)|
     puts " - #{user_or_url} (as #{name})"
   end
 end
 
 desc "Track another user's repository."
 flags :private => "Use git@github.com: instead of git://github.com/."
+flags :ssh => 'Equivalent to --private'
 command :track do |remote, user|
   # track remote user
   # track remote user/repo
@@ -51,11 +52,12 @@ command :track do |remote, user|
   die "Already tracking #{user}" if helper.tracking?(user)
   repo = @helper.project if repo.nil?
   repo.chomp!(".git")
+  remote ||= user
 
-  if options[:private]
-    git "remote add #{user} #{helper.private_url_for_user_and_repo(user, repo)}"
+  if options[:private] || options[:ssh]
+    git "remote add #{remote} #{helper.private_url_for_user_and_repo(user, repo)}"
   else
-    git "remote add #{user} #{helper.public_url_for_user_and_repo(user, repo)}"
+    git "remote add #{remote} #{helper.public_url_for_user_and_repo(user, repo)}"
   end
 end
 

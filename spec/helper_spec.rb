@@ -191,15 +191,29 @@ remote.nex3.url git://github.com/nex3/github-gem.git
   end
 
   helper :open do
-    it "should launch the URL" do
-      Launchy::Browser.next_instance.tap do |browser|
-        browser.should_receive(:my_os_family).any_number_of_times.and_return :windows # avoid forking
-        if RUBY_PLATFORM =~ /mingw|mswin/
-          browser.should_receive(:system).with("start http://www.google.com")
-        else
-          browser.should_receive(:system).with("/usr/bin/open http://www.google.com")
+    it "should launch the URL when Launchy is installed" do
+      begin
+        require 'launchy'
+        @helper.should_receive(:gem).with('launchy')
+        Launchy::Browser.next_instance.tap do |browser|
+          browser.should_receive(:my_os_family).any_number_of_times.and_return :windows # avoid forking
+          if RUBY_PLATFORM =~ /mingw|mswin/
+            browser.should_receive(:system).with("start http://www.google.com")
+          else
+            browser.should_receive(:system).with("/usr/bin/open http://www.google.com")
+          end
+          # @helper.should_receive(:has_launchy?).and_return { |blk| blk.call }
+          Launchy::Browser.next_instance.should_receive(:visit).with("http://www.google.com")
+          @helper.open "http://www.google.com"
+        rescue LoadError
+          fail "Launchy is required for this spec"
         end
       end
+    end
+
+    it "should fail when Launchy is not installed" do
+      @helper.should_receive(:gem).with('launchy').and_raise(Gem::LoadError)
+      STDERR.should_receive(:puts).with("Sorry, you need to install launchy: `gem install launchy`")
       @helper.open "http://www.google.com"
     end
   end

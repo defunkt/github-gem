@@ -1,7 +1,7 @@
 bin/github
 commands/commands.rb
 commands/helpers.rb
-lib/extensions.rb
+lib/github/extensions.rb
 lib/github/command.rb
 lib/github/helper.rb
 lib/github.rb

@@ -11,7 +11,7 @@ begin
     p.url          = "http://github.com/"
     p.author       = ['Chris Wanstrath', 'Kevin Ballard']
     p.email        = "chris@ozmm.org"
-    p.dependencies = ["launchy"]
+    # p.dependencies = ["launchy"]
   end
 
 rescue LoadError => boom
@@ -26,6 +26,10 @@ begin
   Spec::Rake::SpecTask.new("spec") do |t|
     t.spec_files = FileList['spec/**/*_spec.rb']
     t.spec_opts = ['--color']
+  end
+
+  task :test do
+    Rake::Task['spec'].invoke
   end
 
   Spec::Rake::SpecTask.new("rcov_spec") do |t|

@@ -27,11 +27,16 @@ describe GitHub::Command do
     hi.out?.should be(true)
     hi.error?.should be(false)
     hi.command.should == "echo hi"
-    bye = @command.sh("echo bye >&2")
+    if RUBY_PLATFORM =~ /mingw|mswin/
+      command = "cmd /c echo bye >&2"
+    else
+      command = "echo bye >&2" 
+    end
+    bye = @command.sh(command)
     bye.should == "bye"
     bye.out?.should be(false)
     bye.error?.should be(true)
-    bye.command.should == "echo bye >&2"
+    bye.command.should == command
   end
 
   it "should return the results of a git operation" do

@@ -24,14 +24,33 @@ describe GitHub::Command do
     unguard(Kernel, :exec)
     hi = @command.sh("echo hi")
     hi.should == "hi"
+
+    hi.out.should == "hi"
     hi.out?.should be(true)
+
+    hi.error.should be_nil
     hi.error?.should be(false)
     hi.command.should == "echo hi"
+
     bye = @command.sh("echo bye >&2")
     bye.should == "bye"
+
+    bye.out.should be_nil
     bye.out?.should be(false)
+
+    bye.error.should == "bye"
     bye.error?.should be(true)
     bye.command.should == "echo bye >&2"
+
+    hi_and_bye = @command.sh("echo '$stdout.write(\"hi\") && $stderr.write(\"bye\")' | ruby")
+    hi_and_bye.should == "hi"
+
+    hi_and_bye.out.should == "hi"
+    hi_and_bye.out?.should be(true)
+
+    hi_and_bye.error.should == "bye"
+    hi_and_bye.error?.should be(true)
+    hi_and_bye.command.should == "echo '$stdout.write(\"hi\") && $stderr.write(\"bye\")' | ruby"
   end
 
   it "should return the results of a git operation" do

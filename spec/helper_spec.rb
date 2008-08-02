@@ -149,6 +149,65 @@ remote.nex3.url git://github.com/nex3/github-gem.git
     end
   end
 
+  helper :remote_branches_for do
+    it "should return a list of remote branches for defunkt" do
+      @helper.should_receive(:`).with('git ls-remote -h defunkt 2> /dev/null').and_return <<-EOF
+fe1f852f3cf719c7cd86147031732f570ad89619	refs/heads/kballard/master
+f8a6bb42b0ed43ac7336bfcda246e59a9da949d6	refs/heads/master
+624d9c2f742ff24a79353a7e02bf289235c72ff1	refs/heads/restart
+      EOF
+      @helper.remote_branches_for("defunkt").should == {
+        "master"          => "f8a6bb42b0ed43ac7336bfcda246e59a9da949d6",
+        "kballard/master" => "fe1f852f3cf719c7cd86147031732f570ad89619",
+        "restart"         => "624d9c2f742ff24a79353a7e02bf289235c72ff1"
+      }
+    end
+
+    it "should return an empty list of remote branches for nex3 and nex4" do
+      # the following use-case should never happen as the -h parameter should only return heads on remote branches
+      # however, we are testing this particular case to verify how remote_branches_for would respond if random
+      # git results
+      @helper.should_receive(:`).with('git ls-remote -h nex3 2> /dev/null').and_return <<-EOF
+fe1f852f3cf719c7cd86147031732f570ad89619	HEAD
+a1a392369e5b7842d01cce965272d4b96c2fd343	refs/tags/v0.1.3
+624d9c2f742ff24a79353a7e02bf289235c72ff1	refs/remotes/origin/master
+random
+	random_again
+      EOF
+      @helper.remote_branches_for("nex3").should be_empty
+
+      @helper.should_receive(:`).with('git ls-remote -h nex4 2> /dev/null').and_return ""
+      @helper.remote_branches_for("nex4").should be_empty
+    end
+  end
+
+  helper :remote_branch? do
+    it "should return whether the branch exists at the remote user" do
+      @helper.should_receive(:remote_branches_for).with("defunkt").any_number_of_times.and_return({
+        "master"          => "f8a6bb42b0ed43ac7336bfcda246e59a9da949d6",
+        "kballard/master" => "fe1f852f3cf719c7cd86147031732f570ad89619",
+        "restart"         => "624d9c2f742ff24a79353a7e02bf289235c72ff1"
+      })
+      @helper.remote_branch?("defunkt", "master").should == true
+      @helper.remote_branch?("defunkt", "not_master").should == false
+    end
+  end
+
+  helper :branch_dirty? do
+    it "should return false" do
+      @helper.should_receive(:`).with(/^git diff/).any_number_of_times
+      $?.should_receive(:exitstatus).and_return(0, 0)
+      @helper.branch_dirty?.should == false
+    end
+
+    it "should return true" do
+      @helper.should_receive(:`).with(/^git diff/).any_number_of_times
+      $?.should_receive(:exitstatus).and_return(1, 1, 0, 1)
+      @helper.branch_dirty?.should == true
+      @helper.branch_dirty?.should == true
+    end
+  end
+
   helper :tracking do
     it "should return a list of remote/user_or_url pairs" do
       @helper.should_receive(:remotes).and_return({

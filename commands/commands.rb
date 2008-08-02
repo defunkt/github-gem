@@ -68,14 +68,16 @@ command :pull do |user, branch|
   user, branch = user.split("/", 2) if branch.nil?
   branch ||= 'master'
   GitHub.invoke(:track, user) unless helper.tracking?(user)
-  
-  if options[:merge]
-    git_exec "pull #{user} #{branch}"
-  else
+
+  die "Unknown branch (#{branch}) specified" unless helper.remote_branch?(user, branch)
+  die "Unable to switch branches, your current branch has uncommitted changes" if helper.branch_dirty?
+
+  unless options[:merge]
     puts "Switching to #{user}/#{branch}"
-    git "checkout #{user}/#{branch}" if git("checkout -b #{user}/#{branch}").error?
-    git_exec "pull #{user} #{branch}"
+    git "update-ref refs/heads/#{user}/#{branch} HEAD"
+    git "checkout #{user}/#{branch}"
   end
+  git_exec "pull #{user} #{branch}"
 end
 
 desc "Clone a repo."

@@ -44,6 +44,30 @@ helper :remotes do
   end
 end
 
+helper :remote_branches_for do |user|
+  user = "." if user.nil? || user.strip.empty?
+  `git ls-remote -h #{user} 2> /dev/null`.split(/\n/).inject({}) do |memo, line|
+    hash, head = line.split(/\t/, 2)
+    head = head[%r{refs/heads/(.+)$},1] unless head.nil?
+    memo[head] = hash unless head.nil?
+    memo
+  end
+end
+
+helper :remote_branch? do |user, branch|
+  remote_branches_for(user).key?(branch)
+end
+
+helper :branch_dirty? do
+  # see if there are any cached or tracked files that have been modified
+  # originally, we were going to use git-ls-files but that could only
+  # report modified track files...not files that have been staged
+  # for committal
+  `git diff --name-only --quiet --cached` 
+  `git diff --name-only --quiet` if $?.exitstatus == 0
+  $?.exitstatus == 1
+end
+
 helper :tracking do
   remotes.inject({}) do |memo, (name, url)|
     if ur = user_and_repo_from(url)

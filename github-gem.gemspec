@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.email = %q{chris@ozmm.org}
   s.executables = ["github"]
   s.extra_rdoc_files = ["bin/github", "lib/github/extensions.rb", "lib/github/command.rb", "lib/github/helper.rb", "lib/github.rb", "LICENSE", "README"]
-  s.files = ["bin/github", "commands/commands.rb", "commands/helpers.rb", "lib/github/extensions.rb", "lib/github/command.rb", "lib/github/helper.rb", "lib/github.rb", "LICENSE", "Manifest", "README", "spec/command_spec.rb", "spec/extensions_spec.rb", "spec/github_spec.rb", "spec/helper_spec.rb", "spec/spec_helper.rb", "spec/ui_spec.rb", "spec/windoze_spec.rb", "github.gemspec"]
+  s.files = ["bin/github", "commands/commands.rb", "commands/helpers.rb", "lib/github/extensions.rb", "lib/github/command.rb", "lib/github/helper.rb", "lib/github.rb", "LICENSE", "Manifest", "README", "spec/command_spec.rb", "spec/extensions_spec.rb", "spec/github_spec.rb", "spec/helper_spec.rb", "spec/spec_helper.rb", "spec/ui_spec.rb", "spec/windoze_spec.rb", "github-gem.gemspec"]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/}
   s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "Github", "--main", "README"]

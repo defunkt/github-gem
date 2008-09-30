@@ -17,7 +17,7 @@ Run it:
 
 
 =============
-Pulling Changes
+Pulling Upstream Changes
 =============
 
 Let's say you just forked `github-gem` on GitHub from defunkt.
@@ -44,6 +44,40 @@ master branch, use the `merge` flag:
 
   $ github pull --merge defunkt
 
+
+==========
+Fetching and Evaluation Downstream Changes
+==========
+
+If you are the maintainer of a project, you will often need to fetch commits
+from other developers, evaluate and/or test them, then merge them into the
+project.
+
+Let's say you are 'defunkt' and 'mojombo' has forked your 'github-gem' repo,
+made some changes and issues you a pull request for his 'master' branch.
+
+From the root of the project, you can do:
+
+  $ github fetch mojombo master
+  
+This will leave you in the 'mojombo/master' branch after fetching his commits.
+Your local 'mojombo/master' branch is now at the exact same place as mojombo's 
+'master' branch. You can now run tests or evaluate the code for awesomeness.
+
+If mojombo's changes are good, you'll want to merge your 'master' (or another
+branch) into those changes so you can retest post-integration:
+
+  $ git merge master
+  
+Test/analyze again and if everything is ok:
+  
+  $ git checkout master
+  $ git merge mojombo/master
+  
+The latter command will be a fast-forward merge since you already did the
+real merge previously.
+
+
 ==========
 Contributors
 ==========
@@ -52,3 +86,4 @@ Contributors
 - maddox
 - halorgium
 - kballard
+- mojombo

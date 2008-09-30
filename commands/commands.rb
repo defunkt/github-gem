@@ -61,6 +61,17 @@ command :track do |remote, user|
   end
 end
 
+desc "Fetch from a remote to a local branch."
+command :fetch do |user, branch|
+  die "Specify a user to pull from" if user.nil?
+  user, branch = user.split("/", 2) if branch.nil?
+  branch ||= 'master'
+  GitHub.invoke(:track, user) unless helper.tracking?(user)
+  
+  git "fetch #{user} #{branch}:refs/remotes/#{user}/#{branch}"
+  git_exec "checkout -b #{user}/#{branch} refs/remotes/#{user}/#{branch}"
+end
+
 desc "Pull from a remote."
 flags :merge => "Automatically merge remote's changes into your master."
 command :pull do |user, branch|

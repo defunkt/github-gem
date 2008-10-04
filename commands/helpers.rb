@@ -36,7 +36,7 @@ end
 
 helper :remotes do
   regexp = '^remote\.(.+)\.url$'
-  `git config --get-regexp '#{regexp}'`.split(/\n/).inject({}) do |memo, line|
+  `git config --get-regexp '#{regexp}'`.split("\n").inject({}) do |memo, line|
     name_string, url = line.split(/ /, 2)
     m, name = *name_string.match(/#{regexp}/)
     memo[name.to_sym] = url
@@ -45,13 +45,12 @@ helper :remotes do
 end
 
 helper :remote_branches_for do |user|
-  user = "." if user.nil? || user.strip.empty?
   `git ls-remote -h #{user} 2> /dev/null`.split(/\n/).inject({}) do |memo, line|
     hash, head = line.split(/\t/, 2)
     head = head[%r{refs/heads/(.+)$},1] unless head.nil?
     memo[head] = hash unless head.nil?
     memo
-  end
+  end if !(user.nil? || user.strip.empty?)
 end
 
 helper :remote_branch? do |user, branch|
@@ -63,9 +62,7 @@ helper :branch_dirty? do
   # originally, we were going to use git-ls-files but that could only
   # report modified track files...not files that have been staged
   # for committal
-  `git diff --name-only --quiet --cached` 
-  `git diff --name-only --quiet` if $?.exitstatus == 0
-  $?.exitstatus == 1
+  !(system("git diff --quiet 2>/dev/null") or !system("git diff --cached --quiet 2>/dev/null"))
 end
 
 helper :tracking do

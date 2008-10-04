@@ -150,6 +150,10 @@ remote.nex3.url git://github.com/nex3/github-gem.git
   end
 
   helper :remote_branches_for do
+    it "should return an empty list because no user was provided" do
+      @helper.remote_branches_for(nil).should == nil
+    end
+
     it "should return a list of remote branches for defunkt" do
       @helper.should_receive(:`).with('git ls-remote -h defunkt 2> /dev/null').and_return <<-EOF
 fe1f852f3cf719c7cd86147031732f570ad89619	refs/heads/kballard/master
@@ -195,16 +199,14 @@ random
 
   helper :branch_dirty? do
     it "should return false" do
-      @helper.should_receive(:`).with(/^git diff/).any_number_of_times
-      $?.should_receive(:exitstatus).and_return(0, 0)
-      @helper.branch_dirty?.should == false
+      @helper.should_receive(:system).with(/^git diff/).and_return(0, 0)
+      @helper.branch_dirty?.should == 0
     end
 
     it "should return true" do
-      @helper.should_receive(:`).with(/^git diff/).any_number_of_times
-      $?.should_receive(:exitstatus).and_return(1, 1, 0, 1)
-      @helper.branch_dirty?.should == true
-      @helper.branch_dirty?.should == true
+      @helper.should_receive(:system).with(/^git diff/).and_return(1, 1, 0, 1)
+      @helper.branch_dirty?.should == 1
+      @helper.branch_dirty?.should == 1
     end
   end
 

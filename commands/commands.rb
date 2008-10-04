@@ -68,8 +68,13 @@ command :fetch do |user, branch|
   branch ||= 'master'
   GitHub.invoke(:track, user) unless helper.tracking?(user)
   
+  die "Unknown branch (#{branch}) specified" unless helper.remote_branch?(user, branch)
+  die "Unable to switch branches, your current branch has uncommitted changes" if helper.branch_dirty?
+
+  puts "Fetching #{user}/#{branch}"
   git "fetch #{user} #{branch}:refs/remotes/#{user}/#{branch}"
-  git_exec "checkout -b #{user}/#{branch} refs/remotes/#{user}/#{branch}"
+  git "update-ref refs/heads/#{user}/#{branch} refs/remotes/#{user}/#{branch}"
+  git_exec "checkout #{user}/#{branch}"
 end
 
 desc "Pull from a remote."

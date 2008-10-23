@@ -421,7 +421,7 @@ EOF
       if @stdout_mock.nil?
         output = ""
         @stdout_mock = DeferredMock.new(output)
-        STDOUT.should_receive(:write).any_number_of_times do |str|
+        $stdout.should_receive(:write).any_number_of_times do |str|
           output << str
         end
       end
@@ -432,7 +432,7 @@ EOF
       if @stderr_mock.nil?
         output = ""
         @stderr_mock = DeferredMock.new(output)
-        STDERR.should_receive(:write).any_number_of_times do |str|
+        $stderr.should_receive(:write).any_number_of_times do |str|
           output << str
         end
       end

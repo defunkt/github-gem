@@ -34,6 +34,35 @@ helper :url_for do |remote|
   `git config --get remote.#{remote}.url`.chomp
 end
 
+helper :local_heads do
+  `git show-ref --heads --hash`.split("\n")
+end
+
+helper :get_commits do |rev_array|
+  list = rev_array.join(' ')
+  `git log --pretty=format:"%H::%ae::%s" --no-merges #{list}`.split("\n").map { |a| a.split('::') }
+end
+
+helper :get_cherry do |branch|
+  `git cherry HEAD #{branch} | git name-rev --stdin`.split("\n").map { |a| a.split(' ') }
+end
+
+helper :print_commits do |cherries, commits|  
+  cherries.sort! { |a, b| a[2] <=> b[2] }
+  shown_commits = {}
+  cherries.each do |cherry|
+    status, sha, ref_name = cherry
+    next if shown_commits[sha]
+    ref_name = ref_name.gsub('remotes/', '')
+    commit = commits.assoc(sha)
+    if status == '+' && commit
+      puts [sha[0,6], ref_name.ljust(25), commit[1][0,20].ljust(21), commit[2][0, 36]].join(" ")
+    end
+    shown_commits[sha] = true
+  end
+  puts 
+end
+
 helper :remotes do
   regexp = '^remote\.(.+)\.url$'
   `git config --get-regexp '#{regexp}'`.split(/\n/).inject({}) do |memo, line|
@@ -105,6 +134,11 @@ helper :network_page_for do |user|
   "https://github.com/#{user}/#{project}/network"
 end
 
+helper :network_meta_for do |user|
+  "http://github.com/#{user}/#{project}/network_meta"
+end
+
+
 helper :has_launchy? do |blk|
   begin
     gem 'launchy'
@@ -119,5 +153,19 @@ helper :open do |url|
   has_launchy? proc {
     Launchy::Browser.new.visit url
   }
+end
+
+helper :print_network_cherry_help do
+  puts "
+=========================================================================================
+These are all the commits that other people have pushed that you have not
+applied or ignored yet. (see 'github ignore')  
+
+* You can run 'github fetch user/branch' to pull one into a local branch for testing
+* You can run 'git cherry-pick [SHA]' to apply a single patch
+* Or, you can run 'git merge user/branch' to merge a commit and everything underneath it.
+=========================================================================================
+
+"
 end
 

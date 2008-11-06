@@ -47,6 +47,11 @@ module GitHub
       Shell.new(*command).run
     end
 
+    def get_network_data(user)
+      puts "gathering metadata from github...\n\n"
+      data = JSON.parse(open(helper.network_meta_for(user)).read)
+    end
+    
     def die(message)
       puts "=> #{message}"
       exit!

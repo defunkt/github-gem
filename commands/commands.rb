@@ -20,12 +20,58 @@ command :browse do |user, branch|
   end
 end
 
-desc "Open the network page for this repo in a web browser."
-command :network do |user|
-  if helper.project
-    user ||= helper.owner
+desc "Project network tools - sub-commands : web [user], list, fetch, commits [user]"
+command :network do |command, user|
+  return if !helper.project
+  user ||= helper.owner
+
+  case command
+  when 'web'
     helper.open helper.network_page_for(user)
+  when 'list'
+    data = get_network_data(user)
+    data['users'].each do |hsh|
+      puts [ hsh['name'].ljust(20), hsh['heads'].map {|a| a['name']}.uniq.join(', ') ].join(' ')
+    end
+  when 'fetch'
+    # fetch each remote we don't have
+    data = get_network_data(user)
+    data['users'].each do |hsh|
+      u = hsh['name']
+      GitHub.invoke(:track, u) unless helper.tracking?(u)
+      puts "fetching #{u}"
+      GitHub.invoke(:fetch_all, u)
+    end
+  when 'commits'
+    # show commits we don't have yet
+    # !! check that our heads are the same as the remote heads (multi-masters?)
+    ids = []
+    data = get_network_data(user)
+    data['users'].each do |hsh|
+      u = hsh['name']
+      ids += hsh['heads'].map { |a| a['id'] }
+    end
+    ids.uniq!
+    
+    local_heads = helper.local_heads
+    local_heads_not = local_heads.map { |a| "^#{a}"}
+    looking_for = (ids - local_heads) + local_heads_not
+    commits = helper.get_commits(looking_for)
+    
+    cherry = []
+    ids.each do |id|
+      cherry += helper.get_cherry(id)
+    end
+    if cherry.size > 0
+      helper.print_network_cherry_help
+      helper.print_commits(cherry, commits)
+    else
+      puts "no unapplied commits"
+    end
+  else
+    puts 'please provide a command'
   end
+  
 end
 
 desc "Info about this project."
@@ -61,6 +107,12 @@ command :track do |remote, user|
   end
 end
 
+desc "Fetch all refs from a user"
+command :fetch_all do |user|
+  GitHub.invoke(:track, user) unless helper.tracking?(user)
+  git "fetch #{user}"
+end
+
 desc "Fetch from a remote to a local branch."
 command :fetch do |user, branch|
   die "Specify a user to pull from" if user.nil?
@@ -69,7 +121,7 @@ command :fetch do |user, branch|
   GitHub.invoke(:track, user) unless helper.tracking?(user)
   
   git "fetch #{user} #{branch}:refs/remotes/#{user}/#{branch}"
-  git_exec "checkout -b #{user}/#{branch} refs/remotes/#{user}/#{branch}"
+  git_exec "checkout -b #{user}/#{branch} refs/remotes/#{user}/#{branch}" 
 end
 
 desc "Pull from a remote."

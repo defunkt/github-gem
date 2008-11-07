@@ -54,24 +54,25 @@ command :network do |command, user|
     data = get_network_data(user)
     data['users'].each do |hsh|
       u = hsh['name']
-      ids += hsh['heads'].map { |a| a['id'] }
+      user_ids = hsh['heads'].map { |a| a['id'] }
+      user_ids.each do |id|
+        if !helper.has_commit?(id)
+          GitHub.invoke(:track, u) unless helper.tracking?(u)
+          puts "fetching #{u}"
+          GitHub.invoke(:fetch_all, u)
+        end
+      end
+      ids += user_ids
     end
     ids.uniq!
     
     # check that we have all these shas locally
-    ids.each do |id|
-      if !helper.has_commit?(id)
-        GitHub.invoke(:track, u) unless helper.tracking?(u)
-        puts "fetching #{u}"
-        GitHub.invoke(:fetch_all, u)
-      end
-    end
-    
+        
     local_heads = helper.local_heads
     local_heads_not = local_heads.map { |a| "^#{a}"}
     looking_for = (ids - local_heads) + local_heads_not
     commits = helper.get_commits(looking_for)
-    
+        
     cherry = []
     ids.each do |id|
       cherry += helper.get_cherry(id)

@@ -39,7 +39,7 @@ helper :local_heads do
 end
 
 helper :has_commit? do |sha|
-  `git rev-parse #{sha}`
+  `git show #{sha} >/dev/null 2>/dev/null`
   $?.exitstatus == 0
 end
 
@@ -79,7 +79,7 @@ helper :ignore_shas do |shas|
 end
 
 helper :get_commits do |rev_array|
-  list = rev_array.join(' ')
+  list = rev_array.select { |a| has_commit?(a) }.join(' ')
   `git log --pretty=format:"%H::%ae::%s::%ar::%ad" --no-merges #{list}`.split("\n").map { |a| a.split('::') }
 end
 

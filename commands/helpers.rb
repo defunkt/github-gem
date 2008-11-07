@@ -38,6 +38,40 @@ helper :local_heads do
   `git show-ref --heads --hash`.split("\n")
 end
 
+helper :has_commit? do |sha|
+  `git rev-parse #{sha}`
+  $?.exitstatus == 0
+end
+
+helper :resolve_commits do |treeish|
+  if treeish.match(/\.\./)
+    commits = `git rev-list #{treeish}`.split("\n")
+  else
+    commits = `git rev-parse #{treeish}`.split("\n")
+  end
+  commits.select { |a| a.size == 40 } # only the shas, not the ^SHAs
+end
+
+helper :ignore_file_path do
+  dir = `git rev-parse --git-dir`.chomp
+  File.join(dir, 'ignore-shas')
+end
+
+helper :ignore_sha_array do
+  File.open( ignore_file_path ) { |yf| YAML::load( yf ) } rescue {}
+end
+
+helper :ignore_shas do |shas|
+  ignores = ignore_sha_array
+  shas.each do |sha|
+    puts 'ignoring ' + sha
+    ignores[sha] = true
+  end
+  File.open( ignore_file_path, 'w' ) do |out|
+    YAML.dump( ignores, out )
+  end
+end
+
 helper :get_commits do |rev_array|
   list = rev_array.join(' ')
   `git log --pretty=format:"%H::%ae::%s::%ar" --no-merges #{list}`.split("\n").map { |a| a.split('::') }
@@ -47,12 +81,13 @@ helper :get_cherry do |branch|
   `git cherry HEAD #{branch} | git name-rev --stdin`.split("\n").map { |a| a.split(' ') }
 end
 
-helper :print_commits do |cherries, commits|  
+helper :print_commits do |cherries, commits|
+  ignores = ignore_sha_array
   cherries.sort! { |a, b| a[2] <=> b[2] }
   shown_commits = {}
   cherries.each do |cherry|
     status, sha, ref_name = cherry
-    next if shown_commits[sha]
+    next if shown_commits[sha] || ignores[sha]
     ref_name = ref_name.gsub('remotes/', '')
     commit = commits.assoc(sha)
     if status == '+' && commit
@@ -155,15 +190,43 @@ helper :open do |url|
   }
 end
 
+helper :print_network_help do
+  puts "
+You have to provide a command :
+
+    web [user]     - opens your web browser to the network graph page for this
+                     project, or for the graph page for [user] if provided
+                 
+    list           - shows the projects in your network that have commits
+                     that you have not pulled in yet, and branch names 
+                     
+    fetch          - adds all projects in your network as remotes and fetches
+                     any objects from them that you don't have yet
+  
+    commits #[user] - will show you a list of all commits in your network that
+                     you have not ignored or have not merged or cherry-picked.
+                     This will automatically fetch objects you don't have yet.
+                     
+    # --after (date)
+    # --before (date)
+    # --author (email)
+    # --clean
+    # --only-shas
+    
+    # <-- stuff not implemented quite yet
+"
+end
+
 helper :print_network_cherry_help do
   puts "
 =========================================================================================
 These are all the commits that other people have pushed that you have not
-applied or ignored yet. (see 'github ignore')  
+applied or ignored yet (see 'github ignore'). Some things you might want to do:
 
-* You can run 'github fetch user/branch' to pull one into a local branch for testing
+* You can run 'github fetch user/branch' (sans '~N') to pull into a local branch for testing
 * You can run 'git cherry-pick [SHA]' to apply a single patch
-* Or, you can run 'git merge user/branch' to merge a commit and everything underneath it.
+* You can run 'git merge user/branch' to merge a commit and all the '~N' variants.
+* You can ignore all of a projects commits with 'github ignore ..user/branch'
 =========================================================================================
 
 "

@@ -53,6 +53,15 @@ command :network do |command, user|
     end
     ids.uniq!
     
+    # check that we have all these shas locally
+    ids.each do |id|
+      if !helper.has_commit?(id)
+        GitHub.invoke(:track, u) unless helper.tracking?(u)
+        puts "fetching #{u}"
+        GitHub.invoke(:fetch_all, u)
+      end
+    end
+    
     local_heads = helper.local_heads
     local_heads_not = local_heads.map { |a| "^#{a}"}
     looking_for = (ids - local_heads) + local_heads_not
@@ -69,9 +78,15 @@ command :network do |command, user|
       puts "no unapplied commits"
     end
   else
-    puts 'please provide a command'
+    helper.print_network_help
   end
-  
+end
+
+desc "Ignore a SHA (from 'github network commits')"
+command :ignore do |sha|
+  commits = helper.resolve_commits(sha)
+  # add to .git/ignore-shas file
+  helper.ignore_shas(commits)
 end
 
 desc "Info about this project."

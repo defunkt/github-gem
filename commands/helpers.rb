@@ -122,7 +122,7 @@ helper :print_commits do |cherries, commits, options|
 end
 
 helper :applies_cleanly do |sha|
-  `git diff #{sha} | git apply --check >/dev/null 2>/dev/null`
+  `git diff ...#{sha} | git apply --check >/dev/null 2>/dev/null`
   $?.exitstatus == 0
 end
 

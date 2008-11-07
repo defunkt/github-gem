@@ -20,7 +20,13 @@ command :browse do |user, branch|
   end
 end
 
-desc "Project network tools - sub-commands : web [user], list, fetch, commits [user]"
+desc "Project network tools - sub-commands : web [user], list, fetch, commits"
+flags :after => "Only show commits after a certain date"
+flags :before => "Only show commits before a certain date"
+flags :shas => "Only show shas"
+flags :project => "Filter commits on a certain project"
+flags :author => "Filter commits on a email address of author"
+flags :applies => "Filter commits to patches that apply cleanly"
 command :network do |command, user|
   return if !helper.project
   user ||= helper.owner
@@ -44,7 +50,6 @@ command :network do |command, user|
     end
   when 'commits'
     # show commits we don't have yet
-    # !! check that our heads are the same as the remote heads (multi-masters?)
     ids = []
     data = get_network_data(user)
     data['users'].each do |hsh|
@@ -72,8 +77,8 @@ command :network do |command, user|
       cherry += helper.get_cherry(id)
     end
     if cherry.size > 0
-      helper.print_network_cherry_help
-      helper.print_commits(cherry, commits)
+      helper.print_network_cherry_help if !options[:shas]
+      helper.print_commits(cherry, commits, options)
     else
       puts "no unapplied commits"
     end
@@ -85,8 +90,7 @@ end
 desc "Ignore a SHA (from 'github network commits')"
 command :ignore do |sha|
   commits = helper.resolve_commits(sha)
-  # add to .git/ignore-shas file
-  helper.ignore_shas(commits)
+  helper.ignore_shas(commits)             # add to .git/ignore-shas file
 end
 
 desc "Info about this project."

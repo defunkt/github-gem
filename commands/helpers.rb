@@ -44,10 +44,16 @@ helper :has_commit? do |sha|
 end
 
 helper :resolve_commits do |treeish|
-  if treeish.match(/\.\./)
-    commits = `git rev-list #{treeish}`.split("\n")
+  if treeish
+    if treeish.match(/\.\./)
+      commits = `git rev-list #{treeish}`.split("\n")
+    else
+      commits = `git rev-parse #{treeish}`.split("\n")
+    end
   else
-    commits = `git rev-parse #{treeish}`.split("\n")
+    # standard in
+    puts 'reading from stdin...'
+    commits = $stdin.read.split("\n") 
   end
   commits.select { |a| a.size == 40 } # only the shas, not the ^SHAs
 end
@@ -74,28 +80,50 @@ end
 
 helper :get_commits do |rev_array|
   list = rev_array.join(' ')
-  `git log --pretty=format:"%H::%ae::%s::%ar" --no-merges #{list}`.split("\n").map { |a| a.split('::') }
+  `git log --pretty=format:"%H::%ae::%s::%ar::%ad" --no-merges #{list}`.split("\n").map { |a| a.split('::') }
 end
 
 helper :get_cherry do |branch|
   `git cherry HEAD #{branch} | git name-rev --stdin`.split("\n").map { |a| a.split(' ') }
 end
 
-helper :print_commits do |cherries, commits|
+# --project (user || user/branch) 
+# --author (email)
+# --after (date)
+# --before (date)
+# --shas
+# --clean         (filter to patches that still apply cleanly)
+helper :print_commits do |cherries, commits, options|
   ignores = ignore_sha_array
   cherries.sort! { |a, b| a[2] <=> b[2] }
   shown_commits = {}
+  before = Date.parse(options[:before]) if options[:before] rescue puts 'cant parse before date'
+  after = Date.parse(options[:after]) if options[:after] rescue puts 'cant parse after date'
   cherries.each do |cherry|
     status, sha, ref_name = cherry
     next if shown_commits[sha] || ignores[sha]
+    next if options[:project] && !ref_name.match(Regexp.new(options[:project]))
     ref_name = ref_name.gsub('remotes/', '')
     commit = commits.assoc(sha)
     if status == '+' && commit
-      puts [sha[0,6], ref_name.ljust(25), commit[1][0,20].ljust(21), commit[2][0, 36].ljust(38), commit[3]].join(" ")
+      next if options[:author] && !commit[1].match(Regexp.new(options[:author]))
+      next if options[:before] && before && (before < Date.parse(commit[4])) 
+      next if options[:after] && after && (after > Date.parse(commit[4])) 
+      next if options[:applies] && !applies_cleanly(sha)
+      if options[:shas]
+        puts sha
+      else
+        puts [sha[0,6], ref_name.ljust(25), commit[1][0,20].ljust(21), 
+            commit[2][0, 36].ljust(38), commit[3]].join(" ")
+      end
     end
     shown_commits[sha] = true
   end
-  puts 
+end
+
+helper :applies_cleanly do |sha|
+  `git diff #{sha} | git apply --check >/dev/null 2>/dev/null`
+  $?.exitstatus == 0
 end
 
 helper :remotes do
@@ -203,17 +231,16 @@ You have to provide a command :
     fetch          - adds all projects in your network as remotes and fetches
                      any objects from them that you don't have yet
   
-    commits #[user] - will show you a list of all commits in your network that
+    commits        - will show you a list of all commits in your network that
                      you have not ignored or have not merged or cherry-picked.
                      This will automatically fetch objects you don't have yet.
-                     
-    # --after (date)
-    # --before (date)
-    # --author (email)
-    # --clean
-    # --only-shas
-    
-    # <-- stuff not implemented quite yet
+                   
+      --project (user/branch)  - only show projects that match string
+      --author (email)         - only show projects that match string
+      --after (date)           - only show commits after date
+      --before (date)          - only show commits before date
+      --shas                   - only print shas (can pipe through 'github ignore')
+      --applies                - filter to patches that still apply cleanly
 "
 end
 

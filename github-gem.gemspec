@@ -1,11 +1,11 @@
 Gem::Specification.new do |s|
   s.name = %q{github}
-  s.version = "0.1.4"
+  s.version = "0.2.0"
 
   s.specification_version = 2 if s.respond_to? :specification_version=
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Chris Wanstrath, Kevin Ballard"]
+  s.authors = ["Chris Wanstrath, Kevin Ballard, Scott Chacon"]
   s.date = %q{2008-05-18}
   s.default_executable = %q{github}
   s.description = %q{The official `github` command line helper for simplifying your GitHub experience.}

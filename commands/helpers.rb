@@ -40,7 +40,7 @@ end
 
 helper :get_commits do |rev_array|
   list = rev_array.join(' ')
-  `git log --pretty=format:"%H::%ae::%s" --no-merges #{list}`.split("\n").map { |a| a.split('::') }
+  `git log --pretty=format:"%H::%ae::%s::%ar" --no-merges #{list}`.split("\n").map { |a| a.split('::') }
 end
 
 helper :get_cherry do |branch|
@@ -56,7 +56,7 @@ helper :print_commits do |cherries, commits|
     ref_name = ref_name.gsub('remotes/', '')
     commit = commits.assoc(sha)
     if status == '+' && commit
-      puts [sha[0,6], ref_name.ljust(25), commit[1][0,20].ljust(21), commit[2][0, 36]].join(" ")
+      puts [sha[0,6], ref_name.ljust(25), commit[1][0,20].ljust(21), commit[2][0, 36].ljust(38), commit[3]].join(" ")
     end
     shown_commits[sha] = true
   end

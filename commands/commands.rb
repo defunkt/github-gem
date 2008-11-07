@@ -27,6 +27,8 @@ flags :shas => "Only show shas"
 flags :project => "Filter commits on a certain project"
 flags :author => "Filter commits on a email address of author"
 flags :applies => "Filter commits to patches that apply cleanly"
+flags :nocache => "Do not use the cached network data"
+flags :cache => "Use the network data even if it's expired"
 command :network do |command, user|
   return if !helper.project
   user ||= helper.owner
@@ -35,13 +37,13 @@ command :network do |command, user|
   when 'web'
     helper.open helper.network_page_for(user)
   when 'list'
-    data = get_network_data(user)
+    data = get_network_data(user, options)
     data['users'].each do |hsh|
       puts [ hsh['name'].ljust(20), hsh['heads'].map {|a| a['name']}.uniq.join(', ') ].join(' ')
     end
   when 'fetch'
     # fetch each remote we don't have
-    data = get_network_data(user)
+    data = get_network_data(user, options)
     data['users'].each do |hsh|
       u = hsh['name']
       GitHub.invoke(:track, u) unless helper.tracking?(u)
@@ -51,7 +53,7 @@ command :network do |command, user|
   when 'commits'
     # show commits we don't have yet
     ids = []
-    data = get_network_data(user)
+    data = get_network_data(user, options)
     data['users'].each do |hsh|
       u = hsh['name']
       user_ids = hsh['heads'].map { |a| a['id'] }

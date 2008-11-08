@@ -3,13 +3,16 @@ require 'github/extensions'
 require 'github/command'
 require 'github/helper'
 require 'rubygems'
+require 'open-uri'
+require 'json'
+require 'yaml'
 
 ##
 # Starting simple.
 #
 # $ github <command> <args>
 #
-#   GitHub.register <command> do |*args|
+#   GitHub.command <command> do |*args|
 #     whatever 
 #   end
 #

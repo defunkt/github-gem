@@ -49,14 +49,14 @@ describe "github" do
 
   # -- network --
   specify "network should open the network page for this repo" do
-    running :network do
+    running :network, 'web' do
       setup_url_for
       @helper.should_receive(:open).once.with("https://github.com/user/project/network")
     end
   end
 
   specify "network defunkt should open the network page for defunkt's fork" do
-    running :network, "defunkt" do
+    running :network, 'web', "defunkt" do
       setup_url_for
       @helper.should_receive(:open).once.with("https://github.com/defunkt/project/network")
     end
@@ -421,7 +421,7 @@ EOF
       if @stdout_mock.nil?
         output = ""
         @stdout_mock = DeferredMock.new(output)
-        STDOUT.should_receive(:write).any_number_of_times do |str|
+        $stdout.should_receive(:write).any_number_of_times do |str|
           output << str
         end
       end
@@ -432,7 +432,7 @@ EOF
       if @stderr_mock.nil?
         output = ""
         @stderr_mock = DeferredMock.new(output)
-        STDERR.should_receive(:write).any_number_of_times do |str|
+        $stderr.should_receive(:write).any_number_of_times do |str|
           output << str
         end
       end

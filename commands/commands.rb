@@ -30,6 +30,7 @@ flags :applies => "Filter commits to patches that apply cleanly"
 flags :nocache => "Do not use the cached network data"
 flags :cache => "Use the network data even if it's expired"
 flags :sort => "How to sort : date(*), branch, author"
+flags :common => "Show common branch point"
 command :network do |command, user|
   return if !helper.project
   user ||= helper.owner

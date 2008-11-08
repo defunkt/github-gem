@@ -87,12 +87,10 @@ helper :get_cherry do |branch|
   `git cherry HEAD #{branch} | git name-rev --stdin`.split("\n").map { |a| a.split(' ') }
 end
 
-# --project (user || user/branch) 
-# --author (email)
-# --after (date)
-# --before (date)
-# --shas
-# --clean         (filter to patches that still apply cleanly)
+helper :get_common do |branch|
+  `git rev-list ..#{branch} --boundary | tail -1 | git name-rev --stdin`.split(' ')[1] rescue 'unknown'
+end
+
 helper :print_commits do |cherries, commits, options|
   ignores = ignore_sha_array
   our_commits = cherries.map { |item| c = commits.assoc(item[1]); [item, c] if c }
@@ -122,8 +120,9 @@ helper :print_commits do |cherries, commits, options|
       if options[:shas]
         puts sha
       else
+        common = options[:common] ? get_common(sha) : ''
         puts [sha[0,6], ref_name.ljust(25), commit[1][0,20].ljust(21), 
-            commit[2][0, 36].ljust(38), commit[3]].join(" ")
+            commit[2][0, 36].ljust(38), commit[3], common].join(" ")
       end
     end
     shown_commits[sha] = true

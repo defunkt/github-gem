@@ -95,16 +95,25 @@ end
 # --clean         (filter to patches that still apply cleanly)
 helper :print_commits do |cherries, commits, options|
   ignores = ignore_sha_array
-  cherries.sort! { |a, b| a[2] <=> b[2] }
+  our_commits = cherries.map { |item| c = commits.assoc(item[1]); [item, c] if c }
+  
+  case options[:sort]
+  when 'branch'
+    our_commits.sort! { |a, b| a[0][2] <=> b[0][2] }
+  when 'author'
+    our_commits.sort! { |a, b| a[1][1] <=> b[1][1] }
+  else
+    our_commits.sort! { |a, b| Date.parse(a[1][4]) <=> Date.parse(b[1][4]) }
+  end
+  
   shown_commits = {}
   before = Date.parse(options[:before]) if options[:before] rescue puts 'cant parse before date'
   after = Date.parse(options[:after]) if options[:after] rescue puts 'cant parse after date'
-  cherries.each do |cherry|
+  our_commits.each do |cherry, commit|
     status, sha, ref_name = cherry
     next if shown_commits[sha] || ignores[sha]
     next if options[:project] && !ref_name.match(Regexp.new(options[:project]))
     ref_name = ref_name.gsub('remotes/', '')
-    commit = commits.assoc(sha)
     if status == '+' && commit
       next if options[:author] && !commit[1].match(Regexp.new(options[:author]))
       next if options[:before] && before && (before < Date.parse(commit[4])) 
@@ -241,6 +250,7 @@ You have to provide a command :
       --before (date)          - only show commits before date
       --shas                   - only print shas (can pipe through 'github ignore')
       --applies                - filter to patches that still apply cleanly
+      --sort                   - how to sort the commits (date, branch, author)
 "
 end
 

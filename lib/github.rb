@@ -3,6 +3,9 @@ require 'github/extensions'
 require 'github/command'
 require 'github/helper'
 require 'rubygems'
+require 'open-uri'
+require 'json'
+require 'yaml'
 
 ##
 # Starting simple.

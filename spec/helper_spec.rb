@@ -255,10 +255,17 @@ random
     it "should launch the URL when Launchy is installed" do
       begin
         require 'launchy'
+
         @helper.should_receive(:gem).with('launchy')
-        # @helper.should_receive(:has_launchy?).and_return { |blk| blk.call }
-        Launchy::Browser.next_instance.should_receive(:visit).with("http://www.google.com")
-        @helper.open "http://www.google.com"
+        Launchy::Browser.next_instance.tap do |browser|
+          browser.should_receive(:my_os_family).any_number_of_times.and_return :windows # avoid forking
+          if RUBY_PLATFORM =~ /mingw|mswin/
+            browser.should_receive(:system).with("start http://www.google.com")
+          else
+            browser.should_receive(:system).with("/usr/bin/open http://www.google.com")
+          end
+          @helper.open "http://www.google.com"
+        end
       rescue LoadError
         fail "Launchy is required for this spec"
       end

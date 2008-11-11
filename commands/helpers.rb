@@ -94,6 +94,7 @@ end
 helper :print_commits do |cherries, commits, options|
   ignores = ignore_sha_array
   our_commits = cherries.map { |item| c = commits.assoc(item[1]); [item, c] if c }
+  our_commits.delete_if { |item| item == nil } 
   
   case options[:sort]
   when 'branch'

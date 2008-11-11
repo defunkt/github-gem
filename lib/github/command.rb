@@ -92,6 +92,9 @@ module GitHub
     end
 
     class Shell < String
+      attr_reader :error
+      attr_reader :out
+
       def initialize(*command)
         @command = command
       end
@@ -99,15 +102,14 @@ module GitHub
       def run
         GitHub.debug "sh: #{command}"
         _, out, err = Open3.popen3(*@command)
-
+        
         out = out.read.strip
         err = err.read.strip
 
-        if out.any?
-          replace @out = out
-        elsif err.any?
-          replace @error = err
-        end
+        replace @error = err if err.any?
+        replace @out = out if out.any?
+
+        self
       end
 
       def command

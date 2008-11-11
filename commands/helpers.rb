@@ -94,6 +94,7 @@ end
 helper :print_commits do |cherries, commits, options|
   ignores = ignore_sha_array
   our_commits = cherries.map { |item| c = commits.assoc(item[1]); [item, c] if c }
+  our_commits.delete_if { |item| item == nil } 
   
   case options[:sort]
   when 'branch'
@@ -138,12 +139,33 @@ end
 
 helper :remotes do
   regexp = '^remote\.(.+)\.url$'
-  `git config --get-regexp '#{regexp}'`.split(/\n/).inject({}) do |memo, line|
+  `git config --get-regexp '#{regexp}'`.split("\n").inject({}) do |memo, line|
     name_string, url = line.split(/ /, 2)
     m, name = *name_string.match(/#{regexp}/)
     memo[name.to_sym] = url
     memo
   end
+end
+
+helper :remote_branches_for do |user|
+  `git ls-remote -h #{user} 2> /dev/null`.split(/\n/).inject({}) do |memo, line|
+    hash, head = line.split(/\t/, 2)
+    head = head[%r{refs/heads/(.+)$},1] unless head.nil?
+    memo[head] = hash unless head.nil?
+    memo
+  end if !(user.nil? || user.strip.empty?)
+end
+
+helper :remote_branch? do |user, branch|
+  remote_branches_for(user).key?(branch)
+end
+
+helper :branch_dirty? do
+  # see if there are any cached or tracked files that have been modified
+  # originally, we were going to use git-ls-files but that could only
+  # report modified track files...not files that have been staged
+  # for committal
+  !(system("git diff --quiet 2>/dev/null") or !system("git diff --cached --quiet 2>/dev/null"))
 end
 
 helper :tracking do

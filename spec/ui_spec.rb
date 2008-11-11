@@ -157,16 +157,16 @@ EOF
     end
   end
 
-  # -- pull --
-  specify "pull should die with no args" do
-    running :pull do
-      @command.should_receive(:die).with("Specify a user to pull from").and_return { raise "Died" }
+  # -- fetch --
+  specify "fetch should die with no args" do
+    running :fetch do
+      @command.should_receive(:die).with("Specify a user to pull from").and_return { raise "Died "}
       self.should raise_error("Died")
     end
   end
 
-  specify "pull defunkt should start tracking defunkt if they're not already tracked" do
-    running :pull, "defunkt" do
+  specify "fetch defunkt should start tracking defunkt if they're not already tracked" do
+    running :fetch, "defunkt" do
       setup_remote(:origin, :user => "user", :ssh => true)
       setup_remote(:external, :url => "home:/path/to/project.git")
       GitHub.should_receive(:invoke).with(:track, "defunkt").and_return { raise "Tracked" }
@@ -174,56 +174,98 @@ EOF
     end
   end
 
-  specify "pull defunkt should create defunkt/master and pull from the defunkt remote" do
-    running :pull, "defunkt" do
+  specify "fetch defunkt should create defunkt/master and fetch from the defunkt remote" do
+    running :fetch, "defunkt" do
       setup_remote(:defunkt)
-      @command.should_receive(:git).with("checkout -b defunkt/master").ordered.and_return do
-        mock("checkout -b defunkt/master").tap { |m| m.stub!(:error?) }
-      end
-      @command.should_receive(:git_exec).with("pull defunkt master").ordered
-      stdout.should == "Switching to defunkt/master\n"
-    end
-  end
-
-  specify "pull defunkt should switch to pre-existing defunkt/master and pull from the defunkt remote" do
-    running :pull, "defunkt" do
-      setup_remote(:defunkt)
-      @command.should_receive(:git).with("checkout -b defunkt/master").ordered.and_return do
-        mock("checkout -b defunkt/master").tap { |m| m.should_receive(:error?) { true } }
-      end
+      @helper.should_receive(:branch_dirty?).and_return false
+      @command.should_receive(:git).with("update-ref refs/heads/defunkt/master HEAD").ordered
       @command.should_receive(:git).with("checkout defunkt/master").ordered
-      @command.should_receive(:git_exec).with("pull defunkt master").ordered
+      @command.should_receive(:git_exec).with("fetch defunkt master").ordered
       stdout.should == "Switching to defunkt/master\n"
     end
   end
 
-  specify "pull defunkt wip should create defunkt/wip and pull from wip branch on defunkt remote" do
-    running :pull, "defunkt", "wip" do
+  specify "fetch defunkt should die if there is a dirty branch" do
+    running :fetch, "defunkt" do
       setup_remote(:defunkt)
-      @command.should_receive(:git).with("checkout -b defunkt/wip").ordered.and_return do
-        mock("checkout -b defunkt/wip").tap { |m| m.stub!(:error?) }
-      end
-      @command.should_receive(:git_exec).with("pull defunkt wip").ordered
-      stdout.should == "Switching to defunkt/wip\n"
+      @helper.should_receive(:branch_dirty?).and_return true
+      @command.should_receive(:die).with("Unable to switch branches, your current branch has uncommitted changes").and_return { raise "Died" }
+      self.should raise_error("Died")
     end
   end
 
-  specify "pull defunkt/wip should switch to pre-existing defunkt/wip and pull from wip branch on defunkt remote" do
-    running :pull, "defunkt/wip" do
-      setup_remote(:defunkt)
-      @command.should_receive(:git).with("checkout -b defunkt/wip").ordered.and_return do
-        mock("checkout -b defunkt/wip").tap { |m| m.should_receive(:error?) { true } }
-      end
+  specify "fetch defunkt/wip should create defunkt/wip and fetch from wip branch on defunkt remote" do
+    running :fetch, "defunkt/wip" do
+      setup_remote(:defunkt, :remote_branches => ["master", "wip"])
+      @helper.should_receive(:branch_dirty?).and_return false
+      @command.should_receive(:git).with("update-ref refs/heads/defunkt/wip HEAD").ordered
       @command.should_receive(:git).with("checkout defunkt/wip").ordered
-      @command.should_receive(:git_exec).with("pull defunkt wip").ordered
+      @command.should_receive(:git_exec).with("fetch defunkt wip").ordered
       stdout.should == "Switching to defunkt/wip\n"
     end
   end
 
-  specify "pull --merge defunkt should pull from defunkt remote into current branch" do
-    running :pull, "--merge", "defunkt" do
+  specify "fetch --merge defunkt should fetch from defunkt remote into current branch" do
+    running :fetch, "--merge", "defunkt" do
       setup_remote(:defunkt)
-      @command.should_receive(:git_exec).with("pull defunkt master")
+      @helper.should_receive(:branch_dirty?).and_return false
+      @command.should_receive(:git_exec).with("fetch defunkt master")
+    end
+  end
+
+  # -- fetch --
+  specify "fetch should die with no args" do
+    running :fetch do
+      @command.should_receive(:die).with("Specify a user to fetch from").and_return { raise "Died" }
+      self.should raise_error("Died")
+    end
+  end
+
+  specify "fetch defunkt should start tracking defunkt if they're not already tracked" do
+    running :fetch, "defunkt" do
+      setup_remote(:origin, :user => "user", :ssh => true)
+      setup_remote(:external, :url => "home:/path/to/project.git")
+      GitHub.should_receive(:invoke).with(:track, "defunkt").and_return { raise "Tracked" }
+      self.should raise_error("Tracked")
+    end
+  end
+
+  specify "fetch defunkt should create defunkt/master and fetch from the defunkt remote" do
+    running :fetch, "defunkt" do
+      setup_remote(:defunkt)
+      @helper.should_receive(:branch_dirty?).and_return false
+      @command.should_receive(:git).with("update-ref refs/heads/defunkt/master HEAD").ordered
+      @command.should_receive(:git).with("checkout defunkt/master").ordered
+      @command.should_receive(:git_exec).with("fetch defunkt master").ordered
+      stdout.should == "Switching to defunkt/master\n"
+    end
+  end
+
+  specify "fetch defunkt should die if there is a dirty branch" do
+    running :fetch, "defunkt" do
+      setup_remote(:defunkt)
+      @helper.should_receive(:branch_dirty?).and_return true
+      @command.should_receive(:die).with("Unable to switch branches, your current branch has uncommitted changes").and_return { raise "Died" }
+      self.should raise_error("Died")
+    end
+  end
+
+  specify "fetch defunkt/wip should create defunkt/wip and fetch from wip branch on defunkt remote" do
+    running :fetch, "defunkt/wip" do
+      setup_remote(:defunkt, :remote_branches => ["master", "wip"])
+      @helper.should_receive(:branch_dirty?).and_return false
+      @command.should_receive(:git).with("update-ref refs/heads/defunkt/wip HEAD").ordered
+      @command.should_receive(:git).with("checkout defunkt/wip").ordered
+      @command.should_receive(:git_exec).with("fetch defunkt wip").ordered
+      stdout.should == "Switching to defunkt/wip\n"
+    end
+  end
+
+  specify "fetch --merge defunkt should fetch from defunkt remote into current branch" do
+    running :fetch, "--merge", "defunkt" do
+      setup_remote(:defunkt)
+      @helper.should_receive(:branch_dirty?).and_return false
+      @command.should_receive(:git_exec).with("fetch defunkt master")
     end
   end
 
@@ -390,18 +432,25 @@ EOF
       @stderr_mock.invoke unless @stderr_mock.nil?
     end
 
-    def setup_remote(remote, options = {:user => nil, :project => "project"})
+    def setup_remote(remote, options = {:user => nil, :project => "project", :remote_branches => nil})
       @remotes ||= {}
+      @remote_branches ||= {}
       user = options[:user] || remote
       project = options[:project]
       ssh = options[:ssh]
       url = options[:url]
+      remote_branches = options[:remote_branches] || ["master"]
       if url
         @remotes[remote.to_sym] = url
       elsif ssh
         @remotes[remote.to_sym] = "git@github.com:#{user}/#{project}.git"
       else
         @remotes[remote.to_sym] = "git://github.com/#{user}/#{project}.git"
+      end
+
+      @remote_branches[remote.to_sym] = (@remote_branches[remote.to_sym] || Array.new) | remote_branches
+      @helper.should_receive(:remote_branch?).any_number_of_times.and_return do |remote, branch|
+        @remote_branches.fetch(remote.to_sym,[]).include?(branch)
       end
     end
 

@@ -24,14 +24,30 @@ describe GitHub::Command do
     unguard(Kernel, :exec)
     hi = @command.sh("echo hi")
     hi.should == "hi"
+    hi.out.should == "hi"
     hi.out?.should be(true)
+    hi.error.should be_nil
     hi.error?.should be(false)
     hi.command.should == "echo hi"
-    bye = @command.sh("echo bye >&2")
+    if RUBY_PLATFORM =~ /mingw|mswin/
+      command = "cmd /c echo bye >&2"
+    else
+      command = "echo bye >&2" 
+    end
+    bye = @command.sh(command)
     bye.should == "bye"
+    bye.out.should be_nil
     bye.out?.should be(false)
+    bye.error.should == "bye"
     bye.error?.should be(true)
-    bye.command.should == "echo bye >&2"
+    bye.command.should == command
+    hi_and_bye = @command.sh("echo hi; echo bye >&2")
+    hi_and_bye.should == "hi"
+    hi_and_bye.out.should == "hi"
+    hi_and_bye.out?.should be(true)
+    hi_and_bye.error.should == "bye"
+    hi_and_bye.error?.should be(true)
+    hi_and_bye.command.should == "echo hi; echo bye >&2"
   end
 
   it "should return the results of a git operation" do

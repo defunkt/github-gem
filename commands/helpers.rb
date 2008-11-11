@@ -116,7 +116,9 @@ helper :print_commits do |cherries, commits, options|
       next if options[:author] && !commit[1].match(Regexp.new(options[:author]))
       next if options[:before] && before && (before < Date.parse(commit[4])) 
       next if options[:after] && after && (after > Date.parse(commit[4])) 
-      next if options[:applies] && !applies_cleanly(sha)
+      applies = applies_cleanly(sha)
+      next if options[:applies] && !applies
+      next if options[:noapply] && applies
       if options[:shas]
         puts sha
       else

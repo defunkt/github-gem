@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = %q{github}
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.specification_version = 2 if s.respond_to? :specification_version=
 
@@ -22,4 +22,5 @@ Gem::Specification.new do |s|
   s.summary = %q{The official `github` command line helper for simplifying your GitHub experience.}
 
   # s.add_dependency(%q<launchy>, [">= 0"])
+  s.add_dependency('json', [">= 0"])
 end

@@ -33,7 +33,7 @@ flags :cache => "Use the network data even if it's expired"
 flags :sort => "How to sort : date(*), branch, author"
 flags :common => "Show common branch point"
 flags :thisbranch => "Look at branches that match the current one"
-flags :limit => "Only show the first X commits - useful for really large projects"
+flags :limit => "Only look through the first X heads - useful for really large projects"
 command :network do |command, user|
   return if !helper.project
   user ||= helper.owner

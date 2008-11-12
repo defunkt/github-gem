@@ -51,16 +51,39 @@ module GitHub
       if options[:cache] && has_cache?
         return get_cache
       end
-      if cache_expired? || options[:nocache] || !has_cache?
+      if cache_network_data(options)
         return cache_data(user)
       else
         return get_cache
       end
     end
+
+    def cache_commits(commits)
+      File.open( commits_cache_path, 'w' ) do |out|
+        out.write(commits.to_yaml)
+      end
+    end
+    
+    def commits_cache
+      YAML.load(File.open(commits_cache_path))
+    end
+
+    def cache_commits_data(options)
+      cache_expired? || options[:nocache] || !has_commits_cache?
+    end
+
+    def cache_network_data(options)
+      cache_expired? || options[:nocache] || !has_cache?
+    end
     
     def network_cache_path
       dir = `git rev-parse --git-dir`.chomp
       File.join(dir, 'network-cache')
+    end
+
+    def commits_cache_path
+      dir = `git rev-parse --git-dir`.chomp
+      File.join(dir, 'commits-cache')
     end
     
     def cache_data(user)
@@ -80,6 +103,10 @@ module GitHub
     
     def has_cache?
       File.file?(network_cache_path)
+    end
+
+    def has_commits_cache?
+      File.file?(commits_cache_path)
     end
     
     def get_cache

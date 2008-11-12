@@ -67,6 +67,10 @@ helper :ignore_sha_array do
   File.open( ignore_file_path ) { |yf| YAML::load( yf ) } rescue {}
 end
 
+helper :remove_ignored do |array, ignore_array|
+  array.reject { |id| ignore_array[id] }
+end
+
 helper :ignore_shas do |shas|
   ignores = ignore_sha_array
   shas.each do |sha|
@@ -91,10 +95,8 @@ helper :get_common do |branch|
   `git rev-list ..#{branch} --boundary | tail -1 | git name-rev --stdin`.split(' ')[1] rescue 'unknown'
 end
 
-helper :print_commits do |cherries, commits, options|
+helper :print_commits do |our_commits, options|
   ignores = ignore_sha_array
-  our_commits = cherries.map { |item| c = commits.assoc(item[1]); [item, c] if c }
-  our_commits.delete_if { |item| item == nil } 
   
   case options[:sort]
   when 'branch'
@@ -102,7 +104,7 @@ helper :print_commits do |cherries, commits, options|
   when 'author'
     our_commits.sort! { |a, b| a[1][1] <=> b[1][1] }
   else
-    our_commits.sort! { |a, b| Date.parse(a[1][4]) <=> Date.parse(b[1][4]) }
+    our_commits.sort! { |a, b| Date.parse(a[1][4]) <=> Date.parse(b[1][4]) } rescue 'cant parse dates'
   end
   
   shown_commits = {}
@@ -115,8 +117,8 @@ helper :print_commits do |cherries, commits, options|
     ref_name = ref_name.gsub('remotes/', '')
     if status == '+' && commit
       next if options[:author] && !commit[1].match(Regexp.new(options[:author]))
-      next if options[:before] && before && (before < Date.parse(commit[4])) 
-      next if options[:after] && after && (after > Date.parse(commit[4])) 
+      next if options[:before] && before && (before < Date.parse(commit[4]))  rescue false
+      next if options[:after] && after && (after > Date.parse(commit[4])) rescue false
       applies = applies_cleanly(sha)
       next if options[:applies] && !applies
       next if options[:noapply] && applies
@@ -125,7 +127,7 @@ helper :print_commits do |cherries, commits, options|
       else
         common = options[:common] ? get_common(sha) : ''
         puts [sha[0,6], ref_name.ljust(25), commit[1][0,20].ljust(21), 
-            commit[2][0, 36].ljust(38), commit[3], common].join(" ")
+            commit[2][0, 36].ljust(38), commit[3][0,15], common].join(" ")
       end
     end
     shown_commits[sha] = true
@@ -187,8 +189,12 @@ helper :owner do
   user_for(:origin)
 end
 
+helper :current_branch do
+  `git rev-parse --symbolic-full-name HEAD`.chomp.sub(/^refs\/heads\//, '')
+end
+
 helper :user_and_branch do
-  raw_branch = `git rev-parse --symbolic-full-name HEAD`.chomp.sub(/^refs\/heads\//, '')
+  raw_branch = current_branch
   user, branch = raw_branch.split(/\//, 2)
   if branch
     [user, branch]
@@ -278,7 +284,7 @@ You have to provide a command :
 end
 
 helper :print_network_cherry_help do
-  puts "
+  $stderr.puts "
 =========================================================================================
 These are all the commits that other people have pushed that you have not
 applied or ignored yet (see 'github ignore'). Some things you might want to do:

@@ -302,6 +302,12 @@ helper :argv do
   GitHub.original_args
 end
 
+helper :network_members do
+  get_network_data(owner, {})['users'].map do |hash|
+    hash['name']
+  end
+end
+
 
 helper :get_network_data do |user, options|
   if options[:cache] && has_cache?

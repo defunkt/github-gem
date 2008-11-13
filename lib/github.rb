@@ -49,6 +49,7 @@ module GitHub
   end
 
   def activate(args)
+    @@original_args = args.clone
     @options = parse_options(args)
     @debug = @options[:debug]
     load 'helpers.rb'
@@ -81,6 +82,10 @@ module GitHub
 
   def options
     @options
+  end
+
+  def original_args
+    @@original_args ||= []
   end
 
   def parse_options(args)

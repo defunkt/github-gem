@@ -280,6 +280,12 @@ helper :get_network_data do |user, options|
   end
 end
 
+helper :network_members do
+  get_network_data(owner, {})['users'].map do |hash|
+    hash['name']
+  end
+end
+
 helper :network_cache_path do
   dir = `git rev-parse --git-dir`.chomp
   File.join(dir, 'network-cache')
@@ -306,4 +312,8 @@ end
 
 helper :get_cache do
   JSON.parse(File.read(network_cache_path))
+end
+
+helper :argv do
+  GitHub.original_args
 end

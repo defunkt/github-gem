@@ -153,6 +153,11 @@ flags :merge => "Automatically merge remote's changes into your master."
 command :pull do |user, branch|
   die "Specify a user to pull from" if user.nil?
   user, branch = user.split("/", 2) if branch.nil?
+
+  if !helper.network_members.include?(user)
+    git_exec "#{helper.argv.join(' ')}".strip
+  end
+
   branch ||= 'master'
   GitHub.invoke(:track, user) unless helper.tracking?(user)
 

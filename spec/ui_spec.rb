@@ -167,6 +167,7 @@ EOF
 
   specify "pull defunkt should start tracking defunkt if they're not already tracked" do
     running :pull, "defunkt" do
+      mock_members 'defunkt'
       setup_remote(:origin, :user => "user", :ssh => true)
       setup_remote(:external, :url => "home:/path/to/project.git")
       GitHub.should_receive(:invoke).with(:track, "defunkt").and_return { raise "Tracked" }
@@ -176,6 +177,7 @@ EOF
 
   specify "pull defunkt should create defunkt/master and pull from the defunkt remote" do
     running :pull, "defunkt" do
+      mock_members 'defunkt'
       setup_remote(:defunkt)
       @command.should_receive(:git).with("checkout -b defunkt/master").ordered.and_return do
         mock("checkout -b defunkt/master").tap { |m| m.stub!(:error?) }
@@ -187,6 +189,7 @@ EOF
 
   specify "pull defunkt should switch to pre-existing defunkt/master and pull from the defunkt remote" do
     running :pull, "defunkt" do
+      mock_members 'defunkt'
       setup_remote(:defunkt)
       @command.should_receive(:git).with("checkout -b defunkt/master").ordered.and_return do
         mock("checkout -b defunkt/master").tap { |m| m.should_receive(:error?) { true } }
@@ -199,6 +202,7 @@ EOF
 
   specify "pull defunkt wip should create defunkt/wip and pull from wip branch on defunkt remote" do
     running :pull, "defunkt", "wip" do
+      mock_members 'defunkt'
       setup_remote(:defunkt)
       @command.should_receive(:git).with("checkout -b defunkt/wip").ordered.and_return do
         mock("checkout -b defunkt/wip").tap { |m| m.stub!(:error?) }
@@ -210,6 +214,7 @@ EOF
 
   specify "pull defunkt/wip should switch to pre-existing defunkt/wip and pull from wip branch on defunkt remote" do
     running :pull, "defunkt/wip" do
+      mock_members 'defunkt'
       setup_remote(:defunkt)
       @command.should_receive(:git).with("checkout -b defunkt/wip").ordered.and_return do
         mock("checkout -b defunkt/wip").tap { |m| m.should_receive(:error?) { true } }
@@ -222,8 +227,23 @@ EOF
 
   specify "pull --merge defunkt should pull from defunkt remote into current branch" do
     running :pull, "--merge", "defunkt" do
+      mock_members 'defunkt'
       setup_remote(:defunkt)
       @command.should_receive(:git_exec).with("pull defunkt master")
+    end
+  end
+
+  specify "pull falls through for non-recognized commands" do
+    running :pull, 'remote' do
+      mock_members 'defunkt'
+      @command.should_receive(:git_exec).with("pull remote")
+    end
+  end
+
+  specify "pull passes along args when falling through" do
+    running :pull, 'remote', '--stat' do
+      mock_members 'defunkt'
+      @command.should_receive(:git_exec).with("pull remote --stat")
     end
   end
 
@@ -431,6 +451,10 @@ EOF
 
     def mock_remotes()
       @helper.should_receive(:remotes).any_number_of_times.and_return(@remotes)
+    end
+
+    def mock_members(members)
+      @helper.should_receive(:network_members).any_number_of_times.and_return(members)
     end
 
     def should(result)

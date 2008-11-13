@@ -84,4 +84,14 @@ module GitHub
       end
     end
   end
+
+  class GitCommand < Command
+    def initialize(name)
+      @name = name
+    end
+
+    def command(*args)
+      git_exec *[ @name, args ]
+    end
+  end
 end

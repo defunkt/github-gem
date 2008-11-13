@@ -13,7 +13,7 @@ require 'yaml'
 # $ github <command> <args>
 #
 #   GitHub.command <command> do |*args|
-#     whatever 
+#     whatever
 #   end
 #
 # We'll probably want to use the `choice` gem for concise, tasty DSL
@@ -57,9 +57,14 @@ module GitHub
   end
 
   def invoke(command, *args)
-    block = commands[command.to_s] || commands['default']
+    block = find_command(command)
     debug "Invoking `#{command}`"
     block.call(*args)
+  end
+
+  def find_command(name)
+    name = name.to_s
+    commands[name] || GitCommand.new(name) || commands['default']
   end
 
   def commands

@@ -318,6 +318,19 @@ EOF
     end
   end
 
+  # -- fallthrough --
+  specify "should fall through to actual git commands" do
+    running :commit do
+      @command.should_receive(:git_exec).with("commit")
+    end
+  end
+
+  specify "should pass along arguments when falling through" do
+    running :commit, '-a', '-m', 'yo mama' do
+      @command.should_receive(:git_exec).with("commit -a -m 'yo mama'")
+    end
+  end
+
   # -- default --
   specify "should print the default message" do
     running :default do
@@ -357,7 +370,7 @@ EOF
 
     def initialize(parent, cmd, *args, &block)
       @cmd_name = cmd.to_s
-      @command = GitHub.commands[cmd.to_s]
+      @command = GitHub.find_command(cmd)
       @helper = @command.helper
       @args = args
       @block = block

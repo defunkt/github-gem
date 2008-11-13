@@ -25,13 +25,19 @@ module GitHub
 
   BasePath = File.expand_path(File.dirname(__FILE__) + '/..')
 
-  def command(command, &block)
+  def command(command, options = {}, &block)
     debug "Registered `#{command}`"
     descriptions[command] = @next_description if @next_description
     @next_description = nil
     flag_descriptions[command].update @next_flags if @next_flags
     @next_flags = nil
     commands[command.to_s] = Command.new(block)
+    aliases = options[:alias] || options[:aliases]
+    aliases = [aliases] unless (aliases.nil? || aliases.respond_to?(:each))
+    aliases.each do |command_alias|
+      commands[command_alias.to_s] = commands[command.to_s]
+    end if options[:aliases]
+    command
   end
 
   def desc(str)
@@ -123,7 +129,7 @@ module GitHub
   end
 end
 
-GitHub.command :default do
+GitHub.command :default, :aliases => ['', '-h', 'help', '-help', '--help'] do
   puts "Usage: github command <space separated arguments>", ''
   puts "Available commands:", ''
   longest = GitHub.descriptions.map { |d,| d.to_s.size }.max
@@ -138,9 +144,3 @@ GitHub.command :default do
   end
   puts
 end
-
-GitHub.commands[''] = GitHub.commands['default']
-GitHub.commands['-h'] = GitHub.commands['default']
-GitHub.commands['--help'] = GitHub.commands['default']
-GitHub.commands['-help'] = GitHub.commands['default']
-GitHub.commands['help'] = GitHub.commands['default']

@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name = %q{github}
+  s.name = "github"
   s.version = "0.3.1"
 
   s.specification_version = 2 if s.respond_to? :specification_version=

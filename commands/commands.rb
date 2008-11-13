@@ -42,13 +42,13 @@ command :network do |command, user|
   when 'web'
     helper.open helper.network_page_for(user)
   when 'list'
-    data = get_network_data(user, options)
+    data = helper.get_network_data(user, options)
     data['users'].each do |hsh|
       puts [ hsh['name'].ljust(20), hsh['heads'].map {|a| a['name']}.uniq.join(', ') ].join(' ')
     end
   when 'fetch'
     # fetch each remote we don't have
-    data = get_network_data(user, options)
+    data = helper.get_network_data(user, options)
     data['users'].each do |hsh|
       u = hsh['name']
       GitHub.invoke(:track, u) unless helper.tracking?(u)
@@ -61,9 +61,9 @@ command :network do |command, user|
     $stderr.puts 'gathering heads'
     cherry = []
     
-    if cache_commits_data(options)
+    if helper.cache_commits_data(options)
       ids = []
-      data = get_network_data(user, options)
+      data = helper.get_network_data(user, options)
       data['users'].each do |hsh|
         u = hsh['name']
         if options[:thisbranch]
@@ -72,7 +72,7 @@ command :network do |command, user|
           user_ids = hsh['heads'].map { |a| a['id'] }
         end
         user_ids.each do |id|
-          if !helper.has_commit?(id) && cache_expired?
+          if !helper.has_commit?(id) && helper.cache_expired?
             GitHub.invoke(:track, u) unless helper.tracking?(u)
             puts "fetching #{u}"
             GitHub.invoke(:fetch_all, u)
@@ -104,20 +104,19 @@ command :network do |command, user|
         break if options[:limit] && cherry.size > options[:limit].to_i
       end
     end
-  
     
-    if cherry.size > 0 || !cache_commits_data(options)
+    if cherry.size > 0 || !helper.cache_commits_data(options)
       helper.print_network_cherry_help if !options[:shas]
       
-      if cache_commits_data(options)
+      if helper.cache_commits_data(options)
         $stderr.puts "caching..."
         $stderr.puts "commits: " + cherry.size.to_s
         our_commits = cherry.map { |item| c = commits.assoc(item[1]); [item, c] if c }
         our_commits.delete_if { |item| item == nil } 
-        cache_commits(our_commits)
+        helper.cache_commits(our_commits)
       else
         $stderr.puts "using cached..."
-        our_commits = commits_cache
+        our_commits = helper.commits_cache
       end
       
       helper.print_commits(our_commits, options)
@@ -195,34 +194,38 @@ flags :merge => "Automatically merge remote's changes into your master."
 command :pull do |user, branch|
   die "Specify a user to pull from" if user.nil?
   user, branch = user.split("/", 2) if branch.nil?
+
+  if !helper.network_members.include?(user)
+    git_exec "#{helper.argv.join(' ')}".strip
+  end
+
   branch ||= 'master'
   GitHub.invoke(:track, user) unless helper.tracking?(user)
 
-  die "Unknown branch (#{branch}) specified" unless helper.remote_branch?(user, branch)
-  die "Unable to switch branches, your current branch has uncommitted changes" if helper.branch_dirty?
-
-  unless options[:merge]
+  if options[:merge]
+    git_exec "pull #{user} #{branch}"
+  else
     puts "Switching to #{user}/#{branch}"
     git "update-ref refs/heads/#{user}/#{branch} HEAD"
     git "checkout #{user}/#{branch}"
   end
-  git_exec "pull #{user} #{branch}"
 end
 
 desc "Clone a repo."
 flags :ssh => "Clone using the git@github.com style url."
 command :clone do |user, repo, dir|
   die "Specify a user to pull from" if user.nil?
-  if user.include? ?/
+  if user.include?('/') && !user.include?('@') && !user.include?(':')
     die "Expected user/repo dir, given extra argument" if dir
     (user, repo), dir = [user.split('/', 2), repo]
   end
-  die "Specify a repo to pull from" if repo.nil?
 
   if options[:ssh]
     git_exec "clone git@github.com:#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
-  else
+  elsif repo
     git_exec "clone git://github.com/#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
+  else
+    git_exec "#{helper.argv.join(' ')}".strip
   end
 end
 

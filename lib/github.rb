@@ -13,7 +13,7 @@ require 'yaml'
 # $ github <command> <args>
 #
 #   GitHub.command <command> do |*args|
-#     whatever 
+#     whatever
 #   end
 #
 # We'll probably want to use the `choice` gem for concise, tasty DSL
@@ -49,6 +49,7 @@ module GitHub
   end
 
   def activate(args)
+    @@original_args = args.clone
     @options = parse_options(args)
     @debug = @options[:debug]
     load 'helpers.rb'
@@ -57,9 +58,14 @@ module GitHub
   end
 
   def invoke(command, *args)
-    block = commands[command.to_s] || commands['default']
+    block = find_command(command)
     debug "Invoking `#{command}`"
     block.call(*args)
+  end
+
+  def find_command(name)
+    name = name.to_s
+    commands[name] || GitCommand.new(name) || commands['default']
   end
 
   def commands
@@ -76,6 +82,10 @@ module GitHub
 
   def options
     @options
+  end
+
+  def original_args
+    @@original_args ||= []
   end
 
   def parse_options(args)
@@ -128,3 +138,9 @@ GitHub.command :default do
   end
   puts
 end
+
+GitHub.commands[''] = GitHub.commands['default']
+GitHub.commands['-h'] = GitHub.commands['default']
+GitHub.commands['--help'] = GitHub.commands['default']
+GitHub.commands['-help'] = GitHub.commands['default']
+GitHub.commands['help'] = GitHub.commands['default']

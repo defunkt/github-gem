@@ -235,15 +235,20 @@ EOF
     end
   end
 
-  specify "clone should die with just one arg" do
-    running :clone, "user" do
-      @command.should_receive(:die).with("Specify a repo to pull from").and_return { raise "Died" }
-      self.should raise_error("Died")
+  specify "clone should fall through with just one arg" do
+    running :clone, "git://git.kernel.org/linux.git" do
+      @command.should_receive(:git_exec).with("clone git://git.kernel.org/linux.git")
     end
   end
 
   specify "clone defunkt github-gem should clone the repo" do
     running :clone, "defunkt", "github-gem" do
+      @command.should_receive(:git_exec).with("clone git://github.com/defunkt/github-gem.git")
+    end
+  end
+
+  specify "clone defunkt/github-gem should clone the repo" do
+    running :clone, "defunkt/github-gem" do
       @command.should_receive(:git_exec).with("clone git://github.com/defunkt/github-gem.git")
     end
   end
@@ -256,6 +261,12 @@ EOF
 
   specify "clone defunkt github-gem repo should clone the repo into the dir 'repo'" do
     running :clone, "defunkt", "github-gem", "repo" do
+      @command.should_receive(:git_exec).with("clone git://github.com/defunkt/github-gem.git repo")
+    end
+  end
+
+  specify "clone defunkt/github-gem repo should clone the repo into the dir 'repo'" do
+    running :clone, "defunkt/github-gem", "repo" do
       @command.should_receive(:git_exec).with("clone git://github.com/defunkt/github-gem.git repo")
     end
   end

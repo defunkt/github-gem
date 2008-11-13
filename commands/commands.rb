@@ -169,16 +169,17 @@ desc "Clone a repo."
 flags :ssh => "Clone using the git@github.com style url."
 command :clone do |user, repo, dir|
   die "Specify a user to pull from" if user.nil?
-  if user.include? ?/
+  if user.include?('/') && !user.include?('@') && !user.include?(':')
     die "Expected user/repo dir, given extra argument" if dir
     (user, repo), dir = [user.split('/', 2), repo]
   end
-  die "Specify a repo to pull from" if repo.nil?
 
   if options[:ssh]
     git_exec "clone git@github.com:#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
-  else
+  elsif repo
     git_exec "clone git://github.com/#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
+  else
+    git_exec "clone #{user}"
   end
 end
 

@@ -133,3 +133,9 @@ GitHub.command :default do
   end
   puts
 end
+
+GitHub.commands[''] = GitHub.commands['default']
+GitHub.commands['-h'] = GitHub.commands['default']
+GitHub.commands['--help'] = GitHub.commands['default']
+GitHub.commands['-help'] = GitHub.commands['default']
+GitHub.commands['help'] = GitHub.commands['default']

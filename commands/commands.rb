@@ -39,13 +39,13 @@ command :network do |command, user|
   when 'web'
     helper.open helper.network_page_for(user)
   when 'list'
-    data = get_network_data(user, options)
+    data = helper.get_network_data(user, options)
     data['users'].each do |hsh|
       puts [ hsh['name'].ljust(20), hsh['heads'].map {|a| a['name']}.uniq.join(', ') ].join(' ')
     end
   when 'fetch'
     # fetch each remote we don't have
-    data = get_network_data(user, options)
+    data = helper.get_network_data(user, options)
     data['users'].each do |hsh|
       u = hsh['name']
       GitHub.invoke(:track, u) unless helper.tracking?(u)
@@ -55,7 +55,7 @@ command :network do |command, user|
   when 'commits'
     # show commits we don't have yet
     ids = []
-    data = get_network_data(user, options)
+    data = helper.get_network_data(user, options)
     data['users'].each do |hsh|
       u = hsh['name']
       user_ids = hsh['heads'].map { |a| a['id'] }
@@ -69,14 +69,14 @@ command :network do |command, user|
       ids += user_ids
     end
     ids.uniq!
-    
+
     # check that we have all these shas locally
-        
+
     local_heads = helper.local_heads
     local_heads_not = local_heads.map { |a| "^#{a}"}
     looking_for = (ids - local_heads) + local_heads_not
     commits = helper.get_commits(looking_for)
-        
+
     cherry = []
     ids.each do |id|
       cherry += helper.get_cherry(id)
@@ -143,9 +143,9 @@ command :fetch do |user, branch|
   user, branch = user.split("/", 2) if branch.nil?
   branch ||= 'master'
   GitHub.invoke(:track, user) unless helper.tracking?(user)
-  
+
   git "fetch #{user} #{branch}:refs/remotes/#{user}/#{branch}"
-  git_exec "checkout -b #{user}/#{branch} refs/remotes/#{user}/#{branch}" 
+  git_exec "checkout -b #{user}/#{branch} refs/remotes/#{user}/#{branch}"
 end
 
 desc "Pull from a remote."
@@ -155,7 +155,7 @@ command :pull do |user, branch|
   user, branch = user.split("/", 2) if branch.nil?
   branch ||= 'master'
   GitHub.invoke(:track, user) unless helper.tracking?(user)
-  
+
   if options[:merge]
     git_exec "pull #{user} #{branch}"
   else

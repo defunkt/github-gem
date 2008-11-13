@@ -53,7 +53,7 @@ helper :resolve_commits do |treeish|
   else
     # standard in
     puts 'reading from stdin...'
-    commits = $stdin.read.split("\n") 
+    commits = $stdin.read.split("\n")
   end
   commits.select { |a| a.size == 40 } # only the shas, not the ^SHAs
 end
@@ -94,7 +94,7 @@ end
 helper :print_commits do |cherries, commits, options|
   ignores = ignore_sha_array
   our_commits = cherries.map { |item| c = commits.assoc(item[1]); [item, c] if c }
-  
+
   case options[:sort]
   when 'branch'
     our_commits.sort! { |a, b| a[0][2] <=> b[0][2] }
@@ -103,7 +103,7 @@ helper :print_commits do |cherries, commits, options|
   else
     our_commits.sort! { |a, b| Date.parse(a[1][4]) <=> Date.parse(b[1][4]) }
   end
-  
+
   shown_commits = {}
   before = Date.parse(options[:before]) if options[:before] rescue puts 'cant parse before date'
   after = Date.parse(options[:after]) if options[:after] rescue puts 'cant parse after date'
@@ -114,14 +114,14 @@ helper :print_commits do |cherries, commits, options|
     ref_name = ref_name.gsub('remotes/', '')
     if status == '+' && commit
       next if options[:author] && !commit[1].match(Regexp.new(options[:author]))
-      next if options[:before] && before && (before < Date.parse(commit[4])) 
-      next if options[:after] && after && (after > Date.parse(commit[4])) 
+      next if options[:before] && before && (before < Date.parse(commit[4]))
+      next if options[:after] && after && (after > Date.parse(commit[4]))
       next if options[:applies] && !applies_cleanly(sha)
       if options[:shas]
         puts sha
       else
         common = options[:common] ? get_common(sha) : ''
-        puts [sha[0,6], ref_name.ljust(25), commit[1][0,20].ljust(21), 
+        puts [sha[0,6], ref_name.ljust(25), commit[1][0,20].ljust(21),
             commit[2][0, 36].ljust(38), commit[3], common].join(" ")
       end
     end
@@ -232,17 +232,17 @@ You have to provide a command :
 
     web [user]     - opens your web browser to the network graph page for this
                      project, or for the graph page for [user] if provided
-                 
+
     list           - shows the projects in your network that have commits
-                     that you have not pulled in yet, and branch names 
-                     
+                     that you have not pulled in yet, and branch names
+
     fetch          - adds all projects in your network as remotes and fetches
                      any objects from them that you don't have yet
-  
+
     commits        - will show you a list of all commits in your network that
                      you have not ignored or have not merged or cherry-picked.
                      This will automatically fetch objects you don't have yet.
-                   
+
       --project (user/branch)  - only show projects that match string
       --author (email)         - only show projects that match string
       --after (date)           - only show commits after date
@@ -268,3 +268,42 @@ applied or ignored yet (see 'github ignore'). Some things you might want to do:
 "
 end
 
+helper :get_network_data do |user, options|
+  if options[:cache] && has_cache?
+    return get_cache
+  end
+
+  if cache_expired? || options[:nocache] || !has_cache?
+    return cache_data(user)
+  else
+    return get_cache
+  end
+end
+
+helper :network_cache_path do
+  dir = `git rev-parse --git-dir`.chomp
+  File.join(dir, 'network-cache')
+end
+
+helper :cache_data do |user|
+  raw_data = Kernel.open(network_meta_for(user)).read
+  File.open( network_cache_path, 'w' ) do |out|
+    out.write(raw_data)
+  end
+  data = JSON.parse(raw_data)
+end
+
+helper :cache_expired? do
+  return true if !has_cache?
+  age = Time.now - File.stat(network_cache_path).mtime
+  return true if age > (60 * 60) # 1 hour
+  false
+end
+
+helper :has_cache? do
+  File.file?(network_cache_path)
+end
+
+helper :get_cache do
+  JSON.parse(File.read(network_cache_path))
+end

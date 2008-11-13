@@ -20,7 +20,7 @@ module GitHub
       args << nil while args.size < arity
       send :command, *args
     end
-    
+
     def helper
       @helper ||= Helper.new
     end
@@ -47,45 +47,6 @@ module GitHub
       Shell.new(*command).run
     end
 
-    def get_network_data(user, options)
-      if options[:cache] && has_cache?
-        return get_cache
-      end
-      if cache_expired? || options[:nocache] || !has_cache?
-        return cache_data(user)
-      else
-        return get_cache
-      end
-    end
-    
-    def network_cache_path
-      dir = `git rev-parse --git-dir`.chomp
-      File.join(dir, 'network-cache')
-    end
-    
-    def cache_data(user)
-      raw_data = open(helper.network_meta_for(user)).read
-      File.open( network_cache_path, 'w' ) do |out|
-        out.write(raw_data)
-      end
-      data = JSON.parse(raw_data)
-    end
-    
-    def cache_expired?
-      return true if !has_cache?
-      age = Time.now - File.stat(network_cache_path).mtime
-      return true if age > (60 * 60) # 1 hour
-      false
-    end
-    
-    def has_cache?
-      File.file?(network_cache_path)
-    end
-    
-    def get_cache
-      JSON.parse(File.read(network_cache_path))
-    end
-    
     def die(message)
       puts "=> #{message}"
       exit!
@@ -99,7 +60,7 @@ module GitHub
       def run
         GitHub.debug "sh: #{command}"
         _, out, err = Open3.popen3(*@command)
-        
+
         out = out.read.strip
         err = err.read.strip
 

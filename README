@@ -22,7 +22,7 @@ Pulling Upstream Changes
 
 Let's say you just forked `github-gem` on GitHub from defunkt.
 
-  $ git clone git://github.com/YOU/github-gem.git
+  $ github clone git://github.com/YOU/github-gem.git
   $ cd github-gem
   $ github pull defunkt
 
@@ -36,8 +36,8 @@ checkout master` and then `git merge defunkt/master` to merge defunkt's changes
 into your own master branch.  In summary:
 
   $ github pull defunkt
-  $ git checkout master
-  $ git merge defunkt/master
+  $ github checkout master
+  $ github merge defunkt/master
 
 If you've already reviewed defunkt's changes and just want to merge them into your 
 master branch, use the `merge` flag:
@@ -67,12 +67,12 @@ Your local 'mojombo/master' branch is now at the exact same place as mojombo's
 If mojombo's changes are good, you'll want to merge your 'master' (or another
 branch) into those changes so you can retest post-integration:
 
-  $ git merge master
+  $ github merge master
   
 Test/analyze again and if everything is ok:
   
-  $ git checkout master
-  $ git merge mojombo/master
+  $ github checkout master
+  $ github merge mojombo/master
   
 The latter command will be a fast-forward merge since you already did the
 real merge previously.
@@ -111,12 +111,12 @@ which will show you something like this:
 These are all the commits that you don't have in your current branch that have been
 pushed to other forks of your project.  If you want to incorporate them, you can use:
 
-  $ git cherry-pick ee013a
+  $ github cherry-pick ee013a
 
 for example to apply that single patch to your branch.  You can also merge a branch, 
 if you want all the changes introduced in another branch:
 
-  $ git merge jchris/gist
+  $ github merge jchris/gist
 
 The next time you run the 'github network commits' command, you won't see any of the 
 patches you have cherry-picked or merged (or rebased).  If you want to ignore a 

@@ -184,7 +184,7 @@ command :clone do |user, repo, dir|
   elsif repo
     git_exec "clone git://github.com/#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
   else
-    git_exec "clone #{user}"
+    git_exec "#{helper.argv.join(' ')}".strip
   end
 end
 

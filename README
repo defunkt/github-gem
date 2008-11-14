@@ -22,7 +22,7 @@ Pulling Upstream Changes
 
 Let's say you just forked `github-gem` on GitHub from defunkt.
 
-  $ github clone git://github.com/YOU/github-gem.git
+  $ github clone YOU/github-gem
   $ cd github-gem
   $ github pull defunkt
 

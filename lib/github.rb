@@ -32,12 +32,9 @@ module GitHub
     flag_descriptions[command].update @next_flags if @next_flags
     @next_flags = nil
     commands[command.to_s] = Command.new(block)
-    aliases = options[:alias] || options[:aliases]
-    aliases = [aliases] unless (aliases.nil? || aliases.respond_to?(:each))
-    aliases.each do |command_alias|
+    Array(options[:alias] || options[:aliases]).each do |command_alias|
       commands[command_alias.to_s] = commands[command.to_s]
-    end if options[:aliases]
-    command
+    end
   end
 
   def desc(str)

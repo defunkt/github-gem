@@ -62,4 +62,24 @@ describe "GitHub.parse_options" do
     GitHub.activate(['default', '--debug'])
     GitHub.should be_debug
   end
+
+  it "should allow for an alias on a commad" do
+    GitHub.command 'some-command', :aliases => 'an-alias' do
+    end
+    GitHub.commands['an-alias'].should_not be_nil
+    GitHub.commands['an-alias'].should_not == GitHub.commands['non-existant-command']
+    GitHub.commands['an-alias'].should == GitHub.commands['some-command']
+  end
+
+  it "should allow for an array of aliases on a commad" do
+    GitHub.command 'another-command', :aliases => ['some-alias-1', 'some-alias-2'] do
+    end
+    GitHub.commands['some-alias-1'].should_not be_nil
+    GitHub.commands['some-alias-1'].should_not == GitHub.commands['non-existant-command']
+    GitHub.commands['some-alias-1'].should_not be_nil
+    GitHub.commands['some-alias-1'].should_not == GitHub.commands['non-existant-command']
+    GitHub.commands['some-alias-1'].should == GitHub.commands['another-command']
+    GitHub.commands['some-alias-2'].should == GitHub.commands['another-command']
+  end
+
 end

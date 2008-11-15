@@ -37,7 +37,7 @@ command :info do
   puts "== Info for #{helper.project}"
   puts "You are #{helper.owner}"
   puts "Currently tracking:"
-  helper.tracking.sort { |(a,),(b,)| a == :origin ? -1 : b == :origin ? 1 : a.to_s <=> b.to_s }.each do |(name,user_or_url)|
+  helper.tracking.sort { |(a,),(b,)| a == helper.origin ? -1 : b == helper.origin ? 1 : a.to_s <=> b.to_s }.each do |(name,user_or_url)|
     puts " - #{user_or_url} (as #{name})"
   end
 end
@@ -142,6 +142,6 @@ command :'pull-request' do |user, branch|
     branch ||= 'master'
     GitHub.invoke(:track, user) unless helper.tracking?(user)
 
-    git_exec "request-pull #{user}/#{branch} origin"
+    git_exec "request-pull #{user}/#{branch} #{helper.origin}"
   end
 end

@@ -17,10 +17,16 @@ helper :repo_for do |remote|
   user_and_repo_for(remote).try.last
 end
 
+helper :origin do
+  orig = `git config --get github.origin`.chomp
+  orig = nil if orig.empty?
+  orig || 'origin'
+end
+
 helper :project do
-  repo = repo_for(:origin)
+  repo = repo_for(origin)
   if repo.nil?
-    if url_for(:origin) == ""
+    if url_for(origin) == ""
       STDERR.puts "Error: missing remote 'origin'"
     else
       STDERR.puts "Error: remote 'origin' is not a github URL"
@@ -186,7 +192,7 @@ helper :tracking? do |user|
 end
 
 helper :owner do
-  user_for(:origin)
+  user_for(origin)
 end
 
 helper :current_branch do

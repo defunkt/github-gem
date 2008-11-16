@@ -6,7 +6,7 @@ command :home do |user|
 end
 
 desc "Automatically set configuration info, or pass args to specify."
-usage "github [my_username] [my_repo_name]"
+usage "github config [my_username] [my_repo_name]"
 command :config do |user, repo|
   user ||= ENV['USER']
   repo ||= File.basename(FileUtils.pwd)
@@ -16,7 +16,7 @@ command :config do |user, repo|
 end
 
 desc "Open this repo in a web browser."
-usage "github [user] [branch]"
+usage "github browse [user] [branch]"
 command :browse do |user, branch|
   if helper.project
     # if one arg given, treat it as a branch name
@@ -227,7 +227,7 @@ command :pull do |user, branch|
   end
 end
 
-desc "Clone a repo."
+desc "Clone a repo. Uses ssh if current user is "
 usage "github clone [user] [repo] [dir]"
 flags :ssh => "Clone using the git@github.com style url."
 command :clone do |user, repo, dir|
@@ -237,7 +237,7 @@ command :clone do |user, repo, dir|
     (user, repo), dir = [user.split('/', 2), repo]
   end
 
-  if options[:ssh]
+  if options[:ssh] || current_user?(user)
     git_exec "clone git@github.com:#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
   elsif repo
     git_exec "clone git://github.com/#{user}/#{repo}.git" + (dir ? " #{dir}" : "")

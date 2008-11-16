@@ -52,6 +52,18 @@ module GitHub
       exit!
     end
 
+    def github_user
+      git("config --get github.user")
+    end
+
+    def shell_user 
+      ENV['USER']
+    end
+    
+    def current_user?(user)
+      user == github_user || user == shell_user
+    end
+
     class Shell < String
       attr_reader :error
       attr_reader :out

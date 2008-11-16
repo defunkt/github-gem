@@ -1,0 +1,9 @@
+== 0.1.4
+
+* Added usage notes to commands. [topfunky]
+* Added config option to set github.user and github.repo. [topfunky]
+* Uses current user to automatically use SSH when cloning own projects.
+
+== 0.1.3
+
+* Original version

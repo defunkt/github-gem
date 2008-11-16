@@ -5,7 +5,18 @@ command :home do |user|
   end
 end
 
+desc "Automatically set configuration info, or pass args to specify."
+usage "github [my_username] [my_repo_name]"
+command :config do |user, repo|
+  user ||= ENV['USER']
+  repo ||= File.basename(FileUtils.pwd)
+  git "config --global github.user #{user}"
+  git "config github.repo #{repo}"
+  puts "Configured with github.user #{user}, github.repo #{repo}"
+end
+
 desc "Open this repo in a web browser."
+usage "github [user] [branch]"
 command :browse do |user, branch|
   if helper.project
     # if one arg given, treat it as a branch name
@@ -145,6 +156,10 @@ command :info do
 end
 
 desc "Track another user's repository."
+usage "github track remote [user]"
+usage "github track remote [user/repo]"
+usage "github track [user]"
+usage "github track [user/repo]"
 flags :private => "Use git@github.com: instead of git://github.com/."
 flags :ssh => 'Equivalent to --private'
 command :track do |remote, user|
@@ -190,6 +205,7 @@ command :fetch do |user, branch|
 end
 
 desc "Pull from a remote."
+usage "github pull [user] [branch]"
 flags :merge => "Automatically merge remote's changes into your master."
 command :pull do |user, branch|
   die "Specify a user to pull from" if user.nil?
@@ -212,6 +228,7 @@ command :pull do |user, branch|
 end
 
 desc "Clone a repo."
+usage "github clone [user] [repo] [dir]"
 flags :ssh => "Clone using the git@github.com style url."
 command :clone do |user, repo, dir|
   die "Specify a user to pull from" if user.nil?
@@ -230,6 +247,7 @@ command :clone do |user, repo, dir|
 end
 
 desc "Generate the text for a pull request."
+usage "github pull-request [user] [branch]"
 command :'pull-request' do |user, branch|
   if helper.project
     die "Specify a user for the pull request" if user.nil?

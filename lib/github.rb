@@ -2,6 +2,7 @@ $:.unshift File.dirname(__FILE__)
 require 'github/extensions'
 require 'github/command'
 require 'github/helper'
+require 'fileutils'
 require 'rubygems'
 require 'open-uri'
 require 'json'
@@ -30,7 +31,9 @@ module GitHub
     descriptions[command] = @next_description if @next_description
     @next_description = nil
     flag_descriptions[command].update @next_flags if @next_flags
+    usage_descriptions[command] = @next_usage if @next_usage
     @next_flags = nil
+    @next_usage = []
     commands[command.to_s] = Command.new(block)
     Array(options[:alias] || options[:aliases]).each do |command_alias|
       commands[command_alias.to_s] = commands[command.to_s]
@@ -44,6 +47,11 @@ module GitHub
   def flags(hash)
     @next_flags ||= {}
     @next_flags.update hash
+  end
+  
+  def usage(string)
+    @next_usage ||= []
+    @next_usage << string
   end
 
   def helper(command, &block)
@@ -81,6 +89,10 @@ module GitHub
 
   def flag_descriptions
     @flagdescs ||= Hash.new { |h, k| h[k] = {} }
+  end
+
+  def usage_descriptions
+    @usage_descriptions ||= Hash.new { |h, k| h[k] = [] }
   end
 
   def options
@@ -130,10 +142,16 @@ GitHub.command :default, :aliases => ['', '-h', 'help', '-help', '--help'] do
   puts "Usage: github command <space separated arguments>", ''
   puts "Available commands:", ''
   longest = GitHub.descriptions.map { |d,| d.to_s.size }.max
-  GitHub.descriptions.each do |command, desc|
+  GitHub.descriptions.sort {|a,b| a.to_s <=> b.to_s }.each do |command, desc|
     cmdstr = "%-#{longest}s" % command
     puts "  #{cmdstr} => #{desc}"
     flongest = GitHub.flag_descriptions[command].map { |d,| "--#{d}".size }.max
+    GitHub.usage_descriptions[command].each do |usage_descriptions|
+      usage_descriptions.each do |usage|
+        usage_str = "#{" " * longest}      %% %-#{flongest}s" % usage
+        puts usage_str
+      end
+    end
     GitHub.flag_descriptions[command].each do |flag, fdesc|
       flagstr = "#{" " * longest}  %-#{flongest}s" % "--#{flag}"
       puts "  #{flagstr}: #{fdesc}"

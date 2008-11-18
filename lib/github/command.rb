@@ -38,15 +38,15 @@ module GitHub
     end
 
     def git_exec(*command)
-      cmdstr = ['git', command].flatten.join(' ')
-      GitHub.debug "exec: #{cmdstr}"
-      exec cmdstr
+      cmd = ['git', command].flatten
+      GitHub.debug "exec: #{cmd * ' '}"
+      exec *cmd
     end
 
     def sh(*command)
       Shell.new(*command).run
     end
-    
+
     def die(message)
       puts "=> #{message}"
       exit!

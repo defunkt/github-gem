@@ -17,9 +17,6 @@ require 'yaml'
 #     whatever
 #   end
 #
-# We'll probably want to use the `choice` gem for concise, tasty DSL
-# arg parsing action.
-#
 
 module GitHub
   extend self

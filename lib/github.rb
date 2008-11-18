@@ -59,8 +59,8 @@ module GitHub
   def activate(args)
     @@original_args = args.clone
     @options = parse_options(args)
-    @debug = @options[:debug]
-    @learn = @options[:learn]
+    @debug = @options.delete(:debug)
+    @learn = @options.delete(:learn)
     Dir[BasePath + '/commands/*.rb'].each do |command|
       load command
     end

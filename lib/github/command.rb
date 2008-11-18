@@ -34,14 +34,14 @@ module GitHub
     end
 
     def git(*command)
-      cmd = ['git', command].flatten.join(' ')
-      GitHub.learn cmd
-      sh cmd
+      cmd = ['git', command].flatten
+      GitHub.learn cmd * ' '
+      sh *cmd
     end
 
     def git_exec(*command)
       cmd = ['git', command].flatten
-      GitHub.learn "#{cmd * ' '}"
+      GitHub.learn cmd * ' '
       exec *cmd
     end
 

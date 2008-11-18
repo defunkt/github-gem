@@ -61,8 +61,9 @@ module GitHub
     @options = parse_options(args)
     @debug = @options[:debug]
     @learn = @options[:learn]
-    load 'helpers.rb'
-    load 'commands.rb'
+    Dir[BasePath + '/commands/*.rb'].each do |command|
+      load command
+    end
     invoke(args.shift, *args)
   end
 

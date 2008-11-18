@@ -45,7 +45,7 @@ module GitHub
     @next_flags ||= {}
     @next_flags.update hash
   end
-  
+
   def usage(string)
     @next_usage ||= []
     @next_usage << string
@@ -60,6 +60,7 @@ module GitHub
     @@original_args = args.clone
     @options = parse_options(args)
     @debug = @options[:debug]
+    @learn = @options[:learn]
     load 'helpers.rb'
     load 'commands.rb'
     invoke(args.shift, *args)
@@ -120,18 +121,26 @@ module GitHub
     end
   end
 
-  def load(file)
-    file[0] == ?/ ? path = file : path = BasePath + "/commands/#{file}"
-    data = File.read(path)
-    GitHub.module_eval data, path
-  end
-
   def debug(*messages)
     puts *messages.map { |m| "== #{m}" } if debug?
   end
 
+  def learn(message)
+    learn? ? puts("== " + Color.yellow(message)) : debug(message)
+  end
+
+  def learn?
+    !!@learn
+  end
+
   def debug?
     !!@debug
+  end
+
+  def load(file)
+    file[0] == ?/ ? path = file : path = BasePath + "/commands/#{file}"
+    data = File.read(path)
+    GitHub.module_eval data, path
   end
 end
 

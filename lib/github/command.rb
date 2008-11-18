@@ -34,12 +34,14 @@ module GitHub
     end
 
     def git(*command)
-      sh ['git', command].flatten.join(' ')
+      cmd = ['git', command].flatten.join(' ')
+      GitHub.learn cmd
+      sh cmd
     end
 
     def git_exec(*command)
       cmd = ['git', command].flatten
-      GitHub.debug "exec: #{cmd * ' '}"
+      GitHub.learn "#{cmd * ' '}"
       exec *cmd
     end
 
@@ -56,10 +58,10 @@ module GitHub
       git("config --get github.user")
     end
 
-    def shell_user 
+    def shell_user
       ENV['USER']
     end
-    
+
     def current_user?(user)
       user == github_user || user == shell_user
     end

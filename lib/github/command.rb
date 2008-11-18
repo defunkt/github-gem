@@ -33,16 +33,24 @@ module GitHub
       puts git(*command)
     end
 
-    def git(*command)
-      cmd = ['git', command].flatten
-      GitHub.learn cmd * ' '
-      sh *cmd
+    def git(command)
+      run :sh, command
     end
 
-    def git_exec(*command)
-      cmd = ['git', command].flatten
-      GitHub.learn cmd * ' '
-      exec *cmd
+    def git_exec(command)
+      run :exec, command
+    end
+
+    def run(method, command)
+      if command.is_a? Array
+        command = [ 'git', command ].flatten
+        GitHub.learn command.join(' ')
+      else
+        command = 'git ' + command
+        GitHub.learn command
+      end
+
+      send method, *command
     end
 
     def sh(*command)
@@ -107,7 +115,7 @@ module GitHub
     end
 
     def command(*args)
-      git_exec *[ @name, args ]
+      git_exec [ @name, args ]
     end
   end
 end

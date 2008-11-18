@@ -127,7 +127,11 @@ module GitHub
   end
 
   def learn(message)
-    learn? ? puts("== " + Color.yellow(message)) : debug(message)
+    if learn?
+      puts "== " + Color.yellow(message)
+    else
+      debug(message)
+    end
   end
 
   def learn?

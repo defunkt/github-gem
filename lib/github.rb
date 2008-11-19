@@ -144,7 +144,7 @@ module GitHub
   end
 
   def load(file)
-    file[0] =~ /^\// ? path = file : path = BasePath + "/commands/#{file}"
+    file[0] =~ /^\// ? path = file : path = BasePath + "/commands/#{File.basename(file)}"
     data = File.read(path)
     GitHub.module_eval data, path
   end

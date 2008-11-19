@@ -22,5 +22,5 @@ Gem::Specification.new do |s|
   s.summary = %q{The official `github` command line helper for simplifying your GitHub experience.}
 
   # s.add_dependency(%q<launchy>, [">= 0"])
-  s.add_dependency('json', [">= 0"])
+  s.add_dependency('json_pure', [">= 0"])
 end

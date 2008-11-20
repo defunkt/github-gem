@@ -323,7 +323,14 @@ helper :get_network_data do |user, options|
     return get_cache
   end
   if cache_network_data(options)
-    return cache_data(user)
+    begin
+      return cache_data(user)
+    rescue SocketError
+      STDERR.puts "*** Warning: There was a problem accessing the network."
+      rv = get_cache
+      STDERR.puts "Using cached data."
+      rv
+    end
   else
     return get_cache
   end

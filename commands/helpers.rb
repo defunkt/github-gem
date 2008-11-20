@@ -296,8 +296,8 @@ These are all the commits that other people have pushed that you have not
 applied or ignored yet (see 'github ignore'). Some things you might want to do:
 
 * You can run 'github fetch user/branch' (sans '~N') to pull into a local branch for testing
-* You can run 'git cherry-pick [SHA]' to apply a single patch
-* You can run 'git merge user/branch' to merge a commit and all the '~N' variants.
+* You can run 'github cherry-pick [SHA]' to apply a single patch
+* You can run 'github merge user/branch' to merge a commit and all the '~N' variants.
 * You can ignore all of a projects commits with 'github ignore ..user/branch'
 =========================================================================================
 

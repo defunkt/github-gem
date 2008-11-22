@@ -1,3 +1,5 @@
+DEV_NULL = File.exist?("/dev/null") ? "/dev/null" : "nul:"
+
 helper :user_and_repo_from do |url|
   case url
   when %r|^git://github\.com/([^/]+/[^/]+)$|: $1.split('/')
@@ -45,7 +47,7 @@ helper :local_heads do
 end
 
 helper :has_commit? do |sha|
-  `git show #{sha} >/dev/null 2>/dev/null`
+  `git show #{sha} >#{DEV_NULL} 2>#{DEV_NULL}`
   $?.exitstatus == 0
 end
 
@@ -141,7 +143,7 @@ helper :print_commits do |our_commits, options|
 end
 
 helper :applies_cleanly do |sha|
-  `git diff ...#{sha} | git apply --check >/dev/null 2>/dev/null`
+  `git diff ...#{sha} | git apply --check >#{DEV_NULL} 2>#{DEV_NULL}`
   $?.exitstatus == 0
 end
 
@@ -156,7 +158,7 @@ helper :remotes do
 end
 
 helper :remote_branches_for do |user|
-  `git ls-remote -h #{user} 2> /dev/null`.split(/\n/).inject({}) do |memo, line|
+  `git ls-remote -h #{user} 2> #{DEV_NULL}`.split(/\n/).inject({}) do |memo, line|
     hash, head = line.split(/\t/, 2)
     head = head[%r{refs/heads/(.+)$},1] unless head.nil?
     memo[head] = hash unless head.nil?
@@ -173,7 +175,7 @@ helper :branch_dirty? do
   # originally, we were going to use git-ls-files but that could only
   # report modified track files...not files that have been staged
   # for committal
-  !(system("git diff --quiet 2>/dev/null") or !system("git diff --cached --quiet 2>/dev/null"))
+  !(system("git diff --quiet 2>#{DEV_NULL}") or !system("git diff --cached --quiet 2>#{DEV_NULL}"))
 end
 
 helper :tracking do

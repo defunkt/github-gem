@@ -152,6 +152,7 @@ flags :markdown => 'Create README.markdown'
 flags :mdown => 'Create README.mdown'
 flags :textile => 'Create README.textile'
 flags :rdoc => 'Create README.rdoc'
+flags :rst => 'Create README.rst'
 command :create do |repo|
   sh "curl -F 'repository[name]=#{repo}' -F 'login=#{github_user}' -F 'token=#{github_token}' http://github.com/repositories"
   mkdir repo

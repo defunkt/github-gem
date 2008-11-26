@@ -163,3 +163,16 @@ command :create do |repo|
   git "remote add origin git@github.com:#{github_user}/#{repo}.git"
   git_exec "push origin master"
 end
+
+desc "Forks a GitHub repository"
+usage "github fork [user]/[repo]"
+command :fork do |user, repo|
+  if repo.nil?
+    user, repo = user.split('/')
+  end
+
+  sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' http://github.com/#{user}/#{repo}/fork"
+  puts "Giving GitHub a moment to create the fork..."
+  sleep 3
+  git_exec "clone git@github.com:#{github_user}/#{repo}.git"
+end

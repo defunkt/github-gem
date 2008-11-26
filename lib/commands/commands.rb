@@ -149,6 +149,7 @@ end
 desc "Create a new, empty GitHub repository"
 usage "github create [repo]"
 flags :markdown => 'Create README.markdown'
+flags :mdown => 'Create README.mdown'
 flags :textile => 'Create README.textile'
 flags :rdoc => 'Create README.rdoc'
 command :create do |repo|

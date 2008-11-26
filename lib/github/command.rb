@@ -66,6 +66,10 @@ module GitHub
       git("config --get github.user")
     end
 
+    def github_token
+      git("config --get github.token")
+    end
+
     def shell_user
       ENV['USER']
     end

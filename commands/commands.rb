@@ -145,3 +145,21 @@ command :'pull-request' do |user, branch|
     git_exec "request-pull #{user}/#{branch} #{helper.origin}"
   end
 end
+
+desc "Create a new, empty GitHub repository"
+usage "github create [repo]"
+flags :markdown => 'Create README.markdown'
+flags :textile => 'Create README.textile'
+flags :rdoc => 'Create README.rdoc'
+command :create do |repo|
+  sh "curl -F 'repository[name]=#{repo}' -F 'login=#{github_user}' -F 'token=#{github_token}' http://github.com/repositories"
+  mkdir repo
+  cd repo
+  git "init"
+  extension = options.keys.first
+  touch extension ? "README.#{extension}" : "README"
+  git "add *"
+  git "commit -m 'First commit!'"
+  git "remote add origin git@github.com:#{github_user}/#{repo}.git"
+  git_exec "push origin master"
+end

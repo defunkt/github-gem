@@ -1,3 +1,5 @@
+require 'fileutils'
+
 if RUBY_PLATFORM =~ /mswin|mingw/
   begin
     require 'win32/open3'
@@ -11,6 +13,8 @@ end
 
 module GitHub
   class Command
+    include FileUtils
+
     def initialize(block)
       (class << self;self end).send :define_method, :command, &block
     end

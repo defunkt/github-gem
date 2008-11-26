@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
-require File.dirname(__FILE__) + '/../lib/github'
+lib_dir = File.join(File.dirname(__FILE__), '..', 'lib')
+$LOAD_PATH.unshift lib_dir if File.directory?(lib_dir)
+
+require 'github'
 
 GitHub.activate ARGV

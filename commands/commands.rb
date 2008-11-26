@@ -108,9 +108,9 @@ command :pull do |user, branch|
   if options[:merge]
     git_exec "pull #{user} #{branch}"
   else
-    puts "Switching to #{user}/#{branch}"
-    git "update-ref refs/heads/#{user}/#{branch} HEAD"
-    git "checkout #{user}/#{branch}"
+    puts "Switching to #{user}-#{branch}"
+    git "fetch #{user}"
+    git_exec "checkout -b #{user}-#{branch} #{user}/#{branch}"
   end
 end
 

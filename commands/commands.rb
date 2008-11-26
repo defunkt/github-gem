@@ -110,7 +110,7 @@ command :pull do |user, branch|
   else
     puts "Switching to #{user}-#{branch}"
     git "fetch #{user}"
-    git_exec "checkout -b #{user}-#{branch} #{user}/#{branch}"
+    git_exec "checkout -b #{user}/#{branch} #{user}/#{branch}"
   end
 end
 

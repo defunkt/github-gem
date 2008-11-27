@@ -21,7 +21,7 @@ require 'yaml'
 module GitHub
   extend self
 
-  BasePath = File.expand_path(File.dirname(__FILE__) + '/..')
+  BasePath = File.expand_path(File.dirname(__FILE__))
 
   def command(command, options = {}, &block)
     debug "Registered `#{command}`"

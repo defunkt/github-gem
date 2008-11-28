@@ -245,6 +245,9 @@ helper :network_meta_for do |user|
   "http://github.com/#{user}/#{project}/network_meta"
 end
 
+helper :network_members_for do |user|
+  "http://github.com/#{user}/#{project}/network/members.json"
+end
 
 helper :has_launchy? do |blk|
   begin
@@ -309,9 +312,7 @@ helper :argv do
 end
 
 helper :network_members do
-  get_network_data(owner, {})['users'].map do |hash|
-    hash['name']
-  end
+  get_network_members(owner, {}).map {|member| member['owner']['login'] }
 end
 
 
@@ -324,6 +325,11 @@ helper :get_network_data do |user, options|
   else
     return get_cache
   end
+end
+
+helper :get_network_members do |user, options|
+  json = Kernel.open(network_members_for(user)).read
+  JSON.parse(json)["users"]
 end
 
 helper :cache_commits do |commits|

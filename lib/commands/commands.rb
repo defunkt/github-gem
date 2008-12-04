@@ -135,7 +135,7 @@ end
 
 desc "Generate the text for a pull request."
 usage "github pull-request [user] [branch]"
-command :'pull-request' do |user, branch|
+command 'pull-request' do |user, branch|
   if helper.project
     die "Specify a user for the pull request" if user.nil?
     user, branch = user.split('/', 2) if branch.nil?
@@ -178,11 +178,11 @@ command :fork do |user, repo|
 end
 
 desc "Create a new GitHub repository from the current local repository"
-command :'create-from-local' do
+command 'create-from-local' do
   cwd = sh "pwd"
   repo = File.basename(cwd)
   is_repo = !git("status").match(/fatal/)
-  raise "Not a git repository. Use gh create instead" unless is_repo  
+  raise "Not a git repository. Use gh create instead" unless is_repo
   sh "curl -F 'repository[name]=#{repo}' -F 'login=#{github_user}' -F 'token=#{github_token}' http://github.com/repositories"
   git "remote add origin git@github.com:#{github_user}/#{repo}.git"
   git_exec "push origin master"

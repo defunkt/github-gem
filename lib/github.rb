@@ -24,6 +24,7 @@ module GitHub
   BasePath = File.expand_path(File.dirname(__FILE__))
 
   def command(command, options = {}, &block)
+    command = command.to_s
     debug "Registered `#{command}`"
     descriptions[command] = @next_description if @next_description
     @next_description = nil
@@ -31,7 +32,7 @@ module GitHub
     usage_descriptions[command] = @next_usage if @next_usage
     @next_flags = nil
     @next_usage = []
-    commands[command.to_s] = Command.new(block)
+    commands[command] = Command.new(block)
     Array(options[:alias] || options[:aliases]).each do |command_alias|
       commands[command_alias.to_s] = commands[command.to_s]
     end
@@ -143,7 +144,7 @@ module GitHub
   end
 
   def load(file)
-    file[0] == ?/ ? path = file : path = BasePath + "/commands/#{file}"
+    file[0] =~ /^\// ? path = file : path = BasePath + "/commands/#{file}"
     data = File.read(path)
     GitHub.module_eval data, path
   end

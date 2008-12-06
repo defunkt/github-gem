@@ -167,16 +167,30 @@ command :create do |repo|
 end
 
 desc "Forks a GitHub repository"
+usage "github fork"
 usage "github fork [user]/[repo]"
 command :fork do |user, repo|
   if repo.nil?
-    user, repo = user.split('/')
+    if user
+      user, repo = user.split('/')
+    else
+      is_repo = true
+      user = helper.owner
+      repo = helper.project
+    end
   end
 
   sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' http://github.com/#{user}/#{repo}/fork"
-  puts "Giving GitHub a moment to create the fork..."
-  sleep 3
-  git_exec "clone git@github.com:#{github_user}/#{repo}.git"
+
+  url = "git@github.com:#{github_user}/#{repo}.git"
+  if is_repo
+    git "config remote.origin.url #{url}"
+    puts "#{user}/#{repo} forked"
+  else
+    puts "Giving GitHub a moment to create the fork..."
+    sleep 3
+    git_exec "clone #{url}"
+  end
 end
 
 desc "Create a new GitHub repository from the current local repository"

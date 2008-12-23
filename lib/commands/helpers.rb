@@ -303,7 +303,7 @@ applied or ignored yet (see 'github ignore'). Some things you might want to do:
 * You can run 'github fetch user/branch' (sans '~N') to pull into a local branch for testing
 * You can run 'github cherry-pick [SHA]' to apply a single patch
 * You can run 'github merge user/branch' to merge a commit and all the '~N' variants.
-* You can ignore all of a projects commits with 'github ignore ..user/branch'
+* You can ignore all commits from a branch with 'github ignore ..user/branch'
 =========================================================================================
 
 "

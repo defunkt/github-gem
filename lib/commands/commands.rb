@@ -153,8 +153,9 @@ flags :mdown => 'Create README.mdown'
 flags :textile => 'Create README.textile'
 flags :rdoc => 'Create README.rdoc'
 flags :rst => 'Create README.rst'
+flags :private => 'Create private repository'
 command :create do |repo|
-  sh "curl -F 'repository[name]=#{repo}' -F 'login=#{github_user}' -F 'token=#{github_token}' http://github.com/repositories"
+  sh "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{!options[:private]}' -F 'login=#{github_user}' -F 'token=#{github_token}' http://github.com/repositories"
   mkdir repo
   cd repo
   git "init"

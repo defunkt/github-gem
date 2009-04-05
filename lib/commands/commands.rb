@@ -205,3 +205,11 @@ command 'create-from-local' do
   git "remote add origin git@github.com:#{github_user}/#{repo}.git"
   git_exec "push origin master"
 end
+
+desc "Search GitHub for the given repository name."
+usage "github search [query]"
+command :search do |query|
+  data = JSON.parse(open("http://github.com/api/v1/json/search/#{URI.escape query}").read)
+  abort "Not found" unless repos = data['repositories']
+  puts repos.map { |r| "#{r['username']}/#{r['name']}"}.sort
+end

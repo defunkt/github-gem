@@ -31,6 +31,12 @@ command :browse do |user, branch|
   end
 end
 
+desc 'Open the given user/project in a web browser'
+usage 'github open [user/project]'
+command :open do |arg|
+  helper.open "http://github.com/#{arg}"
+end
+
 
 desc "Info about this project."
 command :info do

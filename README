@@ -152,6 +152,41 @@ scripts (like 'github ignore' for instance).
 
 
 ==========
+Issues
+==========
+
+If you'd like to see a summary of the open issues on your project:
+
+  $ github issues open
+
+  -----
+  Issue #135 (2 votes): Remove Node#collect_namespaces
+  *  URL: http://github.com/tenderlove/nokogiri/issues/#issue/135
+  *  Opened 3 days ago by tenderlove
+  *  Last updated about 1 hour ago
+  
+  I think we should remove Node#collect_namespaces.  Since namespace names are not unique, I don't know that this method is very useful.
+  -----
+  Issue #51 (0 votes): FFI: support varargs in error/exception callbacks
+  *  URL: http://github.com/tenderlove/nokogiri/issues/#issue/51
+  *  Opened 4 months ago by flavorjones
+  *  Last updated about 1 month ago
+  *  Labels: ffi, mdalessio
+  
+  we should open JIRA tickets for vararg support in FFI callbacks
+  
+  then we should format the libxml error messages properly in the error/exception callbacks
+  -----
+
+If you want to additionally filter by time:
+
+  $ github issues open --after=2009-09-14
+
+Or filter by label:
+
+  $ github issues open --label=ffi
+
+==========
 Contributors
 ==========
 

@@ -4,6 +4,7 @@ lib/github.rb
 lib/commands/commands.rb
 lib/commands/helpers.rb
 lib/commands/network.rb
+lib/commands/issues.rb
 lib/github/helper.rb
 lib/github/command.rb
 lib/github/extensions.rb

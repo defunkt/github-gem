@@ -14,6 +14,10 @@ class HelperRunner
     @parent.send :it, "#{@name} #{str}", &block
   end
   alias specify it
+
+  def before(symbol=:each, &block)
+    @parent.send :before, symbol, &block
+  end
 end
 
 describe GitHub::Helper do

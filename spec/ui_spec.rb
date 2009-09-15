@@ -454,8 +454,9 @@ EOF
     def run
       self.instance_eval &@block
       mock_remotes unless @remotes.nil?
-      GitHub.should_receive(:load).with("commands.rb")
-      GitHub.should_receive(:load).with("helpers.rb")
+      GitHub.should_receive(:load).with(GitHub::BasePath + "/commands/commands.rb")
+      GitHub.should_receive(:load).with(GitHub::BasePath + "/commands/helpers.rb")
+      GitHub.should_receive(:load).with(GitHub::BasePath + "/commands/network.rb")
       args = @args.clone
       GitHub.parse_options(args) # strip out the flags
       GitHub.should_receive(:invoke).with(@cmd_name, *args).and_return do

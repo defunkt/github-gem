@@ -457,6 +457,7 @@ EOF
       GitHub.should_receive(:load).with(GitHub::BasePath + "/commands/commands.rb")
       GitHub.should_receive(:load).with(GitHub::BasePath + "/commands/helpers.rb")
       GitHub.should_receive(:load).with(GitHub::BasePath + "/commands/network.rb")
+      GitHub.should_receive(:load).with(GitHub::BasePath + "/commands/issues.rb")
       args = @args.clone
       GitHub.parse_options(args) # strip out the flags
       GitHub.should_receive(:invoke).with(@cmd_name, *args).and_return do

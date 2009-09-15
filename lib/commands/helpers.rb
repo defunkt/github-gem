@@ -251,6 +251,10 @@ helper :network_members_for do |user|
   "http://github.com/#{user}/#{project}/network/members.json"
 end
 
+helper :list_issues_for do |user, state|
+  "http://github.com/api/v2/yaml/issues/list/#{user}/#{project}/#{state}"
+end
+
 helper :has_launchy? do |blk|
   begin
     gem 'launchy'
@@ -394,4 +398,73 @@ end
 
 helper :get_cache do
   JSON.parse(File.read(network_cache_path))
+end
+
+helper :print_issues_help do
+  puts <<-EOHELP
+You have to provide a command :
+
+  open           - shows closed tickets for this project
+  closed         - shows closed tickets for this project
+
+    --user=<username>   - show issues from <username>'s repository
+    --after=<date>      - only show issues updated after <date>
+
+  EOHELP
+end
+
+helper :distance_of_time do |from_time, to_time|
+  # this is a dumbed-down version of actionpack's helper.
+  from_time = from_time.to_time if from_time.respond_to?(:to_time)
+  to_time = to_time.to_time if to_time.respond_to?(:to_time)
+
+  distance_in_minutes = (((to_time - from_time).abs)/60).round
+
+  words = case distance_in_minutes
+          when 0               then "less than 1 minute"
+          when 2..44           then "%d minutes" % distance_in_minutes
+          when 45..89          then "about 1 hour"
+          when 90..1439        then "about %d hours" % (distance_in_minutes.to_f / 60.0).round
+          when 1440..2879      then "1 day"
+          when 2880..43199     then "%d days" % (distance_in_minutes / 1440).round
+          when 43200..86399    then "about 1 month"
+          when 86400..525599   then "%d months" % (distance_in_minutes / 43200).round
+          when 525600..1051199 then "about 1 year"
+          else                      "over %d years" % (distance_in_minutes / 525600).round
+          end
+
+  "#{words} ago"
+end
+
+helper :format_issue do |issue, options|
+  options ||= {}
+  report = []
+  report << "Issue ##{issue['number']} (#{issue['votes']} votes): #{issue['title']}"
+  report << "*  URL: http://github.com/#{options[:user]}/#{project}/issues/#issue/#{issue['number']}" if options[:user]
+  report << "*  Opened #{distance_of_time(issue['created_at'], Time.now)} by #{issue['user']}" if issue['created_at']
+  report << "*  Closed #{distance_of_time(issue['closed_at'], Time.now)}" if issue['closed_at']
+  report << "*  Last updated #{distance_of_time(issue['updated_at'], Time.now)}" if issue['updated_at']
+  report << "*  Labels: #{issue['labels'].join(', ')}" if issue['labels'] && issue['labels'].length > 0
+  report << ""
+  report << issue['body']
+  report << ""
+  report.join("\n")
+end
+
+helper :filter_issue do |issue, options|
+  if options[:after] && ! options[:after].instance_of?(Time)
+    options[:after] = Time.parse(options[:after]) rescue (puts 'cant parse after date')
+  end
+  return true if options[:after] && (options[:after] > issue['updated_at']) rescue false
+  return true if options[:label] && (issue['labels'].nil? || issue['labels'].empty? || ! issue['labels'].include?(options[:label]))
+  return false
+end
+
+helper :print_issues do |issues, options|
+  issues.sort_by {|issue| issue['updated_at']}.reverse.each do |issue|
+    next if filter_issue(issue, options)
+    puts "-----"
+    puts format_issue(issue, options)
+  end
+  puts "-----"
 end

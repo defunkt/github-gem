@@ -395,3 +395,60 @@ end
 helper :get_cache do
   JSON.parse(File.read(network_cache_path))
 end
+
+helper :http_get do |url|
+  parsed_url = URI.parse(url)
+  http = Net::HTTP.new(parsed_url.host, parsed_url.port)
+  http.use_ssl = parsed_url.scheme == 'https'
+  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  http.get(parsed_url.request_uri)
+end
+
+helper :url_encode do |str|
+  str.to_s.gsub(/[^a-zA-Z0-9_\.\-]/n) {|s| sprintf('%%%02x', s[0])}
+end
+
+helper :http_post do |url,params|
+  parsed_url = URI.parse(url)
+  http = Net::HTTP.new(parsed_url.host, parsed_url.port)
+  http.use_ssl = parsed_url.scheme == 'https'
+  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+  req = Net::HTTP::Post.new(parsed_url.path)
+  req.body = params.map {|k,v| "#{url_encode(k)}=#{url_encode(v)}" }.join('&')
+  req.content_type = 'application/x-www-form-urlencoded'
+  http.request req
+end
+
+helper :prepare_param do |name, value|
+  "Content-Disposition: form-data; name=\"#{url_encode(name)}\"\r\n\r\n#{value}\r\n"
+end
+
+helper :http_post_multipart do |url, params|
+  parsed_url = URI.parse(url)
+  http = Net::HTTP.new(parsed_url.host, parsed_url.port)
+  http.use_ssl = parsed_url.scheme == 'https'
+  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+  boundary = "#{rand(1000000)}boundaryofdoomydoom#{rand(1000000)}"
+
+  fp = []
+  files = []
+
+  params.each do |k,v|
+    if v.respond_to?(:path) and v.respond_to?(:read) then
+      filename = v.path
+      content = v.read
+      mime_type = MIME::Types.type_for(filename)[0] || MIME::Types["application/octet-stream"][0]
+      fp.push(prepare_param("Content-Type", mime_type.simplified))
+      files.push("Content-Disposition: form-data; name=\"#{url_encode(k.to_s)}\"; filename=\"#{ filename }\"\r\nContent-Type: #{ mime_type.simplified }\r\n\r\n#{ content }\r\n")
+    else
+      fp.push(prepare_param(k,v))
+    end
+  end
+
+  http.post(parsed_url.path, "--#{boundary}\r\n" + (fp + files).join("--#{boundary}\r\n") + "--#{boundary}--", {
+    "Content-Type" => "multipart/form-data; boundary=#{boundary}",
+    "User-Agent" => "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en-us) AppleWebKit/523.10.6 (KHTML, like Gecko) Version/3.0.4 Safari/523.10.6"
+  })
+end

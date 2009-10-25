@@ -204,3 +204,54 @@ command 'create-from-local' do
   git "remote add origin git@github.com:#{github_user}/#{repo}.git"
   git_exec "push origin master"
 end
+
+desc "Uploads a file to GitHub's non-repo storage"
+usage "github upload [filename]"
+usage "github upload [filename] [user]/[repo]"
+command :upload do |filename, user, repo|
+  die "Specify a file to upload" if filename.nil?
+  if repo.nil?
+    if user
+      user, repo = user.split('/')
+    else
+      user = helper.owner
+      repo = helper.project
+    end
+  end
+  die "Cannot determine GitHub repo" if user.nil? || repo.nil?
+
+  die "Target file does not exist" unless File.size?(filename)
+  file = File.new(filename)
+  mime_type = MIME::Types.type_for(filename)[0] || MIME::Types["application/octet-stream"][0]
+
+  res = helper.http_get "https://github.com/#{user}/#{repo}/downloads?login=#{github_user}&token=#{github_token}"
+  is_public = res.body =~ /You are being <a href="http:\/\/github.com/
+  schema = is_public ? "http" : "https"
+  res = helper.http_get "#{schema}://github.com/#{user}/#{repo}/downloads?login=#{github_user}&token=#{github_token}" if is_public
+  die "File has already been uploaded" if res.body =~ /<td><a href=".+?\/downloads\/#{user}\/#{repo}\/#{filename}.*">#{filename}<\/a><\/td>/
+
+  res = helper.http_post("#{schema}://github.com/#{user}/#{repo}/downloads", {
+    :file_size => File.size(filename),
+    :content_type => mime_type.simplified,
+    :file_name => filename,
+    :description => '',
+    :login => github_user,
+    :token => github_token,
+  })
+  die "Repo not found" if res.class == Net::HTTPNotFound
+  data = XmlSimple.xml_in(res.body)
+  die "Unable to authorize upload" if data["signature"].nil?
+
+  res = helper.http_post_multipart("http://github.s3.amazonaws.com/", {
+    :key => "#{data["prefix"].first}#{filename}",
+    :Filename => filename,
+    :policy => data["policy"].first,
+    :AWSAccessKeyId => data["accesskeyid"].first,
+    :signature => data["signature"].first,
+    :acl => data["acl"].first,
+    :file => file,
+    :success_action_status => 201
+  })
+  die "File upload failed" unless res.class == Net::HTTPCreated
+  puts "File uploaded successfully"
+end

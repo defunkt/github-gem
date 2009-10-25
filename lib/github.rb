@@ -10,7 +10,6 @@ require 'open-uri'
 require 'json'
 require 'yaml'
 require 'xmlsimple'
-require "time"
 require 'mime/types'
 
 ##

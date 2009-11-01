@@ -137,18 +137,18 @@ describe GitHub::Helper do
 
   helper :project do
     it "should return project-awesome" do
-      setup_url_for :origin, "user", "project-awesome"
+      setup_url_for "origin", "user", "project-awesome"
       @helper.project.should == "project-awesome"
     end
 
     it "should exit due to missing origin" do
-      @helper.should_receive(:url_for).twice.with(:origin).and_return("")
+      @helper.should_receive(:url_for).twice.with("origin").and_return("")
       STDERR.should_receive(:puts).with("Error: missing remote 'origin'")
       lambda { @helper.project }.should raise_error(SystemExit)
     end
 
     it "should exit due to non-github origin" do
-      @helper.should_receive(:url_for).twice.with(:origin).and_return("home:path/to/repo.git")
+      @helper.should_receive(:url_for).twice.with("origin").and_return("home:path/to/repo.git")
       STDERR.should_receive(:puts).with("Error: remote 'origin' is not a github URL")
       lambda { @helper.project }.should raise_error(SystemExit)
     end
@@ -156,8 +156,8 @@ describe GitHub::Helper do
 
   helper :repo_for do
     it "should return mephisto.git" do
-      setup_url_for :mojombo, "mojombo", "mephisto"
-      @helper.repo_for(:mojombo).should == "mephisto.git"
+      setup_url_for "mojombo", "mojombo", "mephisto"
+      @helper.repo_for("mojombo").should == "mephisto.git"
     end
   end
 
@@ -195,15 +195,15 @@ describe GitHub::Helper do
 
   helper :user_for do
     it "should return defunkt" do
-      setup_url_for :origin, "defunkt"
-      @helper.user_for(:origin).should == "defunkt"
+      setup_url_for "origin", "defunkt"
+      @helper.user_for("origin").should == "defunkt"
     end
   end
 
   helper :url_for do
     it "should call out to the shell" do
       @helper.should_receive(:`).with("git config --get remote.origin.url").and_return "git://github.com/user/project.git\n"
-      @helper.url_for(:origin).should == "git://github.com/user/project.git"
+      @helper.url_for("origin").should == "git://github.com/user/project.git"
     end
   end
 

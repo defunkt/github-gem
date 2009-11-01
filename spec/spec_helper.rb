@@ -124,12 +124,13 @@ end
 
 # include this in any example group that defines @helper
 module SetupMethods
-  def setup_url_for(remote = :origin, user = nil, project = :project)
+  def setup_url_for(remote = "origin", user = nil, project = "project")
     if user.nil?
       user = remote
-      user = "user" if remote == :origin
+      user = "user" if remote == "origin"
     end
     @helper.should_receive(:url_for).any_number_of_times.with(remote).and_return("git://github.com/#{user}/#{project}.git")
+    @helper.should_receive(:origin).any_number_of_times.and_return(remote.to_s)
   end
 
   def setup_user_and_branch(user = :user, branch = :master)

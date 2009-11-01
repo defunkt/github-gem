@@ -73,9 +73,9 @@ describe "github" do
 == Info for project
 You are user
 Currently tracking:
- - user (as origin)
  - defunkt (as defunkt)
  - home:/path/to/project.git (as external)
+ - user (as origin)
 EOF
     end
   end
@@ -110,14 +110,14 @@ EOF
       setup_url_for
       @helper.should_receive(:tracking?).with("defunkt").once.and_return(true)
       @command.should_receive(:die).with("Already tracking defunkt").and_return { raise "Died" }
-      self.should raise_error("Died")
+      self.should raise_error(RuntimeError)
     end
   end
 
   specify "track should die with no args" do
     running :track do
       @command.should_receive(:die).with("Specify a user to track").and_return { raise "Died" }
-      self.should raise_error("Died")
+      self.should raise_error(RuntimeError)
     end
   end
 
@@ -131,7 +131,7 @@ EOF
 
   specify "track defunkt/github-gem.git should function with no origin remote" do
     running :track, "defunkt/github-gem.git" do
-      @helper.stub!(:url_for).with(:origin).and_return ""
+      @helper.stub!(:url_for).with("origin").and_return ""
       @helper.stub!(:tracking?).and_return false
       @command.should_receive(:git).with("remote add defunkt git://github.com/defunkt/github-gem.git")
       self.should_not raise_error(SystemExit)
@@ -141,7 +141,7 @@ EOF
 
   specify "track origin defunkt/github-gem should track defunkt/github-gem as the origin remote" do
     running :track, "origin", "defunkt/github-gem" do
-      @helper.stub!(:url_for).with(:origin).and_return ""
+      @helper.stub!(:url_for).with("origin").and_return ""
       @helper.stub!(:tracking?).and_return false
       @command.should_receive(:git).with("remote add origin git://github.com/defunkt/github-gem.git")
       stderr.should_not =~ /^Error/
@@ -150,7 +150,7 @@ EOF
 
   specify "track --private origin defunkt/github-gem should track defunkt/github-gem as the origin remote using ssh" do
     running :track, "--private", "origin", "defunkt/github-gem" do
-      @helper.stub!(:url_for).with(:origin).and_return ""
+      @helper.stub!(:url_for).with("origin").and_return ""
       @helper.stub!(:tracking?).and_return false
       @command.should_receive(:git).with("remote add origin git@github.com:defunkt/github-gem.git")
       stderr.should_not =~ /^Error/
@@ -161,7 +161,7 @@ EOF
   specify "fetch should die with no args" do
     running :fetch do
       @command.should_receive(:die).with("Specify a user to pull from").and_return { raise "Died "}
-      self.should raise_error("Died")
+      self.should raise_error(RuntimeError)
     end
   end
 
@@ -193,7 +193,7 @@ EOF
       setup_remote(:defunkt)
       @helper.should_receive(:branch_dirty?).and_return true
       @command.should_receive(:die).with("Unable to switch branches, your current branch has uncommitted changes").and_return { raise "Died" }
-      self.should raise_error("Died")
+      self.should raise_error(RuntimeError)
     end
   end
 
@@ -219,8 +219,8 @@ EOF
   # -- fetch --
   specify "fetch should die with no args" do
     running :fetch do
-      @command.should_receive(:die).with("Specify a user to fetch from").and_return { raise "Died" }
-      self.should raise_error("Died")
+      @command.should_receive(:die).with("Specify a user to pull from").and_return { raise "Died" }
+      self.should raise_error(RuntimeError)
     end
   end
 
@@ -250,7 +250,7 @@ EOF
       setup_remote(:defunkt)
       @helper.should_receive(:branch_dirty?).and_return true
       @command.should_receive(:die).with("Unable to switch branches, your current branch has uncommitted changes").and_return { raise "Died" }
-      self.should raise_error("Died")
+      self.should raise_error(RuntimeError)
     end
   end
 
@@ -272,7 +272,7 @@ EOF
       mock_members 'defunkt'
       setup_remote(:defunkt)
       @helper.should_receive(:branch_dirty?).and_return false
-      @command.should_receive(:git_exec).with("fetch defunkt master")
+      @command.should_receive(:git_exec).with("pull defunkt master")
     end
   end
 
@@ -294,7 +294,7 @@ EOF
   specify "clone should die with no args" do
     running :clone do
       @command.should_receive(:die).with("Specify a user to pull from").and_return { raise "Died" }
-      self.should raise_error("Died")
+      self.should raise_error(RuntimeError)
     end
   end
 
@@ -351,7 +351,7 @@ EOF
     running :'pull-request' do
       setup_url_for
       @command.should_receive(:die).with("Specify a user for the pull request").and_return { raise "Died" }
-      self.should raise_error("Died")
+      self.should raise_error(RuntimeError)
     end
   end
 
@@ -395,6 +395,7 @@ EOF
   # -- fallthrough --
   specify "should fall through to actual git commands" do
     running :commit do
+      rp @command
       @command.should_receive(:git_exec).with("commit")
     end
   end
@@ -488,14 +489,14 @@ EOF
       url = options[:url]
       remote_branches = options[:remote_branches] || ["master"]
       if url
-        @remotes[remote.to_sym] = url
+        @remotes[remote] = url
       elsif ssh
-        @remotes[remote.to_sym] = "git@github.com:#{user}/#{project}.git"
+        @remotes[remote] = "git@github.com:#{user}/#{project}.git"
       else
-        @remotes[remote.to_sym] = "git://github.com/#{user}/#{project}.git"
+        @remotes[remote] = "git://github.com/#{user}/#{project}.git"
       end
 
-      @remote_branches[remote.to_sym] = (@remote_branches[remote.to_sym] || Array.new) | remote_branches
+      @remote_branches[remote] = (@remote_branches[remote] || Array.new) | remote_branches
       @helper.should_receive(:remote_branch?).any_number_of_times.and_return do |remote, branch|
         @remote_branches.fetch(remote.to_sym,[]).include?(branch)
       end

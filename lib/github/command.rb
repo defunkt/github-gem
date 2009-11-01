@@ -42,6 +42,7 @@ module GitHub
     end
 
     def git_exec(command)
+      rp self
       run :exec, command
     end
 

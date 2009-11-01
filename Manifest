@@ -1,5 +1,6 @@
 History.txt
 LICENSE
+Manifest
 README
 Rakefile
 bin/gh
@@ -7,6 +8,7 @@ bin/github
 github-gem.gemspec
 lib/commands/commands.rb
 lib/commands/helpers.rb
+lib/commands/issues.rb
 lib/commands/network.rb
 lib/github.rb
 lib/github/command.rb
@@ -20,4 +22,3 @@ spec/helper_spec.rb
 spec/spec_helper.rb
 spec/ui_spec.rb
 spec/windoze_spec.rb
-Manifest

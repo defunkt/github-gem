@@ -14,6 +14,10 @@ class HelperRunner
     @parent.send :it, "#{@name} #{str}", &block
   end
   alias specify it
+
+  def before(symbol=:each, &block)
+    @parent.send :before, symbol, &block
+  end
 end
 
 describe GitHub::Helper do
@@ -25,6 +29,75 @@ describe GitHub::Helper do
 
   before(:each) do
     @helper = GitHub::Helper.new
+  end
+
+  helper :print_issues_help do
+    it "should exist" do
+      @helper.should respond_to(:print_issues_help)
+    end
+  end
+
+  helper :format_issue do
+    before(:each) do
+      @issue = {}
+      @issue['number'] = 1234
+      @issue['title'] = "Isaac Asimov's Science Fiction Magazine"
+      @issue['votes'] = 99
+    end
+
+    specify "the title, number of votes and ticket number should appear" do
+      @helper.format_issue(@issue, {}).should =~ /Issue #1234 \(99 votes\): Isaac Asimov's Science Fiction Magazine/
+    end
+
+    specify "the url should appear" do
+      @helper.format_issue(@issue, {:user => 'hamilton'}).should =~ /http:\/\/github.com\/hamilton\/foo\/issues\/#issue\/#{@issue['number']}/
+    end
+
+    specify "created_at should appear" do
+      @issue['created_at'] = Time.now - 3600
+      @issue['user'] = 'Ray Bradbury'
+      @helper.format_issue(@issue, {}).should =~ /Opened about 1 hour ago by Ray Bradbury/
+    end
+
+    specify "closed_at should appear" do
+      @issue['closed_at'] = Time.now - 3600
+      @helper.format_issue(@issue, {}).should =~ /Closed about 1 hour ago/
+    end
+
+    specify "updated_at should appear" do
+      @issue['updated_at'] = Time.now - 3600
+      @helper.format_issue(@issue, {}).should =~ /Last updated about 1 hour ago/
+    end
+
+    specify "labels should appear" do
+      @issue['labels'] = ['Horror','Sci-Fi','Fan Fic']
+      @helper.format_issue(@issue, {}).should =~ /Labels: Horror, Sci-Fi, Fan Fic/
+    end
+
+    specify "the body should appear" do
+      @issue['body'] = <<-EOF
+        It was the best of times,
+        It was the worst of times.
+      EOF
+      report = @helper.format_issue(@issue, {})
+      report.should =~ /It was the best of times,/
+      report.should =~ /It was the worst of times\./
+    end
+  end
+
+  helper :filter_issue do
+    specify "when the after option is present, show only issues updated on or after that date" do
+      issue = {'updated_at' => Time.parse('2009-01-02 12:00:00')}
+      @helper.filter_issue(issue, :after => '2009-01-02').should be_false
+      @helper.filter_issue(issue, :after => '2009-01-03').should be_true
+    end
+
+    specify "when a label is specified, show only issues that have that label" do
+      @helper.filter_issue({'labels' => nil}, :label => 'foo').should be_true
+      @helper.filter_issue({'labels' => []}, :label => 'foo').should be_true
+      @helper.filter_issue({'labels' => ['foo']}, :label => 'foo').should be_false
+      @helper.filter_issue({'labels' => ['quux','foo','bar']}, :label => 'foo').should be_false
+    end
   end
 
   helper :owner do

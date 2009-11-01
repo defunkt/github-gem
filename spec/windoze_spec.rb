@@ -23,12 +23,14 @@ describe "github/command.rb" do
 
   it "should require win32/open3 under Windows" do
     mod = Module.new
+    mod.should_receive(:require).with("fileutils")
     mod.should_receive(:require).with("win32/open3")
     mod.class_eval @data, @filename
   end
 
   it "should blow up if win32/open3 isn't present under Windows" do
     mod = Module.new
+    mod.should_receive(:require).with("fileutils")
     mod.should_receive(:require).with("win32/open3").and_return { raise LoadError }
     mod.should_receive(:warn).with("You must 'gem install win32-open3' to use the github command on Windows")
     lambda { mod.class_eval @data, @filename }.should raise_error(SystemExit)

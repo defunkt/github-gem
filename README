@@ -46,7 +46,7 @@ master branch, use the `merge` flag:
 
 
 ==========
-Fetching and Evaluation Downstream Changes
+Fetching and Evaluating Downstream Changes
 ==========
 
 If you are the maintainer of a project, you will often need to fetch commits

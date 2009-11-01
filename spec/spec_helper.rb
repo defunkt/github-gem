@@ -136,3 +136,21 @@ module SetupMethods
     @helper.should_receive(:url_for).any_number_of_times.with(remote).and_return("git://github.com/#{user}/#{project}.git")
   end
 end
+
+# When running specs in TextMate, provide an rputs method to cleanly print objects into HTML display
+# From http://talklikeaduck.denhaven2.com/2009/09/23/rspec-textmate-pro-tip
+module Kernel
+  if ENV.keys.find {|env_var| env_var.index("TM_") >= 0}
+    def rputs(*args)
+      require 'cgi'
+      puts( *["<pre>", args.collect {|a| CGI.escapeHTML(a.to_s)}, "</pre>"])
+    end
+    def rp(*args)
+      require 'cgi'
+      puts( *["<pre>", args.collect {|a| CGI.escapeHTML(a.inspect)}, "</pre>"])
+    end
+  else
+    alias_method :rputs, :puts
+    alias_method :rp, :p
+  end
+end

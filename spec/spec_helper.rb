@@ -55,7 +55,7 @@ module Spec::Example::ExampleGroupSubclassMethods
     target.class_eval do
       guarded = instance_method(name)
       define_method name do |*args|
-        raise "Testing guards violated: Cannot call #{klass}#{sep}#{name}"
+        raise "Testing guards violated: Cannot call #{klass}#{sep}#{name} with args #{args.inspect}"
       end
     end
     @guards ||= []

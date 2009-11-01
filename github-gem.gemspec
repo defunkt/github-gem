@@ -23,4 +23,5 @@ Gem::Specification.new do |s|
 
   # s.add_dependency(%q<launchy>, [">= 0"])
   s.add_dependency('json_pure', [">= 0"])
+  s.add_dependency('text-format', [">= 0"])
 end

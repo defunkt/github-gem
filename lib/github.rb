@@ -7,6 +7,7 @@ require 'rubygems'
 require 'open-uri'
 require 'json'
 require 'yaml'
+require 'text/format'
 
 ##
 # Starting simple.
@@ -154,19 +155,28 @@ GitHub.command :default, :aliases => ['', '-h', 'help', '-help', '--help'] do
   puts "Usage: github command <space separated arguments>", ''
   puts "Available commands:", ''
   longest = GitHub.descriptions.map { |d,| d.to_s.size }.max
+  indent = longest + 6 # length of "  " + " => "
+  fmt = Text::Format.new(
+    :first_indent => indent,
+    :body_indent => indent,
+    :columns => 79 # be a little more lenient than the default
+  )
   GitHub.descriptions.sort {|a,b| a.to_s <=> b.to_s }.each do |command, desc|
     cmdstr = "%-#{longest}s" % command
+    desc = fmt.format(desc).strip # strip to eat first "indent"
     puts "  #{cmdstr} => #{desc}"
     flongest = GitHub.flag_descriptions[command].map { |d,| "--#{d}".size }.max
+    ffmt = fmt.clone
+    ffmt.body_indent += 2 # length of "% " and/or "--"
     GitHub.usage_descriptions[command].each do |usage_descriptions|
       usage_descriptions.each do |usage|
-        usage_str = "#{" " * longest}      %% %-#{flongest}s" % usage
-        puts usage_str
+        usage_str = "%% %-#{flongest}s" % usage
+        puts ffmt.format(usage_str)
       end
     end
     GitHub.flag_descriptions[command].each do |flag, fdesc|
       flagstr = "#{" " * longest}  %-#{flongest}s" % "--#{flag}"
-      puts "  #{flagstr}: #{fdesc}"
+      puts ffmt.format("  #{flagstr}: #{fdesc}")
     end
   end
   puts

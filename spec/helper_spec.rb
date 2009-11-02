@@ -333,12 +333,7 @@ random
 
         @helper.should_receive(:gem).with('launchy')
         Launchy::Browser.next_instance.tap do |browser|
-          browser.should_receive(:my_os_family).any_number_of_times.and_return :windows # avoid forking
-          if RUBY_PLATFORM =~ /mingw|mswin/
-            browser.should_receive(:system).with("start http://www.google.com")
-          else
-            browser.should_receive(:system).with("/usr/bin/open http://www.google.com")
-          end
+          browser.should_receive(:run).with('/usr/bin/open', "http://www.google.com")
           @helper.open "http://www.google.com"
         end
       rescue LoadError

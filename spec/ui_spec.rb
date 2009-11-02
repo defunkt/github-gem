@@ -279,6 +279,7 @@ EOF
   specify "pull falls through for non-recognized commands" do
     running :pull, 'remote' do
       mock_members 'defunkt'
+      setup_remote(:defunkt)
       @command.should_receive(:git_exec).with("pull remote")
     end
   end

@@ -42,11 +42,11 @@ module GitHub
     end
 
     def git_exec(command)
-      rp self
       run :exec, command
     end
 
     def run(method, command)
+      rp "run #{method} #{command}"
       if command.is_a? Array
         command = [ 'git', command ].flatten
         GitHub.learn command.join(' ')

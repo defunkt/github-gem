@@ -106,6 +106,7 @@ command :pull do |user, branch|
 
   if !helper.network_members.include?(user)
     git_exec "#{helper.argv.join(' ')}".strip
+    return
   end
 
   branch ||= 'master'
@@ -115,7 +116,7 @@ command :pull do |user, branch|
     git_exec "pull #{user} #{branch}"
   else
     puts "Switching to #{user}-#{branch}"
-    git "fetch #{user}"
+    git_exec "fetch #{user}"
     git_exec "checkout -b #{user}/#{branch} #{user}/#{branch}"
   end
 end

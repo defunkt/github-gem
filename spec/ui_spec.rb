@@ -395,14 +395,13 @@ EOF
   # -- fallthrough --
   specify "should fall through to actual git commands" do
     running :commit do
-      rp @command
-      @command.should_receive(:git_exec).with("commit")
+      @command.should_receive(:git_exec).with(["commit", []])
     end
   end
 
   specify "should pass along arguments when falling through" do
     running :commit, '-a', '-m', 'yo mama' do
-      @command.should_receive(:git_exec).with("commit -a -m 'yo mama'")
+      @command.should_receive(:git_exec).with(["commit", ["-a", "-m", 'yo mama']])
     end
   end
 

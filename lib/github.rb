@@ -77,7 +77,7 @@ module GitHub
 
   def find_command(name)
     name = name.to_s
-    commands[name] || GitCommand.new(name) || commands['default']
+    commands[name] || (commands[name] = GitCommand.new(name)) || commands['default']
   end
 
   def commands

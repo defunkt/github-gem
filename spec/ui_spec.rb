@@ -259,12 +259,10 @@ EOF
     running :pull, "defunkt/wip" do
       mock_members 'defunkt'
       setup_remote(:defunkt)
-      @command.should_receive(:git).with("checkout -b defunkt/wip").ordered.and_return do
-        mock("checkout -b defunkt/wip").tap { |m| m.should_receive(:error?) { true } }
-      end
-      @command.should_receive(:git).with("checkout defunkt/wip").ordered
-      @command.should_receive(:git_exec).with("fetch defunkt wip").ordered
-      stdout.should == "Switching to defunkt/wip\n"
+      @helper.should_receive(:branch_dirty?).and_return false
+      @command.should_receive(:git).with("fetch defunkt").ordered
+      @command.should_receive(:git_exec).with("checkout -b defunkt/wip defunkt/wip").ordered
+      stdout.should == "Switching to defunkt-wip\n"
     end
   end
 

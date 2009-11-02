@@ -144,12 +144,14 @@ describe GitHub::Helper do
 
     it "should exit due to missing origin" do
       @helper.should_receive(:url_for).twice.with("origin").and_return("")
+      @helper.should_receive(:origin).twice.and_return("origin")
       STDERR.should_receive(:puts).with("Error: missing remote 'origin'")
       lambda { @helper.project }.should raise_error(SystemExit)
     end
 
     it "should exit due to non-github origin" do
       @helper.should_receive(:url_for).twice.with("origin").and_return("home:path/to/repo.git")
+      @helper.should_receive(:origin).twice.and_return("origin")
       STDERR.should_receive(:puts).with("Error: remote 'origin' is not a github URL")
       lambda { @helper.project }.should raise_error(SystemExit)
     end

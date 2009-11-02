@@ -1,4 +1,4 @@
-DEV_NULL = File.exist?("/dev/null") ? "/dev/null" : "nul:"
+DEV_NULL = File.exist?("/dev/null") ? "/dev/null" : "nul:" unless const_defined?("DEV_NULL")
 
 helper :user_and_repo_from do |url|
   case url

@@ -152,8 +152,9 @@ module GitHub
 end
 
 GitHub.command :default, :aliases => ['', '-h', 'help', '-help', '--help'] do
-  puts "Usage: github command <space separated arguments>", ''
-  puts "Available commands:", ''
+  message = []
+  message << "Usage: github command <space separated arguments>"
+  message << "Available commands:"
   longest = GitHub.descriptions.map { |d,| d.to_s.size }.max
   indent = longest + 6 # length of "  " + " => "
   fmt = Text::Format.new(
@@ -164,20 +165,20 @@ GitHub.command :default, :aliases => ['', '-h', 'help', '-help', '--help'] do
   GitHub.descriptions.sort {|a,b| a.to_s <=> b.to_s }.each do |command, desc|
     cmdstr = "%-#{longest}s" % command
     desc = fmt.format(desc).strip # strip to eat first "indent"
-    puts "  #{cmdstr} => #{desc}"
+    message << "  #{cmdstr} => #{desc}"
     flongest = GitHub.flag_descriptions[command].map { |d,| "--#{d}".size }.max
     ffmt = fmt.clone
     ffmt.body_indent += 2 # length of "% " and/or "--"
     GitHub.usage_descriptions[command].each do |usage_descriptions|
       usage_descriptions.each do |usage|
         usage_str = "%% %-#{flongest}s" % usage
-        puts ffmt.format(usage_str)
+        message << ffmt.format(usage_str)
       end
     end
     GitHub.flag_descriptions[command].each do |flag, fdesc|
       flagstr = "#{" " * longest}  %-#{flongest}s" % "--#{flag}"
-      puts ffmt.format("  #{flagstr}: #{fdesc}")
+      message << ffmt.format("  #{flagstr}: #{fdesc}")
     end
   end
-  puts
+  puts message.map { |m| m.gsub(/\n$/,'') }.join("\n") + "\n"
 end

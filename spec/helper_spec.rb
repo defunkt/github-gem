@@ -50,6 +50,7 @@ describe GitHub::Helper do
     end
 
     specify "the url should appear" do
+      setup_url_for("origin",  "hamilton", "foo")
       @helper.format_issue(@issue, {:user => 'hamilton'}).should =~ /http:\/\/github.com\/hamilton\/foo\/issues\/#issue\/#{@issue['number']}/
     end
 
@@ -102,14 +103,14 @@ describe GitHub::Helper do
 
   helper :owner do
     it "should return repo owner" do
-      setup_url_for :origin, "hacker"
+      setup_url_for "origin", "hacker"
       @helper.owner.should == "hacker"
     end
   end
 
   helper :private_url_for do
     it "should return an ssh-style url" do
-      setup_url_for :origin, "user", "merb-core"
+      setup_url_for "origin", "user", "merb-core"
       @helper.private_url_for("wycats").should == "git@github.com:wycats/merb-core.git"
     end
   end
@@ -123,7 +124,7 @@ describe GitHub::Helper do
 
   helper :public_url_for do
     it "should return a git:// URL" do
-      setup_url_for :origin, "user", "merb-core"
+      setup_url_for "origin", "user", "merb-core"
       @helper.public_url_for("wycats").should == "git://github.com/wycats/merb-core.git"
     end
   end
@@ -272,14 +273,13 @@ random
 
   helper :branch_dirty? do
     it "should return false" do
-      @helper.should_receive(:system).with(/^git diff/).and_return(0, 0)
-      @helper.branch_dirty?.should == 0
+      @helper.should_receive(:system).with(/^git diff/).and_return(true)
+      @helper.branch_dirty?.should == false
     end
 
     it "should return true" do
-      @helper.should_receive(:system).with(/^git diff/).and_return(1, 1, 0, 1)
-      @helper.branch_dirty?.should == 1
-      @helper.branch_dirty?.should == 1
+      @helper.should_receive(:system).with(/^git diff/).and_return(false, true)
+      @helper.branch_dirty?.should == true
     end
   end
 

@@ -170,12 +170,14 @@ helper :remote_branch? do |user, branch|
   remote_branches_for(user).key?(branch)
 end
 
+# see if there are any cached or tracked files that have been modified
+# originally, we were going to use git-ls-files but that could only
+# report modified track files...not files that have been staged
+# for committal
 helper :branch_dirty? do
-  # see if there are any cached or tracked files that have been modified
-  # originally, we were going to use git-ls-files but that could only
-  # report modified track files...not files that have been staged
-  # for committal
-  !(system("git diff --quiet 2>#{DEV_NULL}") or !system("git diff --cached --quiet 2>#{DEV_NULL}"))
+  !( system("git diff --quiet 2>#{DEV_NULL}") || 
+    !system("git diff --cached --quiet 2>#{DEV_NULL}")
+  )
 end
 
 helper :tracking do

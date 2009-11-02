@@ -306,12 +306,14 @@ EOF
 
   specify "clone defunkt github-gem should clone the repo" do
     running :clone, "defunkt", "github-gem" do
+      @command.should_receive(:current_user?).and_return(nil)
       @command.should_receive(:git_exec).with("clone git://github.com/defunkt/github-gem.git")
     end
   end
 
   specify "clone defunkt/github-gem should clone the repo" do
     running :clone, "defunkt/github-gem" do
+      @command.should_receive(:current_user?).and_return(nil)
       @command.should_receive(:git_exec).with("clone git://github.com/defunkt/github-gem.git")
     end
   end
@@ -324,12 +326,14 @@ EOF
 
   specify "clone defunkt github-gem repo should clone the repo into the dir 'repo'" do
     running :clone, "defunkt", "github-gem", "repo" do
+      @command.should_receive(:current_user?).and_return(nil)
       @command.should_receive(:git_exec).with("clone git://github.com/defunkt/github-gem.git repo")
     end
   end
 
   specify "clone defunkt/github-gem repo should clone the repo into the dir 'repo'" do
     running :clone, "defunkt/github-gem", "repo" do
+      @command.should_receive(:current_user?).and_return(nil)
       @command.should_receive(:git_exec).with("clone git://github.com/defunkt/github-gem.git repo")
     end
   end
@@ -342,6 +346,7 @@ EOF
 
   specify "clone defunkt/github-gem repo should clone the repo into the dir 'repo'" do
     running :clone, "defunkt/github-gem", "repo" do
+      @command.should_receive(:current_user?).and_return(nil)
       @command.should_receive(:git_exec).with("clone git://github.com/defunkt/github-gem.git repo")
     end
   end

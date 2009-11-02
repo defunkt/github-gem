@@ -132,11 +132,13 @@ command :clone do |user, repo, dir|
     die "Expected user/repo dir, given extra argument" if dir
     (user, repo), dir = [user.split('/', 2), repo]
   end
-
-  if options[:ssh] || current_user?(user)
-    git_exec "clone git@github.com:#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
-  elsif repo
-    git_exec "clone git://github.com/#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
+  
+  if repo
+    if options[:ssh] || current_user?(user)
+      git_exec "clone git@github.com:#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
+    else
+      git_exec "clone git://github.com/#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
+    end
   else
     git_exec "#{helper.argv.join(' ')}".strip
   end

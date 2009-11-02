@@ -186,9 +186,13 @@ command :fork do |user, repo|
     if user
       user, repo = user.split('/')
     else
-      is_repo = true
-      user = helper.owner
-      repo = helper.project
+      unless helper.remotes.empty?
+        is_repo = true
+        user = helper.owner
+        repo = helper.project
+      else
+        die "Specify a user/project to fork, or run from within a repo"
+      end
     end
   end
 

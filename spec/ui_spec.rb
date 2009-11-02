@@ -214,6 +214,7 @@ EOF
       @command.should_receive(:git).with("fetch defunkt master:refs/remotes/defunkt/master").ordered
       @command.should_receive(:git).with("update-ref refs/heads/defunkt/master refs/remotes/defunkt/master").ordered
       @command.should_receive(:git_exec).with("checkout defunkt/master").ordered
+      stdout.should == "Fetching defunkt/master\n"
     end
   end
 

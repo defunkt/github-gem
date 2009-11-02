@@ -46,7 +46,6 @@ module GitHub
     end
 
     def run(method, command)
-      rp "run #{method} #{command}"
       if command.is_a? Array
         command = [ 'git', command ].flatten
         GitHub.learn command.join(' ')

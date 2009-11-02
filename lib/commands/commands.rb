@@ -112,11 +112,13 @@ command :pull do |user, branch|
   branch ||= 'master'
   GitHub.invoke(:track, user) unless helper.tracking?(user)
 
+  die "Unable to switch branches, your current branch has uncommitted changes" if helper.branch_dirty?
+
   if options[:merge]
     git_exec "pull #{user} #{branch}"
   else
     puts "Switching to #{user}-#{branch}"
-    git_exec "fetch #{user}"
+    git "fetch #{user}"
     git_exec "checkout -b #{user}/#{branch} #{user}/#{branch}"
   end
 end

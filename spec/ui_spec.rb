@@ -180,10 +180,9 @@ EOF
       mock_members 'defunkt'
       setup_remote(:defunkt)
       @helper.should_receive(:branch_dirty?).and_return false
-      @command.should_receive(:git).with("update-ref refs/heads/defunkt/master HEAD").ordered
-      @command.should_receive(:git).with("checkout defunkt/master").ordered
-      @command.should_receive(:git_exec).with("fetch defunkt master").ordered
-      stdout.should == "Switching to defunkt/master\n"
+      @command.should_receive(:git).with("fetch defunkt").ordered
+      @command.should_receive(:git_exec).with("checkout -b defunkt/master defunkt/master").ordered
+      stdout.should == "Switching to defunkt-master\n"
     end
   end
 
@@ -212,7 +211,9 @@ EOF
     running :fetch, "--merge", "defunkt" do
       setup_remote(:defunkt)
       @helper.should_receive(:branch_dirty?).and_return false
-      @command.should_receive(:git_exec).with("fetch defunkt master")
+      @command.should_receive(:git).with("fetch defunkt master:refs/remotes/defunkt/master")
+      @command.should_receive(:git).with("update-ref refs/heads/defunkt/master refs/remotes/defunkt/master")
+      @command.should_receive(:git_exec).with("checkout defunkt/master")
     end
   end
 

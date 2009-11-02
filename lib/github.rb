@@ -175,7 +175,7 @@ GitHub.command :default, :aliases => ['', '-h', 'help', '-help', '--help'] do
         message << ffmt.format(usage_str)
       end
     end
-    GitHub.flag_descriptions[command].each do |flag, fdesc|
+    GitHub.flag_descriptions[command].sort {|a,b| a.to_s <=> b.to_s }.each do |flag, fdesc|
       flagstr = "#{" " * longest}  %-#{flongest}s" % "--#{flag}"
       message << ffmt.format("  #{flagstr}: #{fdesc}")
     end

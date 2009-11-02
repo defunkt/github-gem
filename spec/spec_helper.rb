@@ -97,6 +97,8 @@ Spec::Runner.configure do |configuration|
     module GitHub
       load 'helpers.rb'
       load 'commands.rb'
+      load 'network.rb'
+      load 'issues.rb'
     end
   end
 

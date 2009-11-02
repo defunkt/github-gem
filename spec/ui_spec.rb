@@ -200,10 +200,10 @@ EOF
     running :fetch, "defunkt/wip" do
       setup_remote(:defunkt, :remote_branches => ["master", "wip"])
       @helper.should_receive(:branch_dirty?).and_return false
-      @command.should_receive(:git).with("update-ref refs/heads/defunkt/wip HEAD").ordered
-      @command.should_receive(:git).with("checkout defunkt/wip").ordered
-      @command.should_receive(:git_exec).with("fetch defunkt wip").ordered
-      stdout.should == "Switching to defunkt/wip\n"
+      @command.should_receive(:git).with("fetch defunkt wip:refs/remotes/defunkt/wip").ordered
+      @command.should_receive(:git).with("update-ref refs/heads/defunkt/wip refs/remotes/defunkt/wip").ordered
+      @command.should_receive(:git_exec).with("checkout defunkt/wip").ordered
+      stdout.should == "Fetching defunkt/wip\n"
     end
   end
 
@@ -211,9 +211,9 @@ EOF
     running :fetch, "--merge", "defunkt" do
       setup_remote(:defunkt)
       @helper.should_receive(:branch_dirty?).and_return false
-      @command.should_receive(:git).with("fetch defunkt master:refs/remotes/defunkt/master")
-      @command.should_receive(:git).with("update-ref refs/heads/defunkt/master refs/remotes/defunkt/master")
-      @command.should_receive(:git_exec).with("checkout defunkt/master")
+      @command.should_receive(:git).with("fetch defunkt master:refs/remotes/defunkt/master").ordered
+      @command.should_receive(:git).with("update-ref refs/heads/defunkt/master refs/remotes/defunkt/master").ordered
+      @command.should_receive(:git_exec).with("checkout defunkt/master").ordered
     end
   end
 
@@ -238,10 +238,10 @@ EOF
     running :fetch, "defunkt" do
       setup_remote(:defunkt)
       @helper.should_receive(:branch_dirty?).and_return false
-      @command.should_receive(:git).with("update-ref refs/heads/defunkt/master HEAD").ordered
-      @command.should_receive(:git).with("checkout defunkt/master").ordered
-      @command.should_receive(:git_exec).with("fetch defunkt master").ordered
-      stdout.should == "Switching to defunkt/master\n"
+      @command.should_receive(:git).with("fetch defunkt master:refs/remotes/defunkt/master").ordered
+      @command.should_receive(:git).with("update-ref refs/heads/defunkt/master refs/remotes/defunkt/master").ordered
+      @command.should_receive(:git_exec).with("checkout defunkt/master").ordered
+      stdout.should == "Fetching defunkt/master\n"
     end
   end
 

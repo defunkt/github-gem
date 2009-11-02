@@ -351,6 +351,25 @@ EOF
       @command.should_receive(:git_exec).with("clone git://github.com/defunkt/github-gem.git repo")
     end
   end
+  
+  # -- fork --
+  specify "fork a user/project repo" do
+    running :fork, "defunkt/github-gem" do
+      setup_github_token
+      @command.should_receive(:sh).with("curl -F 'login=drnic' -F 'token=MY_GITHUB_TOKEN' http://github.com/defunkt/github-gem/fork")
+      @command.should_receive(:git_exec, "clone git://github.com/defunkt/github-gem.git")
+      stdout.should == "Giving GitHub a moment to create the fork...\n"
+    end
+  end
+
+  specify "fork a user project repo" do
+    running :fork, "defunkt", "github-gem" do
+      setup_github_token
+      @command.should_receive("sh").with("curl -F 'login=drnic' -F 'token=MY_GITHUB_TOKEN' http://github.com/defunkt/github-gem/fork")
+      @command.should_receive(:git_exec, "clone git://github.com/defunkt/github-gem.git")
+      stdout.should == "Giving GitHub a moment to create the fork...\n"
+    end
+  end
 
   # -- pull-request --
   specify "pull-request should die with no args" do

@@ -120,6 +120,7 @@ helper :print_commits do |our_commits, options|
   after = Date.parse(options[:after]) if options[:after] rescue puts 'cant parse after date'
   our_commits.each do |cherry, commit|
     status, sha, ref_name = cherry
+    ref_name ||= ""
     next if shown_commits[sha] || ignores[sha]
     next if options[:project] && !ref_name.match(Regexp.new(options[:project]))
     ref_name = ref_name.gsub('remotes/', '')

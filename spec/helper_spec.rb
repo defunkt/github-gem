@@ -329,7 +329,7 @@ random
   helper :open do
     it "should launch the URL when Launchy is installed" do
       begin
-        ENV['LAUNCHY_BROWSER'] = 'dummy_browser'
+        ENV['LAUNCHY_BROWSER'] = __FILE__ # tricking launchy into thinking there is always a browser
         require 'launchy'
 
         @helper.should_receive(:gem).with('launchy')

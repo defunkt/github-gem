@@ -334,6 +334,7 @@ random
         @helper.should_receive(:gem).with('launchy')
         Launchy::Browser.next_instance.tap do |browser|
           browser.should_receive(:run).with('/usr/bin/open', "http://www.google.com")
+          ENV['LAUNCHY_BROWSER'] = 'dummy_browser'
           @helper.open "http://www.google.com"
         end
       rescue LoadError

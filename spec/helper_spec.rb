@@ -329,12 +329,13 @@ random
   helper :open do
     it "should launch the URL when Launchy is installed" do
       begin
-        ENV['LAUNCHY_BROWSER'] = __FILE__ # tricking launchy into thinking there is always a browser
+        # tricking launchy into thinking there is always a browser
+        ENV['LAUNCHY_BROWSER'] = dummy_browser = __FILE__
         require 'launchy'
 
         @helper.should_receive(:gem).with('launchy')
         Launchy::Browser.next_instance.tap do |browser|
-          browser.should_receive(:run).with('/usr/bin/open', "http://www.google.com")
+          browser.should_receive(:run).with(dummy_browser, "http://www.google.com")
           @helper.open "http://www.google.com"
         end
       rescue LoadError

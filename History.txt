@@ -1,3 +1,5 @@
+* gh clone --search query -- now includes project descriptions
+
 == 0.3.9
 
 * gh clone --search query -- to search for a repo and then clone it

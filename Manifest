@@ -6,6 +6,7 @@ Rakefile
 bin/gh
 bin/github
 github-gem.gemspec
+github.gemspec
 lib/commands/commands.rb
 lib/commands/helpers.rb
 lib/commands/issues.rb
@@ -14,6 +15,7 @@ lib/github.rb
 lib/github/command.rb
 lib/github/extensions.rb
 lib/github/helper.rb
+lib/github/ui.rb
 setup.rb
 spec/command_spec.rb
 spec/extensions_spec.rb

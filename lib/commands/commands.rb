@@ -224,11 +224,11 @@ end
 desc "Search GitHub for the given repository name."
 usage "github search [query]"
 command :search do |query|
+  die "Usage: github search [query]" if query.nil?
   data = JSON.parse(open("http://github.com/api/v1/json/search/#{URI.escape query}").read)
-
-  if repos = data['repositories']
+  if repos = data['repositories'] && !repos.nil?
     puts repos.map { |r| "#{r['username']}/#{r['name']}"}.sort.uniq
   else
-    puts "Not found"
+    puts "No results found"
   end
 end

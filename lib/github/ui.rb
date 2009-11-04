@@ -8,7 +8,9 @@ module GitHub
     def display_select_list(list)
       HighLine.track_eof = false
       long_result = HighLine.new.choose do |menu|
-        list.each { |item| menu.choice item }
+        list.each_with_index do |item, i|
+           menu.choice((i < 9) ? " #{item}" : item)
+        end
         menu.header = "Select a repository to clone"
       end
       long_result && long_result.gsub(/\s+#.*$/,'')

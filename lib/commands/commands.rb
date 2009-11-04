@@ -136,10 +136,7 @@ command :clone do |user, repo, dir|
       repo_list = repos.map do |r|
         { "name" => "#{r['username']}/#{r['name']}", "description" => r['description'] }
       end
-      formatted_list = []
-      helper.format_list(repo_list).split("\n").each_with_index do |item, i|
-        formatted_list << ((i < 9) ? " " + item : item)
-      end
+      formatted_list = helper.format_list(repo_list).split("\n")
       if user_repo = GitHub::UI.display_select_list(formatted_list)
         user, repo = user_repo.split('/', 2)
       end

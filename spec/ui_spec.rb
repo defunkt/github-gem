@@ -360,8 +360,8 @@ EOF
       ']}'
       json.rewind
       question_list = <<-LIST.gsub(/^      /, '').split("\n").compact
-       defunkt/github-gem         # The official `github` command line helper for simplifying your GitHub experience.
-       pjhyett/github-gem-builder # The scripts used to build RubyGems on GitHub
+      defunkt/github-gem         # The official `github` command line helper for simplifying your GitHub experience.
+      pjhyett/github-gem-builder # The scripts used to build RubyGems on GitHub
       LIST
       @command.should_receive(:open).with("http://github.com/api/v1/json/search/github-gem").and_return(json)
       GitHub::UI.should_receive(:display_select_list).with(question_list).

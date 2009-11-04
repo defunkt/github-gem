@@ -126,13 +126,26 @@ end
 desc "Clone a repo. Uses ssh if current user is "
 usage "github clone [user] [repo] [dir]"
 flags :ssh => "Clone using the git@github.com style url."
+flags :search => "Search for [user|repo] and clone selected repository"
 command :clone do |user, repo, dir|
   die "Specify a user to pull from" if user.nil?
+  if options[:search]
+    query = [user, repo, dir].compact.join(" ")
+    data = JSON.parse(open("http://github.com/api/v1/json/search/#{URI.escape query}").read)
+    if (repos = data['repositories']) && !repos.nil? && repos.length > 0
+      repos = repos.map { |r| "#{r['username']}/#{r['name']}"}.sort.uniq
+      if user_repo = GitHub::UI.display_select_list(repos)
+        user, repo = user_repo.split('/', 2)
+      end
+    end
+    die "Perhaps try another search" unless user && repo
+  end
+
   if user.include?('/') && !user.include?('@') && !user.include?(':')
     die "Expected user/repo dir, given extra argument" if dir
     (user, repo), dir = [user.split('/', 2), repo]
   end
-  
+
   if repo
     if options[:ssh] || current_user?(user)
       git_exec "clone git@github.com:#{user}/#{repo}.git" + (dir ? " #{dir}" : "")

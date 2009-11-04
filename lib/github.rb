@@ -2,6 +2,7 @@ $:.unshift File.dirname(__FILE__)
 require 'github/extensions'
 require 'github/command'
 require 'github/helper'
+require 'github/ui'
 require 'fileutils'
 require 'rubygems'
 require 'open-uri'

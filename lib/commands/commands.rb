@@ -133,8 +133,11 @@ command :clone do |user, repo, dir|
     query = [user, repo, dir].compact.join(" ")
     data = JSON.parse(open("http://github.com/api/v1/json/search/#{URI.escape query}").read)
     if (repos = data['repositories']) && !repos.nil? && repos.length > 0
-      repos = repos.map { |r| "#{r['username']}/#{r['name']}"}.sort.uniq
-      if user_repo = GitHub::UI.display_select_list(repos)
+      repo_list = repos.map do |r|
+        { "name" => "#{r['username']}/#{r['name']}", "description" => r['description'] }
+      end
+      formatted_list = helper.format_list(repo_list).split("\n")
+      if user_repo = GitHub::UI.display_select_list(formatted_list)
         user, repo = user_repo.split('/', 2)
       end
     end

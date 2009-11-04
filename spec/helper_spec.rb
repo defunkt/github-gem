@@ -31,6 +31,20 @@ describe GitHub::Helper do
     @helper = GitHub::Helper.new
   end
 
+  helper :format_list do
+    it "should format an array of hashes with name,description keys" do
+      list = [{"name" => "aaa", "description" => "description for aaa"}, 
+        {"name" => "a long name", "description" => "help"},
+        {"name" => "no desc"}]
+      expected = <<-EOS.gsub(/^      /, '')
+      aaa         # description for aaa
+      a long name # help
+      no desc     
+      EOS
+      @helper.format_list(list).should == expected.gsub(/\n$/,'')
+    end
+  end
+  
   helper :print_issues_help do
     it "should exist" do
       @helper.should respond_to(:print_issues_help)

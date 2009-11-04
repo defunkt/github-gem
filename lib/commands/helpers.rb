@@ -454,6 +454,25 @@ helper :format_issue do |issue, options|
   report.join("\n")
 end
 
+# Converts an array of {"name" => "foo", "description" => "some description"} items
+# as a string list like:
+#   foo     # some description
+#   bar-tar # another description
+helper :format_list do |items|
+  longest_name = items.inject("") do |name, item|
+    name = item["name"] if item["name"] && item["name"].size > name.size
+    name
+  end
+  longest = longest_name.size + 1
+  lines = items.map do |item|
+    cmdstr = "%-#{longest}s" % item["name"]
+    if description = item["description"]
+      cmdstr += "# #{description}"
+    end
+    cmdstr
+  end.join("\n")
+end
+
 helper :filter_issue do |issue, options|
   if options[:after] && ! options[:after].instance_of?(Time)
     options[:after] = Time.parse(options[:after]) rescue (puts 'cant parse after date')

@@ -5,7 +5,6 @@ README
 Rakefile
 bin/gh
 bin/github
-github-gem.gemspec
 github.gemspec
 lib/commands/commands.rb
 lib/commands/helpers.rb

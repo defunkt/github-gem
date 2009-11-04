@@ -466,7 +466,7 @@ helper :format_list do |items|
   longest = longest_name.size + 1
   lines = items.map do |item|
     cmdstr = "%-#{longest}s" % item["name"]
-    if description = item["description"]
+    if (description = item["description"]) && description.length > 0
       cmdstr += "# #{description}"
     end
     cmdstr

@@ -35,11 +35,13 @@ describe GitHub::Helper do
     it "should format an array of hashes with name,description keys" do
       list = [{"name" => "aaa", "description" => "description for aaa"}, 
         {"name" => "a long name", "description" => "help"},
-        {"name" => "no desc"}]
+        {"name" => "no desc"},
+        {"name" => "empty desc", "description" => ""}]
       expected = <<-EOS.gsub(/^      /, '')
       aaa         # description for aaa
       a long name # help
       no desc     
+      empty desc  
       EOS
       @helper.format_list(list).should == expected.gsub(/\n$/,'')
     end

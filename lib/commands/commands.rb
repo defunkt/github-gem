@@ -138,7 +138,7 @@ command :clone do |user, repo, dir|
       end
       formatted_list = helper.format_list(repo_list).split("\n")
       if user_repo = GitHub::UI.display_select_list(formatted_list)
-        user, repo = user_repo.split('/', 2)
+        user, repo = user_repo.strip.split('/', 2)
       end
     end
     die "Perhaps try another search" unless user && repo

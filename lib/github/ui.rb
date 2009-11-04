@@ -13,7 +13,7 @@ module GitHub
         end
         menu.header = "Select a repository to clone"
       end
-      long_result && long_result.gsub(/\s+#.*$/,'')
+      long_result && long_result.gsub(/\s+#.*$/,'').gsub(/^\ /,'')
     end
   end
 end

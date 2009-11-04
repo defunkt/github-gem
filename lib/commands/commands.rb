@@ -226,7 +226,7 @@ usage "github search [query]"
 command :search do |query|
   die "Usage: github search [query]" if query.nil?
   data = JSON.parse(open("http://github.com/api/v1/json/search/#{URI.escape query}").read)
-  if repos = data['repositories'] && !repos.nil?
+  if (repos = data['repositories']) && !repos.nil? && repos.length > 0
     puts repos.map { |r| "#{r['username']}/#{r['name']}"}.sort.uniq
   else
     puts "No results found"

@@ -1,4 +1,8 @@
-* no longer using old /network/members API call (which is 500ing at the moment)
+* Commands:
+  * gh issues web [user] - opens the Issues page
+
+* Miscellaneous:
+  * no longer using old /network/members API call (which is 500ing at the moment)
 
 == 0.3.10
 

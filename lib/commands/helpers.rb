@@ -250,6 +250,10 @@ helper :network_meta_for do |user|
   "http://github.com/#{user}/#{project}/network_meta"
 end
 
+helper :issues_page_for do |user|
+  "https://github.com/#{user}/#{project}/issues"
+end
+
 helper :list_issues_for do |user, state|
   "http://github.com/api/v2/yaml/issues/list/#{user}/#{project}/#{state}"
 end

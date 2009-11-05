@@ -1,4 +1,8 @@
+== 0.3.10
+
 * gh clone --search query -- now includes project descriptions
+* bugfix
+  * added highline dependency
 
 == 0.3.9
 

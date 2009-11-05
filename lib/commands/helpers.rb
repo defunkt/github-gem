@@ -250,10 +250,6 @@ helper :network_meta_for do |user|
   "http://github.com/#{user}/#{project}/network_meta"
 end
 
-helper :network_members_for do |user|
-  "http://github.com/#{user}/#{project}/network/members.json"
-end
-
 helper :list_issues_for do |user, state|
   "http://github.com/api/v2/yaml/issues/list/#{user}/#{project}/#{state}"
 end
@@ -341,11 +337,6 @@ helper :get_network_data do |user, options|
   else
     return get_cache
   end
-end
-
-helper :get_network_members do |user, options|
-  json = Kernel.open(network_members_for(user)).read
-  JSON.parse(json)["users"]
 end
 
 helper :cache_commits do |commits|

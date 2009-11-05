@@ -1,3 +1,5 @@
+* no longer using old /network/members API call (which is 500ing at the moment)
+
 == 0.3.10
 
 * gh clone --search query -- now includes project descriptions

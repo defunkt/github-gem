@@ -320,8 +320,8 @@ helper :argv do
   GitHub.original_args
 end
 
-helper :network_members do
-  get_network_members(owner, {}).map {|member| member['owner']['login'] }
+helper :network_members do |user, options|
+  get_network_data(user, options)['users'].map { |u| u['name'] }
 end
 
 

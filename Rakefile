@@ -11,7 +11,10 @@ begin
     p.url          = "http://github.com/"
     p.author       = ['Chris Wanstrath', 'Kevin Ballard', 'Scott Chacon']
     p.email        = "chris@ozmm.org"
-    p.dependencies = ["text-format"]
+    p.dependencies = [
+      "text-format >=1.0.0",
+      "highline ~>1.5.1"
+    ]
   end
 
 rescue LoadError => boom

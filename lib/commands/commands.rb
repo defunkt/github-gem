@@ -37,7 +37,6 @@ command :open do |arg|
   helper.open "http://github.com/#{arg}"
 end
 
-
 desc "Info about this project."
 command :info do
   puts "== Info for #{helper.project}"
@@ -162,7 +161,7 @@ end
 
 desc "Generate the text for a pull request."
 usage "github pull-request [user] [branch]"
-command 'pull-request' do |user, branch|
+command :'pull-request' do |user, branch|
   if helper.project
     die "Specify a user for the pull request" if user.nil?
     user, branch = user.split('/', 2) if branch.nil?
@@ -227,7 +226,7 @@ end
 
 desc "Create a new GitHub repository from the current local repository"
 flags :private => 'Create private repository'
-command 'create-from-local' do
+command :'create-from-local' do
   cwd = sh "pwd"
   repo = File.basename(cwd)
   is_repo = !git("status").match(/fatal/)

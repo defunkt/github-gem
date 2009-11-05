@@ -20,10 +20,7 @@ command :network do |command, user|
   when 'web'
     helper.open helper.network_page_for(user)
   when 'list'
-    members = helper.get_network_members(user, options)
-    members.each do |hsh|
-      puts hsh["owner"]["login"]
-    end
+    helper.network_members(user, options).each { |user| puts user }
   when 'fetch'
     # fetch each remote we don't have
     data = helper.get_network_data(user, options)

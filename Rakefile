@@ -4,7 +4,7 @@ require 'rake'
 begin
   require 'echoe'
 
-  Echoe.new('github', '0.3.10') do |p|
+  Echoe.new('github', '0.4.0') do |p|
     p.rubyforge_name = 'github'
     p.summary      = "The official `github` command line helper for simplifying your GitHub experience."
     p.description  = "The official `github` command line helper for simplifying your GitHub experience."

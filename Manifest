@@ -1,7 +1,7 @@
 History.txt
 LICENSE
 Manifest
-README
+README.md
 Rakefile
 bin/gh
 bin/github
@@ -24,6 +24,7 @@ spec/commands/command_fork_spec.rb
 spec/commands/command_helper.rb
 spec/commands/command_home_spec.rb
 spec/commands/command_info_spec.rb
+spec/commands/command_issues_spec.rb
 spec/commands/command_network_spec.rb
 spec/commands/command_pull-request_spec.rb
 spec/commands/command_pull_spec.rb

@@ -1,7 +1,14 @@
-* Commands:
+== 0.4.0
+
+Releasing to GemCutter!
+
+Maintenance taken over by Dr Nic Williams.
+Post issues/bugs to http://github.com/defunkt/github-gem/issues
+
+New Commands:
   * gh issues web [user] - opens the Issues page
 
-* Miscellaneous:
+Miscellaneous:
   * no longer using old /network/members API call (which is 500ing at the moment)
 
 == 0.3.10

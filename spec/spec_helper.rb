@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'spec'
+require 'activerecord'
 
 require File.dirname(__FILE__) + '/../lib/github'
 

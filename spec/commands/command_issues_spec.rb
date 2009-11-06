@@ -27,8 +27,8 @@ describe "github issues" do
       stdout.should == <<-EOS.gsub(/^      /, '')
       -----
       Issue #1 (0 votes): members.json 500 error
-      *  Opened about 19 hours ago by kdmny
-      *  Last updated about 18 hours ago
+      *  Opened about 10 hours ago by bug_finder
+      *  Last updated 5 minutes ago
       
       I have a nasty bug.
       -----
@@ -43,9 +43,9 @@ describe "github issues" do
       stdout.should == <<-EOS.gsub(/^      /, '')
       -----
       Issue #1 (0 votes): members.json 500 error
-      *  Opened about 19 hours ago by kdmny
-      *  Closed about 18 hours ago
-      *  Last updated about 18 hours ago
+      *  Opened about 10 hours ago by bug_finder
+      *  Closed 5 minutes ago
+      *  Last updated 5 minutes ago
       
       I have a nasty bug.
       -----
@@ -68,24 +68,29 @@ describe "github issues" do
   end
   
   class CommandHelper::Runner
-    def mock_issues_for(state = "open", user = "user", project = "project")
+    def mock_issues_for(state = "open", options = {})
+      options[:updated_at] = 5.minutes.ago
+      options[:closed_at]  = 5.minutes.ago
+      options[:created_at] = 10.hours.ago
+      options[:user]       = "user"
+      options[:project]    = "project"
       yaml = <<-YAML.gsub(/^    /, '')
       --- 
       issues: 
       - number: 1
         votes: 0
-        created_at: 2009-11-04 20:25:02 -08:00
+        created_at: #{options[:created_at].strftime("%Y-%m-%d %H:%M:%S %z")}
         body: |-
           I have a nasty bug.
         title: members.json 500 error
-        updated_at: 2009-11-04 21:26:39 -08:00
-        #{"closed_at: 2009-11-04 21:25:17 -08:00" if state == "closed"}
-        user: kdmny
+        updated_at: #{options[:updated_at].strftime("%Y-%m-%d %H:%M:%S %z")}
+        #{"closed_at: #{options[:closed_at].strftime("%Y-%m-%d %H:%M:%S %z")}" if state == "closed"}
+        user: bug_finder
         labels: []
 
         state: #{state}
       YAML
-      api_url = "http://github.com/api/v2/yaml/issues/list/#{user}/#{project}/#{state}"
+      api_url = "http://github.com/api/v2/yaml/issues/list/#{options[:user]}/#{options[:project]}/#{state}"
       @command.should_receive(:open).with(api_url).and_return(yaml)
     end
   end

@@ -413,11 +413,10 @@ end
 
 helper :distance_of_time do |from_time, to_time|
   # this is a dumbed-down version of actionpack's helper.
-  from_time = from_time.to_time if from_time.respond_to?(:to_time)
-  to_time = to_time.to_time if to_time.respond_to?(:to_time)
+  from_time = Time.parse(from_time) if from_time.is_a?(String)
+  to_time   = Time.parse(to_time) if to_time.is_a?(String)
 
   distance_in_minutes = (((to_time - from_time).abs)/60).round
-
   words = case distance_in_minutes
           when 0               then "less than 1 minute"
           when 2..44           then "%d minutes" % distance_in_minutes

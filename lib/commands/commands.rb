@@ -1,7 +1,9 @@
 desc "Open this repo's master branch in a web browser."
 command :home do |user|
   if helper.project
-    helper.open helper.homepage_for(user || helper.owner, 'master')
+    homepage = helper.homepage_for(user || helper.owner, 'master')
+    homepage.gsub!(%r{/tree/master$}, '')
+    helper.open homepage
   end
 end
 

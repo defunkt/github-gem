@@ -247,7 +247,7 @@ helper :network_page_for do |user|
 end
 
 helper :network_meta_for do |user|
-  "http://github.com/#{user}/#{project}/network_meta"
+  "https://github.com/#{user}/#{project}/network_meta"
 end
 
 helper :issues_page_for do |user|
@@ -332,8 +332,9 @@ helper :get_network_data do |user, options|
   if cache_network_data(options)
     begin
       return cache_data(user)
-    rescue SocketError
+    rescue Exception => e
       STDERR.puts "*** Warning: There was a problem accessing the network."
+      STDERR.puts e
       rv = get_cache
       STDERR.puts "Using cached data."
       rv
@@ -371,12 +372,17 @@ helper :commits_cache_path do
   File.join(dir, 'commits-cache')
 end
 
+helper :github_user do
+  `git config --get github.user`.chomp
+end
+
+helper :github_token do
+  `git config --get github.token`.chomp
+end
+
 helper :cache_data do |user|
-  raw_data = Kernel.open(network_meta_for(user)).read
-  File.open( network_cache_path, 'w' ) do |out|
-    out.write(raw_data)
-  end
-  data = JSON.parse(raw_data)
+  `curl -L -F 'login=#{github_user}' -F 'token=#{github_token}' #{network_meta_for(user)} -o #{network_cache_path}`
+  get_cache
 end
 
 helper :cache_expired? do

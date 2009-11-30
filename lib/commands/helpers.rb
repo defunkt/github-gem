@@ -381,7 +381,7 @@ helper :github_token do
 end
 
 helper :cache_data do |user|
-  `curl -L -F 'login=#{github_user}' -F 'token=#{github_token}' #{network_meta_for(user)} -o #{network_cache_path}`
+  `curl -s -L -F 'login=#{github_user}' -F 'token=#{github_token}' #{network_meta_for(user)} -o #{network_cache_path}`
   get_cache
 end
 

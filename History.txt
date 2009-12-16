@@ -1,7 +1,8 @@
-== 0.4.1 NOT YET RELEASED
+== 0.4.1
 
 Updated Commands:
   * gh home - no longer appends /tree/master to the end of the URL
+  * gh create-from-local - fixed quoting bug to prevented project creation
 
 == 0.4.0
 

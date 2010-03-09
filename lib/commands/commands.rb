@@ -233,9 +233,14 @@ command :'create-from-local' do
   repo = File.basename(cwd)
   is_repo = !git("status").match(/fatal/)
   raise "Not a git repository. Use gh create instead" unless is_repo
-  sh  "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{!options[:private].inspect}' -F 'login=#{github_user}' -F 'token=#{github_token}' http://github.com/repositories"
-  git "remote add origin git@github.com:#{github_user}/#{repo}.git"
-  git_exec "push origin master"
+  created = sh  "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{!options[:private].inspect}' -F 'login=#{github_user}' -F 'token=#{github_token}' http://github.com/repositories"
+  if created.out =~ %r{You are being <a href="http://github.com/#{github_user}/([^"]+)"}
+    git "remote add origin git@github.com:#{github_user}/#{$1}.git"
+    git_exec "push origin master"
+  else
+    #TODO try to explain why it failed
+    die "error creating repository"
+  end
 end
 
 desc "Search GitHub for the given repository name."

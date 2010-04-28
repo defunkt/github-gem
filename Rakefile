@@ -10,7 +10,7 @@ begin
     p.description  = "The official `github` command line helper for simplifying your GitHub experience."
     p.url          = "http://github.com/"
     p.author       = ['Chris Wanstrath', 'Kevin Ballard', 'Scott Chacon', 'Dr Nic Williams']
-    p.email        = "chris@ozmm.org"
+    p.email        = "drnicwilliams@gmail.com"
     p.dependencies = [
       "text-format >=1.0.0",
       "highline ~>1.5.1",

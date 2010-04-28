@@ -1,3 +1,9 @@
+== 0.4.2
+
+New protocols supported: http, git+ssh, git+ssh://git@
+
+Added missing 'json' gem dependency.
+
 == 0.4.1
 
 Updated Commands:

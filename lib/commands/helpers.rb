@@ -4,9 +4,8 @@ helper :user_and_repo_from do |url|
   case url
   when %r|^git://github\.com/([^/]+/[^/]+)$|: $1.split('/')
   when %r|^http://github\.com/([^/]+/[^/]+)$|: $1.split('/')
-  when %r|^git\+ssh://github\.com/([^/]+/[^/]+)$|: $1.split('/')
-  when %r|^git@github\.com:([^/]+/[^/]+)$|: $1.split('/')
-  when %r|^ssh://github\.com:([^/]+/[^/]+)$|: $1.split('/')
+  when %r|^(?:git\+ssh://)?(?:git@)?github\.com/([^/]+/[^/]+)$|: $1.split('/')
+  when %r|^(?:ssh://)?(?:git@)?github\.com:([^/]+/[^/]+)$|: $1.split('/')
   end
 end
 

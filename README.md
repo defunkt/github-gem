@@ -14,6 +14,15 @@ Run it:
     $ github <command> <args>
     $ gh <command> <args>
 
+## Authentication
+    
+To let GitHub know who you are, just have your git config set up with your GitHub username and token.
+
+    $ git config --global github.user "your-github-username"
+    $ git config --global github.token "your-github-token"
+
+You can find your token under [your account](https://github.com/account).
+
 ## Pulling Upstream Changes
 
 Let's say you just forked `github-gem` on GitHub from defunkt.

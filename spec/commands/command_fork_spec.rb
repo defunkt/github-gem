@@ -41,4 +41,13 @@ describe "github fork" do
       stdout.should == "Giving GitHub a moment to create the fork...\n"
     end
   end
+  
+  specify "fork should die if token or user isn't set" do
+    running :fork, "defunkt", "github-gem" do
+      setup_github_token :user => nil, :token => nil
+      @command.should_receive(:die).with("Setup your github user and token before running a fork").and_return { raise "Died" }
+      self.should raise_error(RuntimeError)
+    end
+  end
+  
 end

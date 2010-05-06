@@ -31,7 +31,7 @@ module CommandHelper
       if @expected_result
         expectation, result = @expected_result
         case result
-        when Spec::Matchers::RaiseError, Spec::Matchers::Change, Spec::Matchers::ThrowSymbol
+        when Spec::Matchers::RaiseException, Spec::Matchers::Change, Spec::Matchers::ThrowSymbol
           invoke.send expectation, result
         else
           invoke.call.send expectation, result

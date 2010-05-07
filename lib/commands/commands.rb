@@ -8,13 +8,16 @@ command :home do |user|
 end
 
 desc "Automatically set configuration info, or pass args to specify."
-usage "github config [my_username] [my_repo_name]"
-command :config do |user, repo|
-  user ||= ENV['USER']
-  repo ||= File.basename(FileUtils.pwd)
+usage "github config [my_username] [my_token]"
+command :config do |user, token|
+  require "highline"
+  highline = HighLine.new
+  user  ||= highline.ask("What is your github user? ") {|q| q.default = ENV['USER']}
+  token ||= highline.ask("What is your github token? ")
+  repo  ||= File.basename(FileUtils.pwd)
   git "config --global github.user #{user}"
-  git "config github.repo #{repo}"
-  puts "Configured with github.user #{user}, github.repo #{repo}"
+  git "config --global github.token #{token}"
+  puts "Configured with github.user #{user}"
 end
 
 desc "Open this repo in a web browser."

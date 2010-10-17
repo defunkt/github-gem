@@ -1,3 +1,7 @@
+== 0.4.3 2010-10-17
+
+* Fixed 'create-from-local' to correctly select public/private [scott]
+
 == 0.4.2
 
 New protocols supported: http, git+ssh, git+ssh://git@

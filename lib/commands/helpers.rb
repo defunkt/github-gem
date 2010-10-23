@@ -389,7 +389,7 @@ helper :cache_expired? do
 end
 
 helper :has_cache? do
-  File.file?(network_cache_path)
+  File.file?(network_cache_path) && !File.zero?(network_cache_path)
 end
 
 helper :has_commits_cache? do

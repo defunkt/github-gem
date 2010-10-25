@@ -1,3 +1,5 @@
+* Added "gh admin" - to open the Admin page for this project
+
 == 0.4.4 2010-10-17
 
 * Fixed 'create-from-local' to correctly select public/private [scott]

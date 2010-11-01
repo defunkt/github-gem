@@ -22,7 +22,9 @@ Gem::Specification.new do |s|
   s.add_dependency "text-format", "1.0.0"
   s.add_dependency "highline", "~> 1.5.1"
   s.add_dependency "json", "~> 1.4.6"
+  s.add_dependency "launchy", "~> 0.3.7"
 
   s.add_development_dependency "rake"
-  s.add_development_dependency "rspec", "1.3.1"
+  s.add_development_dependency "rspec", "~>1.3.1"
+  s.add_development_dependency "activerecord", "~>2.3.10"
 end

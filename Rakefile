@@ -1,27 +1,5 @@
-require 'rubygems'
-require 'rake'
-
-begin
-  require 'echoe'
-
-  Echoe.new('github', '0.4.5') do |p|
-    p.rubyforge_name = 'github'
-    p.summary      = "The official `github` command line helper for simplifying your GitHub experience."
-    p.description  = "The official `github` command line helper for simplifying your GitHub experience."
-    p.url          = "http://github.com/"
-    p.author       = ['Chris Wanstrath', 'Kevin Ballard', 'Scott Chacon', 'Dr Nic Williams']
-    p.email        = "drnicwilliams@gmail.com"
-    p.dependencies = [
-      "text-format >=1.0.0",
-      "highline ~>1.5.1",
-      "json >=1.2.0"
-    ]
-  end
-
-rescue LoadError => boom
-  puts "You are missing a dependency required for meta-operations on this gem."
-  puts "#{boom.to_s.capitalize}."
-end
+require "bundler/setup"
+Bundler::GemHelper.install_tasks
 
 # add spec tasks, if you have rspec installed
 begin

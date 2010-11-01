@@ -1,3 +1,5 @@
 .config
 InstalledFiles
 pkg
+*.gem
+.bundle

@@ -76,7 +76,7 @@ describe "github clone" do
       defunkt/github-gem         # The official `github` command line helper for simplifying your GitHub experience.
       pjhyett/github-gem-builder # The scripts used to build RubyGems on GitHub
       LIST
-      @command.should_receive(:open).with("http://github.com/api/v1/json/search/github-gem").and_return(json)
+      @command.should_receive(:open).with("https://github.com/api/v1/json/search/github-gem").and_return(json)
       GitHub::UI.should_receive(:display_select_list).with(question_list).
         and_return("defunkt/github-gem")
       @command.should_receive(:current_user?).and_return(nil)

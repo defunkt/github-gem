@@ -46,7 +46,7 @@ end
 desc 'Open the given user/project in a web browser'
 usage 'github open [user/project]'
 command :open do |arg|
-  helper.open "http://github.com/#{arg}"
+  helper.open "https://github.com/#{arg}"
 end
 
 desc "Info about this project."
@@ -142,7 +142,7 @@ command :clone do |user, repo, dir|
   die "Specify a user to pull from" if user.nil?
   if options[:search]
     query = [user, repo, dir].compact.join(" ")
-    data = JSON.parse(open("http://github.com/api/v1/json/search/#{URI.escape query}").read)
+    data = JSON.parse(open("https://github.com/api/v1/json/search/#{URI.escape query}").read)
     if (repos = data['repositories']) && !repos.nil? && repos.length > 0
       repo_list = repos.map do |r|
         { "name" => "#{r['username']}/#{r['name']}", "description" => r['description'] }
@@ -193,7 +193,7 @@ flags :rdoc => 'Create README.rdoc'
 flags :rst => 'Create README.rst'
 flags :private => 'Create private repository'
 command :create do |repo|
-  sh "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{!options[:private]}' -F 'login=#{github_user}' -F 'token=#{github_token}' http://github.com/repositories"
+  sh "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{!options[:private]}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/repositories"
   mkdir repo
   cd repo
   git "init"
@@ -223,7 +223,7 @@ command :fork do |user, repo|
     end
   end
 
-  sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' http://github.com/#{user}/#{repo}/fork"
+  sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/#{user}/#{repo}/fork"
 
   url = "git@github.com:#{github_user}/#{repo}.git"
   if is_repo
@@ -243,8 +243,8 @@ command :'create-from-local' do
   repo = File.basename(cwd)
   is_repo = !git("status").match(/fatal/)
   raise "Not a git repository. Use gh create instead" unless is_repo
-  created = sh  "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{options[:private] != true}' -F 'login=#{github_user}' -F 'token=#{github_token}' http://github.com/repositories"
-  if created.out =~ %r{You are being <a href="http://github.com/#{github_user}/([^"]+)"}
+  created = sh  "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{options[:private] != true}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/repositories"
+  if created.out =~ %r{You are being <a href="https://github.com/#{github_user}/([^"]+)"}
     git "remote add origin git@github.com:#{github_user}/#{$1}.git"
     git_exec "push origin master"
   else
@@ -257,7 +257,7 @@ desc "Search GitHub for the given repository name."
 usage "github search [query]"
 command :search do |query|
   die "Usage: github search [query]" if query.nil?
-  data = JSON.parse(open("http://github.com/api/v1/json/search/#{URI.escape query}").read)
+  data = JSON.parse(open("https://github.com/api/v1/json/search/#{URI.escape query}").read)
   if (repos = data['repositories']) && !repos.nil? && repos.length > 0
     puts repos.map { |r| "#{r['username']}/#{r['name']}"}.sort.uniq
   else

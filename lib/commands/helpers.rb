@@ -249,7 +249,7 @@ helper :network_page_for do |user|
 end
 
 helper :network_meta_for do |user|
-  "http://github.com/#{user}/#{project}/network_meta"
+  "https://github.com/#{user}/#{project}/network_meta"
 end
 
 helper :issues_page_for do |user|
@@ -257,7 +257,7 @@ helper :issues_page_for do |user|
 end
 
 helper :list_issues_for do |user, state|
-  "http://github.com/api/v2/yaml/issues/list/#{user}/#{project}/#{state}"
+  "https://github.com/api/v2/yaml/issues/list/#{user}/#{project}/#{state}"
 end
 
 helper :has_launchy? do |blk|

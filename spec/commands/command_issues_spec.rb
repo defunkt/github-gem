@@ -90,7 +90,7 @@ describe "github issues" do
 
         state: #{state}
       YAML
-      api_url = "http://github.com/api/v2/yaml/issues/list/#{options[:user]}/#{options[:project]}/#{state}"
+      api_url = "https://github.com/api/v2/yaml/issues/list/#{options[:user]}/#{options[:project]}/#{state}"
       @command.should_receive(:open).with(api_url).and_return(yaml)
     end
   end

@@ -29,7 +29,7 @@ end
 
 helper :project do
   repo = repo_for(origin)
-  if repo.nil?
+  if repo.nil? || repo.empty?
     if url_for(origin) == ""
       STDERR.puts "Error: missing remote 'origin'"
     else

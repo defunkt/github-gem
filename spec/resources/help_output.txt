@@ -1,0 +1,72 @@
+Usage: github command <space separated arguments>
+Available commands:
+  admin             => Open this repo's Admin panel a web browser.
+  browse            => Open this repo in a web browser.
+                       % github browse [user] [branch]
+  clone             => Clone a repo. Uses ssh if current user is
+                       % github clone [user] [repo] [dir]
+                       --search: Search for [user|repo] and clone selected
+                         repository
+                       --ssh : Clone using the git@github.com style url.
+  config            => Automatically set configuration info, or pass args to
+                       specify.
+                       % github config [my_username] [my_repo_name]
+  create            => Create a new, empty GitHub repository
+                       % github create [repo]
+                       --markdown: Create README.markdown
+                       --mdown : Create README.mdown
+                       --private : Create private repository
+                       --rdoc : Create README.rdoc
+                       --rst : Create README.rst
+                       --textile : Create README.textile
+  create-from-local => Create a new GitHub repository from the current local
+                       repository
+                       --private: Create private repository
+  fetch             => Fetch from a remote to a local branch.
+  fetch_all         => Fetch all refs from a user
+  fork              => Forks a GitHub repository
+                       % github fork
+                       % github fork [user]/[repo]
+  home              => Open this repo's master branch in a web browser.
+  ignore            => Ignore a SHA (from 'github network commits')
+  info              => Info about this project.
+  issues            => Project issues tools - sub-commands : open [user],
+                       closed [user]
+                       --after: Only show issues updated after a certain date
+                       --label: Only show issues with a certain label
+  network           => Project network tools - sub-commands : web [user], list,
+                       fetch, commits
+                       --after : Only show commits after a certain date
+                       --applies : Filter commits to patches that apply cleanly
+                       --author : Filter commits on a email address of author
+                       --before : Only show commits before a certain date
+                       --cache : Use the network data even if it's expired
+                       --common : Show common branch point
+                       --limit : Only look through the first X heads - useful
+                         for really large projects
+                       --noapply : Filter commits to patches that do not apply
+                         cleanly
+                       --nocache : Do not use the cached network data
+                       --project : Filter commits on a certain project
+                       --shas : Only show shas
+                       --sort : How to sort : date(*), branch, author
+                       --thisbranch: Look at branches that match the current
+                         one
+  open              => Open the given user/project in a web browser
+                       % github open [user/project]
+  pull              => Pull from a remote.
+                       % github pull [user] [branch]
+                       --merge: Automatically merge remote's changes into your
+                         master.
+  pull-request      => Generate the text for a pull request.
+                       % github pull-request [user] [branch]
+  search            => Search GitHub for the given repository name.
+                       % github search [query]
+  track             => Track another user's repository.
+                       % github track remote [user]
+                       % github track remote [user/repo]
+                       % github track [user]
+                       % github track [user/repo]
+                       --private: Use git@github.com: instead of
+                         git://github.com/.
+                       --ssh : Equivalent to --private

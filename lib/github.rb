@@ -163,7 +163,9 @@ GitHub.command :default, :aliases => ['', '-h', 'help', '-help', '--help'] do
     :body_indent => indent,
     :columns => 79 # be a little more lenient than the default
   )
-  GitHub.descriptions.sort {|a,b| a.to_s <=> b.to_s }.each do |command, desc|
+  sorted = GitHub.descriptions.keys.sort
+  sorted.each do |command|
+    desc = GitHub.descriptions[command]
     cmdstr = "%-#{longest}s" % command
     desc = fmt.format(desc).strip # strip to eat first "indent"
     message << "  #{cmdstr} => #{desc}"
@@ -171,7 +173,7 @@ GitHub.command :default, :aliases => ['', '-h', 'help', '-help', '--help'] do
     ffmt = fmt.clone
     ffmt.body_indent += 2 # length of "% " and/or "--"
     GitHub.usage_descriptions[command].each do |usage_descriptions|
-      usage_descriptions.each do |usage|
+      usage_descriptions.split("\n").each do |usage|
         usage_str = "%% %-#{flongest}s" % usage
         message << ffmt.format(usage_str)
       end

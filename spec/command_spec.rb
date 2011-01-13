@@ -79,4 +79,11 @@ describe GitHub::Command do
     @command.should_receive(:exit!).once
     @command.die "message"
   end
+
+  it "should die if a github API token cannot be found" do
+    @command.should_receive(:git).once.with("config --get github.token").and_return("")
+    @command.should_receive(:puts).once.with("=> You must 'git config github.token [your API token]' before running this command")
+    @command.should_receive(:exit!).once
+    @command.github_token
+  end
 end

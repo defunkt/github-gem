@@ -71,7 +71,12 @@ module GitHub
     end
 
     def github_token
-      git("config --get github.token")
+      token = git("config --get github.token")
+      if token.empty?
+        die("You must 'git config github.token [your API token]' before running this command")
+      end
+
+      token
     end
 
     def shell_user

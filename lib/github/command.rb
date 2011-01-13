@@ -67,7 +67,12 @@ module GitHub
     end
 
     def github_user
-      git("config --get github.user")
+      user = git("config --get github.user")
+      if user.empty?
+        die("You must 'git config github.user [your Github username]' before running this command")
+      end
+
+      user
     end
 
     def github_token

@@ -69,7 +69,7 @@ module GitHub
     def github_user
       user = git("config --get github.user")
       if user.empty?
-        die("You must 'git config github.user [your Github username]' before running this command")
+        die("You must 'git config --global github.user [your Github username]' before running this command")
       end
 
       user
@@ -78,7 +78,7 @@ module GitHub
     def github_token
       token = git("config --get github.token")
       if token.empty?
-        die("You must 'git config github.token [your API token]' before running this command")
+        die("You must 'git config --global github.token [your API token]' before running this command")
       end
 
       token

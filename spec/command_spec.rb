@@ -82,14 +82,14 @@ describe GitHub::Command do
 
   it "should die if a github API token cannot be found" do
     @command.should_receive(:git).once.with("config --get github.token").and_return("")
-    @command.should_receive(:puts).once.with("=> You must 'git config github.token [your API token]' before running this command")
+    @command.should_receive(:puts).once.with("=> You must 'git config --global github.token [your API token]' before running this command")
     @command.should_receive(:exit!).once
     @command.github_token
   end
 
   it "should die if a github username token cannot be found" do
     @command.should_receive(:git).once.with("config --get github.user").and_return("")
-    @command.should_receive(:puts).once.with("=> You must 'git config github.user [your Github username]' before running this command")
+    @command.should_receive(:puts).once.with("=> You must 'git config --global github.user [your Github username]' before running this command")
     @command.should_receive(:exit!).once
     @command.github_user
   end

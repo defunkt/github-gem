@@ -1,3 +1,8 @@
+== 0.5.0 2011-1-17
+
+* Support for ruby 1.9.2 [keithpitty]
+* Clean fail if haven't setup github config yet [keithpitty]
+
 == 0.4.6 2010-11-04
 
 * Fix recent https migration of github.com [fishman]

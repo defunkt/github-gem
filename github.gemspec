@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ['Chris Wanstrath', 'Kevin Ballard', 'Scott Chacon', 'Dr Nic Williams']
   s.email       = ["drnicwilliams@gmail.com"]
-  s.homepage    = "http://github/defunkt/github-gem"
+  s.homepage    = "https://github.com/defunkt/github-gem"
   s.summary     = "The official `github` command line helper for simplifying your GitHub experience."
   s.description = "The official `github` command line helper for simplifying your GitHub experience."
 

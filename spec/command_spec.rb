@@ -79,18 +79,16 @@ describe GitHub::Command do
     @command.should_receive(:exit!).once
     @command.die "message"
   end
-
-  it "should die if a github API token cannot be found" do
-    @command.should_receive(:git).once.with("config --get github.token").and_return("")
-    @command.should_receive(:puts).once.with("=> You must 'git config --global github.token [your API token]' before running this command")
-    @command.should_receive(:exit!).once
-    @command.github_token
-  end
-
-  it "should die if a github username token cannot be found" do
+  
+  it "requests github API credentials if not found" do
     @command.should_receive(:git).once.with("config --get github.user").and_return("")
-    @command.should_receive(:puts).once.with("=> You must 'git config --global github.user [your Github username]' before running this command")
-    @command.should_receive(:exit!).once
+    @command.should_receive(:puts).once.with("Please enter your GitHub credentials:")
+    h = mock("HighLine")
+    h.should_receive(:ask).once.with("Username: ").and_return("drnic")
+    h.should_receive(:ask).once.with("Token: ").and_return("TOKEN")
+    @command.should_receive(:highline).twice.and_return(h)
+    @command.should_receive(:git).once.with("config --global github.user 'drnic'")
+    @command.should_receive(:git).once.with("config --global github.token 'TOKEN'")
     @command.github_user
   end
 end

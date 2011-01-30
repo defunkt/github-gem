@@ -68,20 +68,27 @@ module GitHub
 
     def github_user
       user = git("config --get github.user")
-      if user.empty?
-        die("You must 'git config --global github.user [your Github username]' before running this command")
-      end
-
+      request_github_credentials && github_user if user.empty?
       user
     end
 
     def github_token
       token = git("config --get github.token")
-      if token.empty?
-        die("You must 'git config --global github.token [your API token]' before running this command")
-      end
-
+      request_github_credentials && github_token if token.empty?
       token
+    end
+    
+    def request_github_credentials
+      puts "Please enter your GitHub credentials:"
+      user = highline.ask("Username: ")
+      git("config --global github.user '#{user}'")
+      token = highline.ask("Token: ")
+      git("config --global github.token '#{token}'")
+      true
+    end
+    
+    def highline
+      @highline ||= HighLine.new
     end
 
     def shell_user

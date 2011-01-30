@@ -89,6 +89,7 @@ describe GitHub::Command do
     @command.should_receive(:highline).twice.and_return(h)
     @command.should_receive(:git).once.with("config --global github.user 'drnic'")
     @command.should_receive(:git).once.with("config --global github.token 'TOKEN'")
+    @command.should_receive(:git).once.with("config --get github.user").and_return("drnic")
     @command.github_user
   end
 end

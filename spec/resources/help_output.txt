@@ -70,3 +70,6 @@ Available commands:
                        --private: Use git@github.com: instead of
                          git://github.com/.
                        --ssh : Equivalent to --private
+  upload            => Uploads a file to GitHub's non-repo storage
+                       % github upload [filename]
+                       % github upload [filename] [user]/[repo]

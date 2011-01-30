@@ -4,11 +4,15 @@ require 'github/command'
 require 'github/helper'
 require 'github/ui'
 require 'fileutils'
+require "net/http"
+require 'net/https'
 require 'rubygems'
 require 'open-uri'
 require 'json'
 require 'yaml'
 require 'text/format'
+require 'xmlsimple'
+require 'mime/types'
 
 ##
 # Starting simple.

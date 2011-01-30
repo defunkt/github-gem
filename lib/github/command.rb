@@ -82,7 +82,13 @@ module GitHub
       puts "Please enter your GitHub credentials:"
       user = highline.ask("Username: ")
       git("config --global github.user '#{user}'")
+      puts("Your account token is at https://github.com/account under 'Account Admin'.")
+      puts("Press Enter to launch page in browser.")
       token = highline.ask("Token: ")
+      while token.strip.empty?
+        helper.open "https://github.com/account"
+        token = highline.ask("Token: ")
+      end
       git("config --global github.token '#{token}'")
       true
     end

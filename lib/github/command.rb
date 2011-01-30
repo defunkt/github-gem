@@ -68,19 +68,26 @@ module GitHub
 
     def github_user
       user = git("config --get github.user")
-      request_github_credentials && github_user if user.empty?
+      if user.empty?
+        request_github_credentials
+        user = github_user
+      end
       user
     end
 
     def github_token
       token = git("config --get github.token")
-      request_github_credentials && github_token if token.empty?
+      if token.empty?
+        request_github_credentials
+        token = github_token
+      end
       token
     end
     
     def request_github_credentials
       puts "Please enter your GitHub credentials:"
-      user = highline.ask("Username: ")
+      user = highline.ask("Username: ") while user.nil? || user.empty?
+      
       git("config --global github.user '#{user}'")
       puts("Your account token is at https://github.com/account under 'Account Admin'.")
       puts("Press Enter to launch page in browser.")

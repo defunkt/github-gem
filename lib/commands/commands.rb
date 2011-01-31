@@ -286,11 +286,10 @@ command :upload do |filename, user, repo|
 
   res = helper.http_get "https://github.com/#{user}/#{repo}/downloads?login=#{github_user}&token=#{github_token}"
   is_public = res.body =~ /You are being <a href="http:\/\/github.com/
-  schema = is_public ? "http" : "https"
   res = helper.http_get "#{schema}://github.com/#{user}/#{repo}/downloads?login=#{github_user}&token=#{github_token}" if is_public
   die "File has already been uploaded" if res.body =~ /<td><a href=".+?\/downloads\/#{user}\/#{repo}\/#{filename}.*">#{filename}<\/a><\/td>/
 
-  res = helper.http_post("#{schema}://github.com/#{user}/#{repo}/downloads", {
+  res = helper.http_post("https://github.com/#{user}/#{repo}/downloads", {
     :file_size => File.size(filename),
     :content_type => mime_type.simplified,
     :file_name => filename,

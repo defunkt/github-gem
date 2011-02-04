@@ -264,3 +264,21 @@ command :search do |query|
     puts "No results found"
   end
 end
+
+desc 'Display the URL to the compare view for the given tree-ish objects'
+usage "github compare [start treeish] [end treeish]"
+usage "github compare [end treeish]"
+flags :open => "Open the compare view in a browser"
+command :compare do |start_tree, end_tree|
+  unless end_tree # only start given. assume starting from master, and ending at start_end
+    end_tree = start_tree
+    start_tree = 'master'
+  end
+
+  compare_url = helper.compare_for(helper.owner, start_tree, end_tree)
+  if options[:open]
+    helper.open compare_url
+  else
+    puts compare_url
+  end
+end

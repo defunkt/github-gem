@@ -256,6 +256,10 @@ helper :issues_page_for do |user|
   "https://github.com/#{user}/#{project}/issues"
 end
 
+helper :compare_for do |user, start_tree, end_tree|
+  "https://github.com/#{user}/#{project}/compare/#{start_tree}...#{end_tree}"
+end
+
 helper :list_issues_for do |user, state|
   "https://github.com/api/v2/yaml/issues/list/#{user}/#{project}/#{state}"
 end

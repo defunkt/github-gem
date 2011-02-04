@@ -365,4 +365,11 @@ random
       @helper.open "http://www.google.com"
     end
   end
+
+  helper :compare_for do
+    it "should generate correct URL" do
+      setup_url_for "origin", "defunkt", "github-gem"
+      @helper.compare_for('defunkt', 'master', 'fallthrough').should == "https://github.com/defunkt/github-gem/compare/master...fallthrough"
+    end
+  end
 end

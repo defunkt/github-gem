@@ -8,6 +8,11 @@ Available commands:
                        --search: Search for [user|repo] and clone selected
                          repository
                        --ssh : Clone using the git@github.com style url.
+  compare           => Display the URL to the compare view for the given
+                       tree-ish objects
+                       % github compare [start treeish] [end treeish]
+                       % github compare [end treeish]
+                       --open: Open the compare view in a browser
   config            => Automatically set configuration info, or pass args to
                        specify.
                        % github config [my_username] [my_repo_name]

@@ -270,10 +270,12 @@ usage "github compare [start treeish] [end treeish]"
 usage "github compare [end treeish]"
 flags :open => "Open the compare view in a browser"
 command :compare do |start_tree, end_tree|
-  unless end_tree # only start given. assume starting from master, and ending at start_end
-    end_tree = start_tree
-    start_tree = 'master'
+  unless end_tree # only end given. assume starting from current branch, and ending at start_end
+    start_tree, end_tree = helper.branch, start_tree
   end
+
+  start_tree = helper.branch_to_compareish(start_tree)
+  end_tree = helper.branch_to_compareish(end_tree)
 
   compare_url = helper.compare_for(helper.owner, start_tree, end_tree)
   if options[:open]

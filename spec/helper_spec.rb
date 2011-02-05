@@ -372,4 +372,24 @@ random
       @helper.compare_for('defunkt', 'master', 'fallthrough').should == "https://github.com/defunkt/github-gem/compare/master...fallthrough"
     end
   end
+
+  helper :branch do
+    it "detects the correct branch" do
+      setup_url_for "origin", "defunkt", "github-gem"
+      @helper.should_receive(:`).with("git branch --no-color").and_return("* compare\n  master\n")
+      @helper.branch.should == 'compare'
+    end
+  end
+
+  helper :branch_to_compareish do
+    it "converts a remote branch to user:repository syntax" do
+      @helper.should_receive(:user_for).with('upstream').and_return('defunkt')
+
+      @helper.branch_to_compareish('upstream/master').should == 'defunkt:master'
+    end
+
+    it "doesn't convert anything else" do
+      @helper.branch_to_compareish('compare').should == 'compare'
+    end
+  end
 end

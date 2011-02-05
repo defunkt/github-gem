@@ -27,6 +27,14 @@ helper :origin do
   orig || 'origin'
 end
 
+helper :branch do
+  # zomg hax. groks output like:
+  # * compare
+  #   master
+  `git branch --no-color`.split("\n").detect {|line| line =~ /^\* (.*)$/ }
+  $1
+end
+
 helper :project do
   repo = repo_for(origin)
   if repo.nil? || repo.empty?
@@ -496,3 +504,15 @@ helper :print_issues do |issues, options|
   end
   puts "-----"
 end
+
+helper :branch_to_compareish do |branch|
+  if branch =~ %r{^\w+/\w+$} # like origin/master
+    remote, branch = branch.split('/')
+    user = user_for(remote)
+
+    "#{user}:#{branch}"
+  else # it's probably alright
+    branch
+  end
+end
+

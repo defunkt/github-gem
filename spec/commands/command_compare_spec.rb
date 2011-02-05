@@ -19,10 +19,11 @@ describe "github compare" do
   end
 
   context "when given one treeish object" do
-    specify "it opens the compare view between master and the object" do
+    specify "it opens the compare view between current branch and the object" do
       running :compare, 'fallthrough' do
         setup_url_for "origin", "defunkt", "github-gem"
 
+        @helper.should_receive(:branch).and_return('master')
         compare_url = 'awesome'
         @helper.should_receive(:compare_for).with('defunkt', 'master', 'fallthrough').and_return(compare_url)
 
@@ -35,6 +36,8 @@ describe "github compare" do
   specify "it can open the URL in a browser" do
     running :compare, 'fallthrough', '--open' do
       setup_url_for "origin", "defunkt", "github-gem"
+
+      @helper.should_receive(:branch).and_return('master')
 
       compare_url = 'awesome'
       @helper.should_receive(:compare_for).with('defunkt', 'master', 'fallthrough').and_return(compare_url)

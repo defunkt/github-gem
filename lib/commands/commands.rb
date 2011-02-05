@@ -274,6 +274,9 @@ command :compare do |start_tree, end_tree|
     start_tree, end_tree = helper.branch, start_tree
   end
 
+  start_tree = helper.branch if start_tree == '-'
+  end_tree = helper.branch if end_tree == '-'
+
   start_tree = helper.branch_to_compareish(start_tree)
   end_tree = helper.branch_to_compareish(end_tree)
 

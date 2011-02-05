@@ -46,4 +46,28 @@ describe "github compare" do
       @helper.should_receive('open').with(compare_url)
     end
   end
+
+  specify "it can fill in '-' with the current branch for start point" do
+    running :compare, 'fallthrough', '-' do
+      @helper.should_receive(:branch).and_return('compare')
+      setup_url_for "origin", "defunkt", "github-gem"
+
+      compare_url = 'awesome'
+      @helper.should_receive(:compare_for).with('defunkt', 'fallthrough', 'compare').and_return(compare_url)
+
+      stdout.should == 'awesome'
+    end
+  end
+
+  specify "it can fill in '-' with the current branch for end point" do
+    running :compare, '-', 'fallthrough' do
+      @helper.should_receive(:branch).and_return('compare')
+      setup_url_for "origin", "defunkt", "github-gem"
+
+      compare_url = 'awesome'
+      @helper.should_receive(:compare_for).with('defunkt', 'compare', 'fallthrough').and_return(compare_url)
+
+      stdout.should == 'awesome'
+    end
+  end
 end

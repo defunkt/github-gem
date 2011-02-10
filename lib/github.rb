@@ -152,35 +152,39 @@ module GitHub
   end
 end
 
+def truncate(string, length)
+  words = string.split
+  word  = words[0..(length-1)].join(' ')
+  left  = words[length..words.length]
+  trun = (left ? left.join(' ') : "") 
+  [word,trun]
+end
+
 GitHub.command :default, :aliases => ['', '-h', 'help', '-help', '--help'] do
   message = []
   message << "Usage: github command <space separated arguments>"
   message << "Available commands:"
   longest = GitHub.descriptions.map { |d,| d.to_s.size }.max
   indent = longest + 6 # length of "  " + " => "
-  fmt = Text::Format.new(
-    :first_indent => indent,
-    :body_indent => indent,
-    :columns => 79 # be a little more lenient than the default
-  )
   sorted = GitHub.descriptions.keys.sort
   sorted.each do |command|
     desc = GitHub.descriptions[command]
     cmdstr = "%-#{longest}s" % command
-    desc = fmt.format(desc).strip # strip to eat first "indent"
-    message << "  #{cmdstr} => #{desc}"
+    line, over = *truncate(desc,8)
+    message << "  #{cmdstr} => #{line}"
+    message << over.rjust(23+over.size) unless over.empty?
     flongest = GitHub.flag_descriptions[command].map { |d,| "--#{d}".size }.max
-    ffmt = fmt.clone
-    ffmt.body_indent += 2 # length of "% " and/or "--"
     GitHub.usage_descriptions[command].each do |usage_descriptions|
       usage_descriptions.split("\n").each do |usage|
-        usage_str = "%% %-#{flongest}s" % usage
-        message << ffmt.format(usage_str)
+        usage_str = "#{" " * longest}      %% %-#{flongest}s" % usage
+        message << usage_str
       end
     end
     GitHub.flag_descriptions[command].sort {|a,b| a.to_s <=> b.to_s }.each do |flag, fdesc|
-      flagstr = "#{" " * longest}  %-#{flongest}s" % "--#{flag}"
-      message << ffmt.format("  #{flagstr}: #{fdesc}")
+      flagstr = "#{" " * longest}  %-#{flongest}s" % "    --#{flag}"
+      line, over = *truncate(fdesc,8)
+      message << "#{flagstr}: #{line}"
+      message << over.rjust(25+over.size) unless over.empty?
     end
   end
   puts message.map { |m| m.gsub(/\n$/,'') }.join("\n") + "\n"

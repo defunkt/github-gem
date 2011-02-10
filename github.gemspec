@@ -19,8 +19,6 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
   
-  s.add_dependency "text-hyphen", "1.0.0"
-  s.add_dependency "text-format", "1.0.0"
   s.add_dependency "highline", "~> 1.5.1"
   s.add_dependency "json", "~> 1.4.6"
   s.add_dependency "launchy", "~> 0.3.7"

@@ -193,7 +193,7 @@ flags :rdoc => 'Create README.rdoc'
 flags :rst => 'Create README.rst'
 flags :private => 'Create private repository'
 command :create do |repo|
-  sh "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{!options[:private]}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/repositories"
+  data = sh "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{!options[:private]}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/repositories"
   mkdir repo
   cd repo
   git "init"
@@ -201,6 +201,7 @@ command :create do |repo|
   touch extension ? "README.#{extension}" : "README"
   git "add *"
   git "commit -m 'First commit!'"
+  repo = $1 if data =~ /"https:\/\/github.com\/#{github_user}\/(.+?)"/i
   git "remote add origin git@github.com:#{github_user}/#{repo}.git"
   git_exec "push origin master"
 end

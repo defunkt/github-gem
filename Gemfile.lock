@@ -6,6 +6,7 @@ PATH
       json (~> 1.4.6)
       launchy (~> 0.3.7)
       text-format (= 1.0.0)
+      text-hyphen (= 1.0.0)
 
 GEM
   remote: http://rubygems.org/
@@ -13,7 +14,7 @@ GEM
     activerecord (2.3.10)
       activesupport (= 2.3.10)
     activesupport (2.3.10)
-    configuration (1.1.0)
+    configuration (1.2.0)
     highline (1.5.2)
     json (1.4.6)
     launchy (0.3.7)

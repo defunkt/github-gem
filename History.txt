@@ -1,3 +1,7 @@
+== 0.6.2 2011-04-03
+
+* No C-extension dependencies by default (using json_pure instead of json)
+
 == 0.6.1 2011-04-03
 
 * Can install github into ruby 1.9

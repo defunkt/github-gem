@@ -1,6 +1,9 @@
 require 'bundler/setup'
 require 'spec'
 require 'active_record'
+require 'active_support/core_ext/numeric/time'
+require 'active_support/core_ext/time/acts_like'
+require 'active_support/core_ext/time/calculations'
 
 require File.dirname(__FILE__) + '/../lib/github'
 

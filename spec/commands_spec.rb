@@ -1,5 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-require File.dirname(__FILE__) + '/commands/command_helper'
+require File.expand_path("../commands/command_helper", __FILE__)
 
 describe "github" do
   include CommandHelper

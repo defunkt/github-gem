@@ -14,6 +14,15 @@ Run it:
     $ github <command> <args>
     $ gh <command> <args>
 
+## Requirements
+
+Only installs pure JSON gem `json_pure` by default. If you are able to install the C-extension `json` gem, it will use that instead.
+
+Try:
+
+    gem install json github
+
+
 ## Pulling Upstream Changes
 
 Let's say you just forked `github-gem` on GitHub from defunkt.

@@ -248,7 +248,7 @@ command :'create-from-local' do
     git "remote add origin git@github.com:#{github_user}/#{$1}.git"
     git_exec "push origin master"
   else
-    #TODO try to explain why it failed
+    puts created # perhaps curl doesn't exist
     die "error creating repository"
   end
 end

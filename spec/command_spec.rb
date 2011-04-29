@@ -113,4 +113,22 @@ describe GitHub::Command do
     @command.should_receive(:git).once.with("config --get github.user").and_return("drnic")
     @command.github_user
   end
+
+  it "gets the github username from the environment if not found in the config" do
+    @command.should_receive(:git).once.with("config --get github.user").and_return("")
+    @command.should_not_receive(:puts)
+    helper = mock("GitHub::Helper")
+    helper.should_receive("getenv").once.with("GITHUB_USER").and_return("drnic")
+    @command.should_receive(:helper).once.and_return(helper)
+    @command.github_user
+  end
+
+  it "gets the github tokenname from the environment if not found in the config" do
+    @command.should_receive(:git).once.with("config --get github.token").and_return("")
+    @command.should_not_receive(:puts)
+    helper = mock("GitHub::Helper")
+    helper.should_receive("getenv").once.with("GITHUB_TOKEN").and_return("TOKEN")
+    @command.should_receive(:helper).once.and_return(helper)
+    @command.github_token
+  end
 end

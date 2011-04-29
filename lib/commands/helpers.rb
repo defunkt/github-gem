@@ -492,3 +492,8 @@ helper :print_issues do |issues, options|
   end
   puts "-----"
 end
+
+helper :getenv do |var|
+  ENV[var]
+end
+

@@ -67,7 +67,10 @@ module GitHub
     end
 
     def github_user
-      user = git("config --get github.user")
+      user = [
+        git("config --get github.user"),
+        helper.getenv("GITHUB_USER")
+      ].reject { |s| s == nil or s.empty? }.first || ""
       if user.empty?
         request_github_credentials
         user = github_user
@@ -76,7 +79,10 @@ module GitHub
     end
 
     def github_token
-      token = git("config --get github.token")
+      token = [
+        git("config --get github.token"),
+        helper.getenv("GITHUB_TOKEN")
+      ].reject { |s| s == nil or s.empty? }.first || ""
       if token.empty?
         request_github_credentials
         token = github_token

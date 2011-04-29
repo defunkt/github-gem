@@ -82,6 +82,9 @@ describe GitHub::Command do
   
   it "requests github API credentials if not found" do
     @command.should_receive(:git).once.with("config --get github.user").and_return("")
+    helper = mock("GitHub::Helper")
+    helper.should_receive("getenv").twice.with("GITHUB_USER").and_return("")
+    @command.should_receive(:helper).twice.and_return(helper)
     @command.should_receive(:puts).once.with("Please enter your GitHub credentials:")
     h = mock("HighLine")
     h.should_receive(:ask).once.with("Username: ").and_return("drnic")
@@ -97,15 +100,16 @@ describe GitHub::Command do
 
   it "requests github API credentials if not found, and shows accounts page" do
     @command.should_receive(:git).once.with("config --get github.user").and_return("")
+    helper = mock("GitHub::Helper")
+    @command.should_receive(:helper).exactly(3).and_return(helper)
+    helper.should_receive("getenv").twice.with("GITHUB_USER").and_return("")
     @command.should_receive(:puts).once.with("Please enter your GitHub credentials:")
     h = mock("HighLine")
     h.should_receive(:ask).once.with("Username: ").and_return("drnic")
     @command.should_receive(:puts).once.with("Your account token is at https://github.com/account under 'Account Admin'.")
     @command.should_receive(:puts).once.with("Press Enter to launch page in browser.")
     h.should_receive(:ask).once.with("Token: ").and_return("")
-    helper = mock("GitHub::Helper")
     helper.should_receive("open").once.with("https://github.com/account")
-    @command.should_receive(:helper).once.and_return(helper)
     h.should_receive(:ask).once.with("Token: ").and_return("TOKEN")
     @command.should_receive(:highline).any_number_of_times.and_return(h)
     @command.should_receive(:git).once.with("config --global github.user 'drnic'")

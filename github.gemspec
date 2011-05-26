@@ -18,14 +18,17 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
-  
-  s.add_dependency "text-hyphen", "1.0.0"
-  s.add_dependency "text-format", "1.0.0"
+
+  # Need hard dependencies here for Ruby 1.9 compatibility.
+  # (See <https://github.com/defunkt/github-gem/pull/45>.)
+  s.add_dependency "text-hyphen", "= 1.0.0"
+  s.add_dependency "text-format", "= 1.0.0"
+
   s.add_dependency "highline", "~> 1.5.1"
   s.add_dependency "json_pure", "~> 1.5.1"
   s.add_dependency "launchy", "~> 0.3.7"
 
   s.add_development_dependency "rake"
-  s.add_development_dependency "rspec", "~>1.3.1"
-  s.add_development_dependency "activerecord", "~>3.0.0"
+  s.add_development_dependency "rspec", "~> 1.3.1"
+  s.add_development_dependency "activerecord", "~> 3.0.0"
 end

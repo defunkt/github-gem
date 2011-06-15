@@ -264,3 +264,27 @@ command :search do |query|
     puts "No results found"
   end
 end
+
+desc "Fetch a specified pull request and rebase it to the current tip"
+usage "github fetch-pull [pullRequestId]"
+command :'fetch-pull' do |n|
+  user, repo = nil,nil
+  # figure out the user+repo name from git-remote
+  git("remote -v").split("\n").each do |line|
+    m = /git@github\.com:([^\/]+)\/(.+)\.git/.match(line)
+    if m
+      user = m[1]
+      repo = m[2]
+    end
+  end
+  die "Cannot infer repository from git-remote" unless user && repo
+
+  # pull in the suggested head and rebase
+  query = [user, repo, n].compact.join("/")
+  data = JSON.parse(open("https://github.com/api/v2/json/pulls/#{URI.escape query}").read)
+  head = data['pull']['head']
+  tip = git "show-ref -s HEAD"
+  pgit "fetch #{head['repository']['url']}.git #{head['ref']}:pull-#{n}"
+  pgit "checkout pull-#{n}"
+  pgit "rebase #{tip}"
+end

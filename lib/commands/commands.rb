@@ -283,7 +283,7 @@ command :'fetch-pull' do |n|
   query = [user, repo, n].compact.join("/")
   data = JSON.parse(open("https://github.com/api/v2/json/pulls/#{URI.escape query}").read)
   head = data['pull']['head']
-  tip = git "show-ref -s HEAD"
+  tip = git "rev-parse HEAD"
   die "appears to be already merged" if head['repository'] == nil
   pgit "fetch #{head['repository']['url']}.git #{head['ref']}:pull-#{n}"
   pgit "checkout pull-#{n}"

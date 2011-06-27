@@ -74,7 +74,7 @@ describe "github issues" do
       options[:created_at] = 10.hours.ago
       options[:user]       = "user"
       options[:project]    = "project"
-      yaml = <<-YAML.gsub(/^    /, '')
+      yaml = <<-YAML.gsub(/^      /, '')
       --- 
       issues: 
       - number: 1

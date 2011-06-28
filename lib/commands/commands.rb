@@ -265,9 +265,9 @@ command :search do |query|
   end
 end
 
-desc "Fetch a specified pull request and rebase it to the current tip"
-usage "github fetch-pull [pullRequestId]"
-command :'fetch-pull' do |n|
+desc "Fetch a pull request and possibly rebase or merge it to the current tip"
+usage "github fetch-pull [pullRequestId] [rebase | merge]"
+command :'fetch-pull' do |n,action|
   user, repo = nil,nil
   # figure out the user+repo name from git-remote
   git("remote -v").split("\n").each do |line|
@@ -299,5 +299,5 @@ command :'fetch-pull' do |n|
   end
   pgit "fetch #{repo_url}.git #{head['ref']}:pull-#{n}"
   pgit "checkout pull-#{n}"
-  pgit "rebase #{tip}"
+  pgit "#{action} #{tip}" if ["rebase", "merge"].include?(action)
 end

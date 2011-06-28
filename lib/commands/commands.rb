@@ -281,11 +281,23 @@ command :'fetch-pull' do |n|
 
   # pull in the suggested head and rebase
   query = [user, repo, n].compact.join("/")
-  data = JSON.parse(open("https://github.com/api/v2/json/pulls/#{URI.escape query}").read)
+  pull_url = "https://github.com/api/v2/json/pulls/#{URI.escape query}"
+  if github_token
+    data = JSON.parse(`curl -s -L -F 'login=#{github_user}' -F 'token=#{github_token}' #{pull_url}`)
+  else
+    data = JSON.parse(open(pull_url).read)
+  end
   head = data['pull']['head']
   tip = git "rev-parse HEAD"
   die "appears to be already merged" if head['repository'] == nil
-  pgit "fetch #{head['repository']['url']}.git #{head['ref']}:pull-#{n}"
+  if github_token
+    repo_owner = head['repository']['owner']
+    repo_name = head['repository']['name']
+    repo_url = "git@github.com:#{repo_owner}/#{repo_name}"
+  else
+    repo_url = head['repository']['url']
+  end
+  pgit "fetch #{repo_url}.git #{head['ref']}:pull-#{n}"
   pgit "checkout pull-#{n}"
   pgit "rebase #{tip}"
 end

@@ -171,16 +171,15 @@ command :clone do |user, repo, dir|
   end
 end
 
-desc "Generate the text for a pull request."
-usage "github pull-request [user] [branch]"
-command :'pull-request' do |user, branch|
+desc "Generate a pull request to target owner and branch."
+usage "github pull-request [user] [branch] [title] [initial comment]"
+command :'pull-request' do |user, branch, title, comment|
   if helper.project
-    die "Specify a user for the pull request" if user.nil?
-    user, branch = user.split('/', 2) if branch.nil?
-    branch ||= 'master'
-    GitHub.invoke(:track, user) unless helper.tracking?(user)
-
-    git_exec "request-pull #{user}/#{branch} #{helper.origin}"
+    puts "not enough arguments" if user.nil? || branch.nil? || title.nil? || comment.nil?
+    current_branch = sh "git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'"
+    sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' -d \"pull[base]=#{branch}\" -d \"pull[head]=#{github_user}:#{current_branch}\" -d \"pull[title]=#{title}\" -d \"pull[body]=#{comment}\" https://github.com/api/v2/json/pulls/#{user}/#{helper.project}"
+  else
+    puts "no project"
   end
 end
 

@@ -6,7 +6,6 @@ Catch us in the #github room on freenode if you want to get involved.  Or just f
 
 ## Getting started
 
-    $ gem source --add http://gemcutter.org
     $ gem install github
 
 Run it:

@@ -237,15 +237,20 @@ command :fork do |user, repo|
 end
 
 desc "Create a new GitHub repository from the current local repository"
+usage "github create-from-local [repo_name]"
 flags :private => 'Create private repository'
-command :'create-from-local' do
+command :'create-from-local' do |repo_name|
   cwd = sh "pwd"
-  repo = File.basename(cwd)
+  if repo_name.nil?
+    repo = File.basename(cwd)
+  else
+    repo = repo_name
+  end
   is_repo = !git("status").match(/fatal/)
   raise "Not a git repository. Use 'gh create' instead" unless is_repo
   created = sh "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{options[:private] != true}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/repositories"
   if created.out =~ %r{You are being <a href="https://github.com/#{github_user}/([^"]+)"}
-    git "remote add origin git@github.com:#{github_user}/#{$1}.git"
+    git "remote add origin git@github.com:#{github_user}/#{repo}.git"
     git_exec "push origin master"
   else
     puts created # perhaps curl doesn't exist

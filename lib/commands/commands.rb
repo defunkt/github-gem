@@ -184,6 +184,42 @@ command :'pull-request' do |user, branch|
   end
 end
 
+# assumes you are in your local repository that was cloned from your Github
+# repository, which is a fork of someone else's Github repository, and have
+# the desired branch checked out
+desc "Perform a pull request."
+usage "github pull-request [user] [base]"
+command :'pull-request' do |to_user, base|
+  base ||= 'master'
+
+  # get username and repo name from the remote url, eg:
+  # origin	git@github.com:lorensr/github-gem.git (fetch)
+
+  # determine which repo my Github repo is forked from with:
+  # GET "/repos/#{from_user}/#{repo}
+  to_user ||= forked_from
+
+  puts "Creating pull request from #{from_user}/#{repo} to #{to_user}/#{repo}."
+  puts "Title: "
+  title = gets.chomp
+  puts "Body: "
+  body = gets.chomp
+  puts "Password: "
+  password = gets.chomp
+
+  # make the following HTTP action:
+  # POST "/repos/#{to_user}/#{repo}/pulls
+  # with this body:
+  {
+    "title" => title,
+    "body" => body,
+    "head" => from_user + ':' + repo
+    "base" => base
+  }
+
+  # parse reply and either indicate failure or print url of pull request 
+end
+
 desc "Create a new, empty GitHub repository"
 usage "github create [repo]"
 flags :markdown => 'Create README.markdown'

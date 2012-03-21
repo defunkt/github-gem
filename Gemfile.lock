@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     github (0.7.1)
-      highline (~> 1.5.1)
+      highline (~> 1.6)
       json_pure (~> 1.5.1)
       launchy (~> 2.0.2)
       text-format (= 1.0.0)
@@ -24,7 +24,7 @@ GEM
     addressable (2.2.7)
     arel (2.0.10)
     builder (2.1.2)
-    highline (1.5.2)
+    highline (1.6.11)
     i18n (0.5.0)
     json_pure (1.5.4)
       spruz (~> 0.2.8)

@@ -248,15 +248,14 @@ command :'create-from-local' do |repo_name|
   end
   is_repo = !git("status").match(/fatal/)
   raise "Not a git repository. Use 'gh create' instead" unless is_repo
-  command = "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{options[:private] != true}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/repositories"
+  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/create"
   created = sh command
   if created.out =~ %r{You are being <a href="https://github.com/#{github_user}/([^"]+)"}
     git "remote add origin git@github.com:#{github_user}/#{repo}.git"
     git_exec "push origin master"
   else
-    puts command # perhaps curl doesn't exist
-    puts created # perhaps curl doesn't exist
-    die "error creating repository"
+    error = JSON.parse(created)
+    die error["error"]
   end
 end
 

@@ -350,8 +350,8 @@ random
         require 'launchy'
 
         @helper.should_receive(:gem).with('launchy')
-        Launchy::Browser.next_instance.tap do |browser|
-          browser.should_receive(:run).with(dummy_browser, "http://www.google.com")
+        Launchy.tap do |launchy|
+          launchy.should_receive(:open).with("http://www.google.com")
           @helper.open "http://www.google.com"
         end
       rescue LoadError

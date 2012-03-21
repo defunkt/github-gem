@@ -273,7 +273,7 @@ end
 
 helper :open do |url|
   has_launchy? proc {
-    Launchy::Browser.new.visit url
+    Launchy.open url
   }
 end
 

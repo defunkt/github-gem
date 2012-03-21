@@ -223,16 +223,23 @@ command :fork do |user, repo|
     end
   end
 
-  sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/#{user}/#{repo}/fork"
-
-  url = "git@github.com:#{github_user}/#{repo}.git"
-  if is_repo
-    git "config remote.origin.url #{url}"
-    puts "#{user}/#{repo} forked"
+  current_origin = git "config remote.origin.url"
+  
+  output_json = sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/fork/#{user}/#{repo}"
+  output = JSON.parse(output_json)
+  if output["error"]
+    die output["error"]
   else
-    puts "Giving GitHub a moment to create the fork..."
-    sleep 3
-    git_exec "clone #{url}"
+    url = "git@github.com:#{github_user}/#{repo}.git"
+    if is_repo
+      git "config remote.origin.url #{url}"
+      git "config remote.parent.url #{current_origin}"
+      puts "#{user}/#{repo} forked"
+    else
+      puts "Giving GitHub a moment to create the fork..."
+      sleep 3
+      git_exec "clone #{url}"
+    end
   end
 end
 

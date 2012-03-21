@@ -115,10 +115,10 @@ command :pull do |user, branch|
   die "Specify a user to pull from" if user.nil?
   user, branch = user.split("/", 2) if branch.nil?
 
-  if !helper.network_members(user, {}).include?(user)
-    git_exec "#{helper.argv.join(' ')}".strip
-    return
-  end
+  # if !helper.network_members(user, {}).include?(user)
+  #   git_exec "#{helper.argv.join(' ')}".strip
+  #   return
+  # end
 
   branch ||= 'master'
   GitHub.invoke(:track, user) unless helper.tracking?(user)

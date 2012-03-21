@@ -1,3 +1,7 @@
+== 0.7.0 2012-03-20
+
+* Fixed fork + create-from-local tasks (moved to github v2 API)
+
 == 0.6.2 2011-04-03
 
 * No C-extension dependencies by default (using json_pure instead of json)

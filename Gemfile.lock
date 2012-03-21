@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    github (0.7.0)
+    github (0.7.1)
       highline (~> 1.5.1)
       json_pure (~> 1.5.1)
       launchy (~> 2.0.2)

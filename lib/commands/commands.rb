@@ -233,7 +233,7 @@ command :fork do |user, repo|
     url = "git@github.com:#{github_user}/#{repo}.git"
     if is_repo
       git "config remote.origin.url #{url}"
-      git "config remote.parent.url #{current_origin}"
+      git "config remote.upstream.url #{current_origin}"
       puts "#{user}/#{repo} forked"
     else
       puts "Giving GitHub a moment to create the fork..."

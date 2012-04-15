@@ -258,7 +258,7 @@ helper :issues_page_for do |user|
 end
 
 helper :list_issues_for do |user, state|
-  "https://github.com/api/v2/yaml/issues/list/#{user}/#{project}/#{state}"
+  `curl -s -L -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/yaml/issues/list/#{user}/#{project}/#{state}`
 end
 
 helper :has_launchy? do |blk|

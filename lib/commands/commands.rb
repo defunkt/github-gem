@@ -20,7 +20,7 @@ end
 desc "Automatically set configuration info, or pass args to specify."
 usage "github config [my_username] [my_repo_name]"
 command :config do |user, repo|
-  user ||= ENV['USER']
+  user ||= "#{github_user}"
   repo ||= File.basename(FileUtils.pwd)
   git "config --global github.user #{user}"
   git "config github.repo #{repo}"
@@ -193,16 +193,22 @@ flags :rdoc => 'Create README.rdoc'
 flags :rst => 'Create README.rst'
 flags :private => 'Create private repository'
 command :create do |repo|
-  sh "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{!options[:private]}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/repositories"
-  mkdir repo
-  cd repo
-  git "init"
-  extension = options.keys.first
-  touch extension ? "README.#{extension}" : "README"
-  git "add *"
-  git "commit -m 'First commit!'"
-  git "remote add origin git@github.com:#{github_user}/#{repo}.git"
-  git_exec "push origin master"
+  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/create"
+  output_json = sh command
+  output = JSON.parse(output_json)
+  if output["error"]
+    die output["error"]
+  else
+    mkdir repo
+    cd repo
+    git "init"
+    extension = options.keys.first
+    touch extension ? "README.#{extension}" : "README"
+    git "add *"
+    git "commit -m 'First commit!'"
+    git "remote add origin git@github.com:#{github_user}/#{repo}.git"
+    git_exec "push origin master"
+  end
 end
 
 desc "Forks a GitHub repository"

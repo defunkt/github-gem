@@ -9,6 +9,7 @@ require 'open-uri'
 require 'json'
 require 'yaml'
 require 'text/format'
+require 'logger'
 
 ##
 # Starting simple.

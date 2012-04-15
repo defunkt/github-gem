@@ -67,6 +67,10 @@ module GitHub
     Dir[BasePath + '/commands/*.rb'].each do |command|
       load command
     end
+    # load user local extensions
+    Dir[ENV['HOME']+ '/.github-gem/commands/*.rb'].each do |command|
+      load command
+    end
     invoke(args.shift, *args)
   end
 
@@ -146,7 +150,7 @@ module GitHub
   end
 
   def load(file)
-    file[0] =~ /^\// ? path = file : path = BasePath + "/commands/#{File.basename(file)}"
+    file =~ /^\// ? path = file : path = BasePath + "/commands/#{File.basename(file)}"
     data = File.read(path)
     GitHub.module_eval data, path
   end

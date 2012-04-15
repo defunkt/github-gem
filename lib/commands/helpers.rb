@@ -32,8 +32,10 @@ helper :project do
   if repo.nil? || repo.empty?
     if url_for(origin) == ""
       STDERR.puts "Error: missing remote 'origin'"
+      STDERR.puts "Hint: perhaps you wish to run `gh create-from-local`"
     else
       STDERR.puts "Error: remote 'origin' is not a github URL"
+      STDERR.puts "Hint: you can try `git config --local --add github.origin '<name>'`"
     end
     exit 1
   end
@@ -178,7 +180,7 @@ end
 # report modified track files...not files that have been staged
 # for committal
 helper :branch_dirty? do
-  !( system("git diff --quiet 2>#{DEV_NULL}") || 
+  !( system("git diff --quiet 2>#{DEV_NULL}") ||
     !system("git diff --cached --quiet 2>#{DEV_NULL}")
   )
 end

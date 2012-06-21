@@ -249,6 +249,7 @@ helper :network_page_for do |user|
 end
 
 helper :network_meta_for do |user|
+  p "https://github.com/#{user}/#{project}/network_meta"
   "https://github.com/#{user}/#{project}/network_meta"
 end
 
@@ -272,7 +273,7 @@ end
 
 helper :open do |url|
   has_launchy? proc {
-    Launchy::Browser.new.visit url
+    Launchy.open url
   }
 end
 

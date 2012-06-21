@@ -20,7 +20,7 @@ end
 desc "Automatically set configuration info, or pass args to specify."
 usage "github config [my_username] [my_repo_name]"
 command :config do |user, repo|
-  user ||= ENV['USER']
+  user ||= "#{github_user}"
   repo ||= File.basename(FileUtils.pwd)
   git "config --global github.user #{user}"
   git "config github.repo #{repo}"
@@ -115,10 +115,10 @@ command :pull do |user, branch|
   die "Specify a user to pull from" if user.nil?
   user, branch = user.split("/", 2) if branch.nil?
 
-  if !helper.network_members(user, {}).include?(user)
-    git_exec "#{helper.argv.join(' ')}".strip
-    return
-  end
+  # if !helper.network_members(user, {}).include?(user)
+  #   git_exec "#{helper.argv.join(' ')}".strip
+  #   return
+  # end
 
   branch ||= 'master'
   GitHub.invoke(:track, user) unless helper.tracking?(user)
@@ -193,16 +193,22 @@ flags :rdoc => 'Create README.rdoc'
 flags :rst => 'Create README.rst'
 flags :private => 'Create private repository'
 command :create do |repo|
-  sh "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{!options[:private]}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/repositories"
-  mkdir repo
-  cd repo
-  git "init"
-  extension = options.keys.first
-  touch extension ? "README.#{extension}" : "README"
-  git "add *"
-  git "commit -m 'First commit!'"
-  git "remote add origin git@github.com:#{github_user}/#{repo}.git"
-  git_exec "push origin master"
+  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/create"
+  output_json = sh command
+  output = JSON.parse(output_json)
+  if output["error"]
+    die output["error"]
+  else
+    mkdir repo
+    cd repo
+    git "init"
+    extension = options.keys.first
+    touch extension ? "README.#{extension}" : "README"
+    git "add *"
+    git "commit -m 'First commit!'"
+    git "remote add origin git@github.com:#{github_user}/#{repo}.git"
+    git_exec "push origin master"
+  end
 end
 
 desc "Forks a GitHub repository"
@@ -223,33 +229,46 @@ command :fork do |user, repo|
     end
   end
 
-  sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/#{user}/#{repo}/fork"
-
-  url = "git@github.com:#{github_user}/#{repo}.git"
-  if is_repo
-    git "config remote.origin.url #{url}"
-    puts "#{user}/#{repo} forked"
+  current_origin = git "config remote.origin.url"
+  
+  output_json = sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/fork/#{user}/#{repo}"
+  output = JSON.parse(output_json)
+  if output["error"]
+    die output["error"]
   else
-    puts "Giving GitHub a moment to create the fork..."
-    sleep 3
-    git_exec "clone #{url}"
+    url = "git@github.com:#{github_user}/#{repo}.git"
+    if is_repo
+      git "config remote.origin.url #{url}"
+      git "config remote.upstream.url #{current_origin}"
+      puts "#{user}/#{repo} forked"
+    else
+      puts "Giving GitHub a moment to create the fork..."
+      sleep 3
+      git_exec "clone #{url}"
+    end
   end
 end
 
 desc "Create a new GitHub repository from the current local repository"
+usage "github create-from-local [repo_name]"
 flags :private => 'Create private repository'
-command :'create-from-local' do
+command :'create-from-local' do |repo_name|
   cwd = sh "pwd"
-  repo = File.basename(cwd)
+  if repo_name.nil?
+    repo = File.basename(cwd)
+  else
+    repo = repo_name
+  end
   is_repo = !git("status").match(/fatal/)
   raise "Not a git repository. Use 'gh create' instead" unless is_repo
-  created = sh "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{options[:private] != true}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/repositories"
-  if created.out =~ %r{You are being <a href="https://github.com/#{github_user}/([^"]+)"}
-    git "remote add origin git@github.com:#{github_user}/#{$1}.git"
-    git_exec "push origin master"
+  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/create"
+  output_json = sh command
+  output = JSON.parse(output_json)
+  if output["error"]
+    die output["error"]
   else
-    puts created # perhaps curl doesn't exist
-    die "error creating repository"
+    git "remote add origin git@github.com:#{github_user}/#{repo}.git"
+    git_exec "push origin master"
   end
 end
 

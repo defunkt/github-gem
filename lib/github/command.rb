@@ -97,7 +97,15 @@ module GitHub
       git("config --global github.oauth '#{data["token"]}'")
       true
     end
-    
+
+    # is the current user in the given org?
+    def in_org?(name)
+      command = "curl -H 'Authorization: token #{github_token}' https://api.github.com/user/orgs"
+      output_json = sh command
+      orgs = JSON.parse(output_json)
+      return orgs.find {|o| o['login']==name }!=nil
+    end
+
     def highline
       @highline ||= HighLine.new
     end

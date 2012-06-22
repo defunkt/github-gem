@@ -161,7 +161,7 @@ command :clone do |user, repo, dir|
   end
 
   if repo
-    if options[:ssh] || current_user?(user)
+    if options[:ssh] || current_user?(user) || in_org?(user)
       git_exec "clone git@github.com:#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
     else
       git_exec "clone git://github.com/#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
@@ -307,7 +307,6 @@ command :'fetch-pull' do |n,action|
     data = JSON.parse(open(pull_url).read)
   end
   head = data['head']
-  puts data
   tip = git "rev-parse HEAD"
   if github_token
     repo_owner = head['repo']['owner']['login']

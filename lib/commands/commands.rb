@@ -193,7 +193,7 @@ flags :rdoc => 'Create README.rdoc'
 flags :rst => 'Create README.rst'
 flags :private => 'Create private repository'
 command :create do |repo|
-  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/create"
+  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -H 'Authorization: token #{github_token}' https://github.com/api/v2/json/repos/create"
   output_json = sh command
   output = JSON.parse(output_json)
   if output["error"]
@@ -231,7 +231,7 @@ command :fork do |user, repo|
 
   current_origin = git "config remote.origin.url"
   
-  output_json = sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/fork/#{user}/#{repo}"
+  output_json = sh "curl -H 'Authorization: token #{github_token}' https://github.com/api/v2/json/repos/fork/#{user}/#{repo}"
   output = JSON.parse(output_json)
   if output["error"]
     die output["error"]
@@ -261,7 +261,7 @@ command :'create-from-local' do |repo_name|
   end
   is_repo = !git("status").match(/fatal/)
   raise "Not a git repository. Use 'gh create' instead" unless is_repo
-  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/create"
+  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -H 'Authorization: token #{github_token}' https://github.com/api/v2/json/repos/create"
   output_json = sh command
   output = JSON.parse(output_json)
   if output["error"]
@@ -299,22 +299,22 @@ command :'fetch-pull' do |n,action|
   die "Cannot infer repository from git-remote" unless user && repo
 
   # pull in the suggested head and rebase
-  query = [user, repo, n].compact.join("/")
-  pull_url = "https://github.com/api/v2/json/pulls/#{URI.escape query}"
+  query = [user, repo].compact.join("/")
+  pull_url = "https://api.github.com/repos/#{URI.escape query}/pulls/#{n}"
   if github_token
-    data = JSON.parse(`curl -s -L -F 'login=#{github_user}' -F 'token=#{github_token}' #{pull_url}`)
+    data = JSON.parse(`curl -s -L -H 'Authorization: token #{github_token}' #{pull_url}`)
   else
     data = JSON.parse(open(pull_url).read)
   end
-  head = data['pull']['head']
+  head = data['head']
+  puts data
   tip = git "rev-parse HEAD"
-  die "appears to be already merged" if head['repository'] == nil
   if github_token
-    repo_owner = head['repository']['owner']
-    repo_name = head['repository']['name']
+    repo_owner = head['repo']['owner']['login']
+    repo_name = head['repo']['name']
     repo_url = "git@github.com:#{repo_owner}/#{repo_name}"
   else
-    repo_url = head['repository']['url']
+    repo_url = head['repo']['clone_url']
   end
   pgit "fetch #{repo_url}.git #{head['ref']}:pull-#{n}"
   pgit "checkout pull-#{n}"

@@ -46,6 +46,12 @@ end
 desc 'Open the given user/project in a web browser'
 usage 'github open [user/project]'
 command :open do |arg|
+  if arg.nil?
+    origin = git('remote -v').split("\n").find{|i| i =~ /^origin/ }
+    if origin
+      arg = origin.split(/\s/)[1].sub('git@github.com:','').sub('https://github.com/','').sub('.git','')
+    end
+  end
   helper.open "https://github.com/#{arg}"
 end
 

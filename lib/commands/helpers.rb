@@ -261,6 +261,10 @@ helper :list_issues_for do |user, state|
   "https://github.com/api/v2/yaml/issues/list/#{user}/#{project}/#{state}"
 end
 
+helper :compare_page_for do |user, start_ref, end_ref|
+  "https://github.com/#{user}/#{project}/compare/#{ [start_ref,end_ref].compact.join('...') }"
+end
+
 helper :has_launchy? do |blk|
   begin
     gem 'launchy'

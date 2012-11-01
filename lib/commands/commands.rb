@@ -17,6 +17,15 @@ command :admin do |user|
   end
 end
 
+desc "Open the compare page between 2 refs for this repo in a web browser"
+usage "github compare [start_ref] [end_ref]"
+command :compare do |start_ref, end_ref|
+  if helper.project
+    page = helper.compare_page_for(helper.owner, start_ref, end_ref)
+    helper.open page
+  end
+end
+
 desc "Automatically set configuration info, or pass args to specify."
 usage "github config [my_username] [my_repo_name]"
 command :config do |user, repo|

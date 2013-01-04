@@ -193,7 +193,7 @@ flags :rdoc => 'Create README.rdoc'
 flags :rst => 'Create README.rst'
 flags :private => 'Create private repository'
 command :create do |repo|
-  sh "curl -F 'repository[name]=#{repo}' -F 'repository[public]=#{!options[:private]}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/repositories"
+  sh "curl  -b #{cookie_cache_path} -c #{cookie_cache_path} -F 'repository[name]=#{repo}' -F 'repository[public]=#{!options[:private]}' -u '#{github_user}' -F https://github.com/repositories"
   mkdir repo
   cd repo
   git "init"
@@ -225,7 +225,7 @@ command :fork do |user, repo|
 
   current_origin = git "config remote.origin.url"
   
-  output_json = sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/fork/#{user}/#{repo}"
+  output_json = sh "curl -b #{cookie_cache_path} -c #{cookie_cache_path} -u'#{github_user}' https://github.com/api/v2/json/repos/fork/#{user}/#{repo}"
   output = JSON.parse(output_json)
   if output["error"]
     die output["error"]
@@ -255,7 +255,7 @@ command :'create-from-local' do |repo_name|
   end
   is_repo = !git("status").match(/fatal/)
   raise "Not a git repository. Use 'gh create' instead" unless is_repo
-  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/create"
+  command = "curl  -b #{cookie_cache_path} -c #{cookie_cache_path} -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -u '#{github_user}' https://github.com/api/v2/json/repos/create"
   output_json = sh command
   output = JSON.parse(output_json)
   if output["error"]

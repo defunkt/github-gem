@@ -370,6 +370,11 @@ helper :network_cache_path do
   File.join(dir, 'network-cache')
 end
 
+helper :cookie_cache_path do
+  dir = `git rev-parse --git-dir`.chomp
+  File.join(dir,'cookie-jar')
+end
+
 helper :commits_cache_path do
   dir = `git rev-parse --git-dir`.chomp
   File.join(dir, 'commits-cache')
@@ -384,7 +389,7 @@ helper :github_token do
 end
 
 helper :cache_data do |user|
-  `curl -s -L -F 'login=#{github_user}' -F 'token=#{github_token}' #{network_meta_for(user)} -o #{network_cache_path}`
+  `curl -b #{cookie_cache_path} -c #{cookie_cache_path} -s -L -u '#{github_user}'  #{network_meta_for(user)} -o #{network_cache_path}`
   get_cache
 end
 

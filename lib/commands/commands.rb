@@ -290,7 +290,7 @@ command :'fetch-pull' do |n,action|
   user, repo = nil,nil
   # figure out the user+repo name from git-remote
   git("remote -v").split("\n").each do |line|
-    m = /git@github\.com:([^\/]+)\/(.+)\.git/.match(line)
+    m = /git@github\.com[:\/]([^\/]+)\/(.+)\.git/.match(line)
     if m
       user = m[1]
       repo = m[2]

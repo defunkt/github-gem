@@ -161,7 +161,7 @@ command :clone do |user, repo, dir|
   end
 
   if repo
-    if options[:ssh] || current_user?(user)
+    if options[:ssh] || current_user?(user) || in_org?(user)
       git_exec "clone git@github.com:#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
     else
       git_exec "clone git://github.com/#{user}/#{repo}.git" + (dir ? " #{dir}" : "")
@@ -193,7 +193,7 @@ flags :rdoc => 'Create README.rdoc'
 flags :rst => 'Create README.rst'
 flags :private => 'Create private repository'
 command :create do |repo|
-  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/create"
+  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -H 'Authorization: token #{github_token}' https://github.com/api/v2/json/repos/create"
   output_json = sh command
   output = JSON.parse(output_json)
   if output["error"]
@@ -231,7 +231,7 @@ command :fork do |user, repo|
 
   current_origin = git "config remote.origin.url"
   
-  output_json = sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/fork/#{user}/#{repo}"
+  output_json = sh "curl -H 'Authorization: token #{github_token}' https://github.com/api/v2/json/repos/fork/#{user}/#{repo}"
   output = JSON.parse(output_json)
   if output["error"]
     die output["error"]
@@ -261,7 +261,7 @@ command :'create-from-local' do |repo_name|
   end
   is_repo = !git("status").match(/fatal/)
   raise "Not a git repository. Use 'gh create' instead" unless is_repo
-  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/create"
+  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -H 'Authorization: token #{github_token}' https://github.com/api/v2/json/repos/create"
   output_json = sh command
   output = JSON.parse(output_json)
   if output["error"]
@@ -282,4 +282,23 @@ command :search do |query|
   else
     puts "No results found"
   end
+end
+
+desc "Fetch a pull request and possibly rebase or merge it to the current tip"
+usage "github fetch-pull [pullRequestId] [rebase | merge]"
+command :'fetch-pull' do |n,action|
+  user, repo = nil,nil
+  # figure out the user+repo name from git-remote
+  git("remote -v").split("\n").each do |line|
+    m = /git@github\.com[:\/]([^\/]+)\/(.+)\.git/.match(line)
+    if m
+      user = m[1]
+      repo = m[2]
+    end
+  end
+  die "Cannot infer repository from git-remote" unless user && repo
+
+  pgit "fetch https://github.com/#{user}/#{repo}.git refs/pull/#{n}/head:pull-#{n}"
+  pgit "checkout pull-#{n}"
+  pgit "#{action} #{tip}" if ["rebase", "merge"].include?(action)
 end

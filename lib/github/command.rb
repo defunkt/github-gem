@@ -76,7 +76,7 @@ module GitHub
     end
 
     def github_token
-      token = git("config --get github.token")
+      token = git("config --get github.oauth")
       if token.empty?
         request_github_credentials
         token = github_token
@@ -89,17 +89,23 @@ module GitHub
       user = highline.ask("Username: ") while user.nil? || user.empty?
       
       git("config --global github.user '#{user}'")
-      puts("Your account token is at https://github.com/account under 'Account Admin'.")
-      puts("Press Enter to launch page in browser.")
-      token = highline.ask("Token: ")
-      while token.strip.empty?
-        helper.open "https://github.com/account"
-        token = highline.ask("Token: ")
-      end
-      git("config --global github.token '#{token}'")
+      puts "We now need to ask you to give your GitHub password."
+      puts("We use this to generate OAuth token and store that. Password will not be persisted.")
+
+      token = highline.ask("Password: ") { |q| q.echo = false }
+      data = JSON.parse(`curl -s -L -u '#{github_user}:#{token}' --data-binary '{"scopes":["repo","gist"],"note":"GitHub Gem"}' -X POST https://api.github.com/authorizations`)
+      git("config --global github.oauth '#{data["token"]}'")
       true
     end
-    
+
+    # is the current user in the given org?
+    def in_org?(name)
+      command = "curl -H 'Authorization: token #{github_token}' https://api.github.com/user/orgs"
+      output_json = sh command
+      orgs = JSON.parse(output_json)
+      return orgs.find {|o| o['login']==name }!=nil
+    end
+
     def highline
       @highline ||= HighLine.new
     end

@@ -298,24 +298,7 @@ command :'fetch-pull' do |n,action|
   end
   die "Cannot infer repository from git-remote" unless user && repo
 
-  # pull in the suggested head and rebase
-  query = [user, repo].compact.join("/")
-  pull_url = "https://api.github.com/repos/#{URI.escape query}/pulls/#{n}"
-  if github_token
-    data = JSON.parse(`curl -s -L -H 'Authorization: token #{github_token}' #{pull_url}`)
-  else
-    data = JSON.parse(open(pull_url).read)
-  end
-  head = data['head']
-  tip = git "rev-parse HEAD"
-  if github_token
-    repo_owner = head['repo']['owner']['login']
-    repo_name = head['repo']['name']
-    repo_url = "git@github.com:#{repo_owner}/#{repo_name}"
-  else
-    repo_url = head['repo']['clone_url']
-  end
-  pgit "fetch #{repo_url}.git #{head['ref']}:pull-#{n}"
+  pgit "fetch https://github.com/#{user}/#{repo}.git refs/pull/#{n}/head:pull-#{n}"
   pgit "checkout pull-#{n}"
   pgit "#{action} #{tip}" if ["rebase", "merge"].include?(action)
 end

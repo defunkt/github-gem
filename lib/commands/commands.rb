@@ -7,7 +7,7 @@ command :home do |user|
   end
 end
 
-desc "Open this repo's Admin panel a web browser."
+desc "Open this repo's Admin panel in a web browser."
 command :admin do |user|
   if helper.project
     homepage = helper.homepage_for(user || helper.owner, 'master')

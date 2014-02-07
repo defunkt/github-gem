@@ -1,6 +1,6 @@
 Usage: github command <space separated arguments>
 Available commands:
-  admin             => Open this repo's Admin panel a web browser.
+  admin             => Open this repo's Admin panel in a web browser.
   browse            => Open this repo in a web browser.
                        % github browse [user] [branch]
   clone             => Clone a repo. Uses ssh if current user is

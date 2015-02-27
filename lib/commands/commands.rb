@@ -231,7 +231,8 @@ command :fork do |user, repo|
 
   current_origin = git "config remote.origin.url"
   
-  output_json = sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/fork/#{user}/#{repo}"
+  url = "https://github.com/api/v2/json/repos/fork/#{user}/#{repo}"
+  output_json = sh "curl -F 'login=#{github_user}' -F 'token=#{github_token}' #{url}"
   output = JSON.parse(output_json)
   if output["error"]
     die output["error"]
@@ -249,6 +250,8 @@ command :fork do |user, repo|
   end
 end
 
+# TODO organizations
+
 desc "Create a new GitHub repository from the current local repository"
 usage "github create-from-local [repo_name]"
 flags :private => 'Create private repository'
@@ -261,14 +264,66 @@ command :'create-from-local' do |repo_name|
   end
   is_repo = !git("status").match(/fatal/)
   raise "Not a git repository. Use 'gh create' instead" unless is_repo
-  command = "curl -F 'name=#{repo}' -F 'public=#{options[:private] ? 0 : 1}' -F 'login=#{github_user}' -F 'token=#{github_token}' https://github.com/api/v2/json/repos/create"
-  output_json = sh command
-  output = JSON.parse(output_json)
-  if output["error"]
-    die output["error"]
+
+  # trying to force the organization
+  organization = nil
+  if organization
+    url = "https://api.github.com/orgs/#{organization}/repos"
+    repo_owner = organization
   else
-    git "remote add origin git@github.com:#{github_user}/#{repo}.git"
-    git_exec "push origin master"
+    url = "https://api.github.com/user/repos"
+    repo_owner = github_user
+  end
+  p url
+  github_password = 'XXX'
+  command = "curl -F 'name=#{repo}' -F 'private=#{options[:private] ? true : false}' -u '#{github_user}:#{github_password}' #{url}"
+  puts command
+  output_json = sh command
+  puts output_json
+  begin
+    output = JSON.parse(output_json)
+    if output["error"] || output["message"]
+      puts output["message"]
+      p output["errors"] if output["errors"]
+      exit 1
+    else
+      git "remote add origin git@github.com:#{github_user}/#{repo}.git"
+      git_exec "push origin master"
+    end
+  rescue JSON::ParserError
+    die "JSON wasn't returned. My guess is the repo wasn't created."
+  end
+end
+
+desc "Delete this fork, or the entire repo if not a fork (with ask for confirm)"
+usage "github delete"
+flags :confirm => "Force config to challenge"
+command :delete do
+  repo_url  = git "config remote.origin.url"
+  upstream  = git "config remote.upstream.url"
+  repo_type = upstream == "" ? "main" : "fork"
+  if repo_url == ""
+    die "No 'origin' repo url to delete."
+  end
+  if options[:confirm] || highline.agree("Really delete #{repo_type} repo #{repo_url}? [yN]")
+    # delete the repo
+    user, repo = helper.user_and_repo_from repo_url
+    repo.gsub!(/\.git$/, "")
+    url = "https://github.com/api/v2/json/repos/delete/#{user}/#{repo}"
+    command = "curl -F 'login=#{github_user}' -F 'token=#{github_token}' #{url}"
+    p command
+    output_json = sh command
+    output = JSON.parse(output_json)
+    if output["error"]
+      die output["error"]
+    else
+      p output
+      git "remote rm origin"
+      if repo_type == "fork"
+        puts "Restoring upstream #{upstream} to origin"
+        git "config remote.origin.url #{upstream}"
+      end
+    end
   end
 end
 
